@@ -1,6 +1,6 @@
 #!/bin/bash
-# https://github.com/281677160/AutoBuild-OpenWrt
-# common Module by 28677160
+# https://github.com/279437541/OpenWrt
+# common Module by 279437541
 # matrix.target=${Modelfile}
 
 TIME() {
