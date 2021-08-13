@@ -177,7 +177,7 @@ else
 			source /bin/openwrt_info
 			TIME h "执行：更换[Github地址]操作"
 			TIME y "地址格式：https://github.com/帐号/仓库"
-			TIME z  "正确地址示例：https://github.com/279437541/OpenWrt"
+			TIME z  "正确地址示例：https://github.com/279437541/AutoBuild-OpenWrt"
 			TIME h  "现在所用地址为：${Github}"
 			echo
 			read -p "请输入新的Github地址：" Input_Other
@@ -337,6 +337,7 @@ TIME g "准备更新固件,更新期间请不要断开电源或重启设备 ..."
 }
 sleep 2
 TIME g "正在更新固件,请耐心等待 ..."
+[[ `grep -c "gzip" ${Download_Path}/Installed_PKG_List` -ge '1' ]] && opkg remove gzip > /dev/null 2>&1
 if [[ "${AutoUpdate_Mode}" == 1 ]] || [[ "${Update_Mode}" == 1 ]]; then
 	cp -Rf /etc/config/network /mnt/network
 	mv -f /etc/config/luci /etc/config/luci-
