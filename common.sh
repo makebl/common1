@@ -410,7 +410,7 @@ if [[ "${REPO_BRANCH}" == "19.07" ]] || [[ "${REPO_BRANCH}" == "master" ]]; then
 fi
 
 if [[ `grep -c "CONFIG_PACKAGE_ntfs-3g=y" ${Home}/.config` -eq '1' ]]; then
-	mkdir -p files/etc/hotplug.d/block && curl -fsSL  https://raw.githubusercontent.com/shidahuilang/openwrt-package/usb/block/10-mount > files/etc/hotplug.d/block/10-mount
+	mkdir -p files/etc/hotplug.d/block && curl -fsSL  https://raw.githubusercontent.com/279437541/openwrt-package/usb/block/10-mount > files/etc/hotplug.d/block/10-mount
 fi
 
 
@@ -508,13 +508,7 @@ echo
 echo
 }
 
-Diy_tongzhi() {
-GONGGAO g "请大家重新FORK仓库，更新到最新版仓库，新版仓库更改很多，请看说明操作"
-GONGGAO r "https://github.com/shidahuilang/langlang"
-echo
-echo
-exit 1
-}
+
 
 ################################################################################################################
 # 编译信息
