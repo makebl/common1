@@ -2,7 +2,7 @@
 # https://github.com/Hyy2001X/AutoBuild-Actions
 # AutoBuild Module by Hyy2001
 # AutoUpdate for Openwrt
-#export CURRENT_Version="/proc/version"
+
 Version=V6.5
 
 Shell_Helper() {
@@ -376,4 +376,3 @@ fi
 ${Upgrade_Options} ${Firmware}
 
 exit 0
-
