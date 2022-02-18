@@ -1,6 +1,6 @@
 #!/bin/bash
-# https://github.com/281677160/AutoBuild-OpenWrt
-# common Module by 28677160
+# https://github.com/shidahuilang/langlang
+# common Module by 大灰狼
 # matrix.target=${Modelfile}
 
 TIME() {
@@ -71,15 +71,13 @@ fi
 # LIENOL源码通用diy.sh文件
 ################################################################################################################
 Diy_lienol() {
-find . -name 'luci-app-netdata' -o -name 'netdata' -o -name 'luci-theme-argon' | xargs -i rm -rf {}
-find . -name 'ddns-scripts_aliyun' -o -name 'ddns-scripts_dnspod' -o -name 'luci-app-wol' | xargs -i rm -rf {}
+find . -name 'luci-app-netdata' -o -name 'netdata' | xargs -i rm -rf {}
+find . -name 'luci-app-wol' | xargs -i rm -rf {}
 find . -name 'luci-app-wrtbwmon' -o -name 'wrtbwmon' -o -name 'pdnsd-alt' | xargs -i rm -rf {}
 find . -name 'UnblockNeteaseMusic-Go' -o -name 'UnblockNeteaseMusic' -o -name 'luci-app-unblockmusic' | xargs -i rm -rf {}
-rm -rf feeds/packages/libs/libcap
 git clone https://github.com/xiaorouji/openwrt-passwall package/luci-app-passwall
 rm -rf package/luci-app-passwall/{v2ray-core,v2ray-plugin,xray-core,xray-plugin}
-# git clone https://github.com/fw876/helloworld package/luci-app-ssr-plus
-git clone https://github.com/281677160/ssr package/luci-app-ssr-plus
+git clone https://github.com/fw876/helloworld package/luci-app-ssr-plus
 
 sed -i 's/DEFAULT_PACKAGES +=/DEFAULT_PACKAGES += luci-app-passwall/g' target/linux/x86/Makefile
 sed -i "/exit 0/i\chmod +x /etc/webweb.sh && source /etc/webweb.sh" $ZZZ
@@ -110,11 +108,11 @@ find . -name 'luci-app-wol' | xargs -i rm -rf {}
 # 全部作者源码公共diy.sh文件
 ################################################################################################################
 Diy_all() {
-git clone --depth 1 -b "${REPO_BRANCH}" https://github.com/shidahuilang/openwrt-package "${Home}"/openwrt-package
+git clone --depth 1 -b "${REPO_BRANCH}" https://github.com/279437541/openwrt-package "${Home}"/openwrt-package
 cp -Rf "${Home}"/openwrt-package/* "${Home}" && rm -rf "${Home}"/openwrt-package
 
 if [[ ${REGULAR_UPDATE} == "true" ]]; then
-	git clone https://github.com/shidahuilang/luci-app-autoupdate feeds/luci/applications/luci-app-autoupdate
+	git clone https://github.com/279437541/luci-app-autoupdate feeds/luci/applications/luci-app-autoupdate
 	cp -Rf "${PATH1}"/{AutoUpdate.sh,replace.sh} package/base-files/files/bin
 fi
 if [[ "${REPO_BRANCH}" == "master" ]]; then
@@ -412,7 +410,7 @@ if [[ "${REPO_BRANCH}" == "19.07" ]] || [[ "${REPO_BRANCH}" == "master" ]]; then
 fi
 
 if [[ `grep -c "CONFIG_PACKAGE_ntfs-3g=y" ${Home}/.config` -eq '1' ]]; then
-	mkdir -p files/etc/hotplug.d/block && curl -fsSL  https://raw.githubusercontent.com/shidahuilang/openwrt-package/usb/block/10-mount > files/etc/hotplug.d/block/10-mount
+	mkdir -p files/etc/hotplug.d/block && curl -fsSL  https://raw.githubusercontent.com/279437541/openwrt-package/usb/block/10-mount > files/etc/hotplug.d/block/10-mount
 fi
 
 
@@ -454,21 +452,12 @@ if [[ "${BY_INFORMATION}" == "true" ]]; then
 	awk '$0=NR$0' Plug-in > Plug-2
 	awk '{print "	" $0}' Plug-2 > Plug-in
 	sed -i "s/^/TIME g \"/g" Plug-in
-
-	if [[ `grep -c "KERNEL_PATCHVER:=" ${Home}/target/linux/${TARGET_BOARD}/Makefile` -eq '1' ]]; then
-		PATCHVE="$(egrep -o 'KERNEL_PATCHVER:=[0-9]+\.[0-9]+' ${Home}/target/linux/${TARGET_BOARD}/Makefile |cut -d "=" -f2)"
-	elif [[ `grep -c "KERNEL_PATCHVER=" ${Home}/target/linux/${TARGET_BOARD}/Makefile` -eq '1' ]]; then
-		PATCHVE="$(egrep -o 'KERNEL_PATCHVER=[0-9]+\.[0-9]+' ${Home}/target/linux/${TARGET_BOARD}/Makefile |cut -d "=" -f2)"
-	else
-		PATCHVER="unknown"
-	fi
-	if [[ -n ${PATCHVE} ]]; then
-		if [[ -f ${Home}/include/kernel-${PATCHVE} ]]; then
-			PATCHVER=$(egrep -o "${PATCHVE}.[0-9]+" ${Home}/include/kernel-${PATCHVE})
-		else
-			PATCHVER=$(egrep -o "${PATCHVE}.[0-9]+" ${Home}/include/kernel-version.mk)
-		fi
-	fi
+    	cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c > CPU
+        cat /proc/cpuinfo | grep "cpu cores" | uniq >> CPU
+        sed -i 's|[[:space:]]||g; s|^.||' CPU && sed -i 's|CPU||g; s|pucores:||' CPU
+        CPUNAME="$(awk 'NR==1' CPU)" && CPUCORES="$(awk 'NR==2' CPU)"
+        rm -rf CPU
+	
 	if [[ "${Modelfile}" == "openwrt_amlogic" ]]; then
 		[[ -e $GITHUB_WORKSPACE/amlogic_openwrt ]] && source $GITHUB_WORKSPACE/amlogic_openwrt
 		[[ "${amlogic_kernel}" == "5.12.12_5.4.127" ]] && {
@@ -484,7 +473,6 @@ if [[ "${BY_INFORMATION}" == "true" ]]; then
 fi
 rm -rf ${Home}/files/{README,README.md}
 }
-
 
 
 ################################################################################################################
@@ -571,19 +559,23 @@ if [[ ${REGULAR_UPDATE} == "true" ]]; then
 	TIME b "固件版本: ${Openwrt_Version}"
 	TIME b "云端路径: ${Github_UP_RELEASE}"
 	TIME g "《编译成功后，会自动把固件发布到指定地址，然后才会生成云端路径》"
-	TIME g "《普通的那个发布固件跟云端的发布路径是两码事，如果你不需要普通发布的可以不用打开发布功能》"
 	echo
 else
 	echo
 fi
 echo
-TIME z "Github使用CPU型号"
-echo `cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c`
-echo
 TIME z " 系统空间      类型   总数  已用  可用 使用率"
 cd ../ && df -hT $PWD && cd openwrt
 echo
+TIME z "  本编译 服务器的 CPU型号为 [ ${CPUNAME} ]"
 echo
+TIME z "  使用 核心数 为 [ ${CPUCORES} ], 线程数为 [ $(nproc) ]"
+echo
+TIME z "  随机分配到 E5系列CPU 编译是 最慢的, 8171M 的CPU 快很多，8272CL 的又比 8171M 快些！"
+echo
+TIME z "  如果编译的插件较多，而又分配到 E5系列 的 CPU，建议关闭 重新再来！"
+echo
+TIME z "  下面将使用 [ $(nproc) 线程 ] 编译固件"
 if [ -n "$(ls -A "${Home}/EXT4" 2>/dev/null)" ]; then
 	echo
 	echo
