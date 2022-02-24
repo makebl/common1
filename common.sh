@@ -60,7 +60,7 @@ if [[ "${Modelfile}" == "openwrt_amlogic" ]]; then
 	done
 
 	# luci-app-cpufreq修改一些代码适配amlogic
-	sed -i 's/LUCI_DEPENDS.*/LUCI_DEPENDS:=\@\(arm\|\|aarch64\)/g' package/lean/luci-app-cpufreq/Makefile
+	sed -i 's/LUCI_DEPENDS.*/LUCI_DEPENDS:=\@\(arm\|\|aarch64\)/g' feeds/luci/applications/luci-app-cpufreq/Makefile
 	# 为 armvirt 添加 autocore 支持
 	sed -i 's/TARGET_rockchip/TARGET_rockchip\|\|TARGET_armvirt/g' package/lean/autocore/Makefile
 fi
@@ -71,13 +71,15 @@ fi
 # LIENOL源码通用diy.sh文件
 ################################################################################################################
 Diy_lienol() {
-find . -name 'luci-app-netdata' -o -name 'netdata' | xargs -i rm -rf {}
-find . -name 'luci-app-wol' | xargs -i rm -rf {}
-find . -name 'luci-app-wrtbwmon' -o -name 'wrtbwmon' -o -name 'pdnsd-alt' | xargs -i rm -rf {}
+find . -name 'luci-app-netdata' -o -name 'netdata' -o -name 'luci-theme-argon' | xargs -i rm -rf {}
+find . -name 'ddns-scripts_aliyun' -o -name 'ddns-scripts_dnspod' -o -name 'luci-app-wol' | xargs -i rm -rf {}
+find . -name 'pdnsd-alt' | xargs -i rm -rf {}
 find . -name 'UnblockNeteaseMusic-Go' -o -name 'UnblockNeteaseMusic' -o -name 'luci-app-unblockmusic' | xargs -i rm -rf {}
+rm -rf feeds/packages/libs/libcap
 git clone https://github.com/xiaorouji/openwrt-passwall package/luci-app-passwall
 rm -rf package/luci-app-passwall/{v2ray-core,v2ray-plugin,xray-core,xray-plugin}
-git clone https://github.com/fw876/helloworld package/luci-app-ssr-plus
+# git clone https://github.com/fw876/helloworld package/luci-app-ssr-plus
+git clone https://github.com/281677160/ssr package/luci-app-ssr-plus
 
 sed -i 's/DEFAULT_PACKAGES +=/DEFAULT_PACKAGES += luci-app-passwall/g' target/linux/x86/Makefile
 sed -i "/exit 0/i\chmod +x /etc/webweb.sh && source /etc/webweb.sh" $ZZZ
@@ -108,11 +110,11 @@ find . -name 'luci-app-wol' | xargs -i rm -rf {}
 # 全部作者源码公共diy.sh文件
 ################################################################################################################
 Diy_all() {
-git clone --depth 1 -b "${REPO_BRANCH}" https://github.com/279437541/openwrt-package "${Home}"/openwrt-package
+git clone --depth 1 -b "${REPO_BRANCH}" https://github.com/shidahuilang/openwrt-package "${Home}"/openwrt-package
 cp -Rf "${Home}"/openwrt-package/* "${Home}" && rm -rf "${Home}"/openwrt-package
 
 if [[ ${REGULAR_UPDATE} == "true" ]]; then
-	git clone https://github.com/279437541/luci-app-autoupdate feeds/luci/applications/luci-app-autoupdate
+	git clone https://github.com/shidahuilang/luci-app-autoupdate feeds/luci/applications/luci-app-autoupdate
 	cp -Rf "${PATH1}"/{AutoUpdate.sh,replace.sh} package/base-files/files/bin
 fi
 if [[ "${REPO_BRANCH}" == "master" ]]; then
@@ -127,7 +129,7 @@ elif [[ "${REPO_BRANCH}" == "openwrt-18.06" ]]; then
 	cp -Rf "${Home}"/build/common/TIANLING/files "${Home}"
 	cp -Rf "${Home}"/build/common/TIANLING/diy/* "${Home}"
 	cp -Rf "${Home}"/build/common/TIANLING/patches/* "${PATH1}/patches"
-	curl -fsSL https://raw.githubusercontent.com/279437541/common/main/Convert/1806-default-settings > ${Home}/package/emortal/default-settings/files/99-default-settings
+	curl -fsSL https://raw.githubusercontent.com/shidahuilang/common/main/Convert/1806-default-settings > ${Home}/package/emortal/default-settings/files/99-default-settings
 elif [[ "${REPO_BRANCH}" == "openwrt-21.02" ]]; then
 	cp -Rf "${Home}"/build/common/MORTAL/files "${Home}"
 	cp -Rf "${Home}"/build/common/MORTAL/diy/* "${Home}"
@@ -410,7 +412,7 @@ if [[ "${REPO_BRANCH}" == "19.07" ]] || [[ "${REPO_BRANCH}" == "master" ]]; then
 fi
 
 if [[ `grep -c "CONFIG_PACKAGE_ntfs-3g=y" ${Home}/.config` -eq '1' ]]; then
-	mkdir -p files/etc/hotplug.d/block && curl -fsSL  https://raw.githubusercontent.com/279437541/openwrt-package/usb/block/10-mount > files/etc/hotplug.d/block/10-mount
+	mkdir -p files/etc/hotplug.d/block && curl -fsSL  https://raw.githubusercontent.com/shidahuilang/openwrt-package/usb/block/10-mount > files/etc/hotplug.d/block/10-mount
 fi
 
 
@@ -452,12 +454,26 @@ if [[ "${BY_INFORMATION}" == "true" ]]; then
 	awk '$0=NR$0' Plug-in > Plug-2
 	awk '{print "	" $0}' Plug-2 > Plug-in
 	sed -i "s/^/TIME g \"/g" Plug-in
-    	cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c > CPU
+	cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c > CPU
         cat /proc/cpuinfo | grep "cpu cores" | uniq >> CPU
         sed -i 's|[[:space:]]||g; s|^.||' CPU && sed -i 's|CPU||g; s|pucores:||' CPU
         CPUNAME="$(awk 'NR==1' CPU)" && CPUCORES="$(awk 'NR==2' CPU)"
         rm -rf CPU
-	
+
+	if [[ `grep -c "KERNEL_PATCHVER:=" ${Home}/target/linux/${TARGET_BOARD}/Makefile` -eq '1' ]]; then
+		PATCHVE="$(egrep -o 'KERNEL_PATCHVER:=[0-9]+\.[0-9]+' ${Home}/target/linux/${TARGET_BOARD}/Makefile |cut -d "=" -f2)"
+	elif [[ `grep -c "KERNEL_PATCHVER=" ${Home}/target/linux/${TARGET_BOARD}/Makefile` -eq '1' ]]; then
+		PATCHVE="$(egrep -o 'KERNEL_PATCHVER=[0-9]+\.[0-9]+' ${Home}/target/linux/${TARGET_BOARD}/Makefile |cut -d "=" -f2)"
+	else
+		PATCHVER="unknown"
+	fi
+	if [[ -n ${PATCHVE} ]]; then
+		if [[ -f ${Home}/include/kernel-${PATCHVE} ]]; then
+			PATCHVER=$(egrep -o "${PATCHVE}.[0-9]+" ${Home}/include/kernel-${PATCHVE})
+		else
+			PATCHVER=$(egrep -o "${PATCHVE}.[0-9]+" ${Home}/include/kernel-version.mk)
+		fi
+	fi
 	if [[ "${Modelfile}" == "openwrt_amlogic" ]]; then
 		[[ -e $GITHUB_WORKSPACE/amlogic_openwrt ]] && source $GITHUB_WORKSPACE/amlogic_openwrt
 		[[ "${amlogic_kernel}" == "5.12.12_5.4.127" ]] && {
@@ -472,6 +488,35 @@ if [[ "${BY_INFORMATION}" == "true" ]]; then
 	fi
 fi
 rm -rf ${Home}/files/{README,README.md}
+}
+
+
+
+################################################################################################################
+# 公告
+################################################################################################################
+GONGGAO() {
+[[ -z "$1" ]] && {
+	echo -ne " "
+} || {
+	case $1 in
+		r) export Color="\e[31;1m";;
+		g) export Color="\e[32m";;
+		b) export Color="\e[34m";;
+		y) export Color="\e[33m";;
+		z) export Color="\e[36m";;
+	esac
+		echo -e "\n\e[35;1m[$(date "+ 公 告 ")]\e[0m ${Color}${2}\e[0m"
+	}
+}
+
+Diy_gonggao() {
+GONGGAO g "《Lede_source文件，Luci版本为18.06，内核版本为5.15》"
+GONGGAO g "《Lienol_source文件，Luci版本为17.01，内核版本为4.14》"
+GONGGAO g "《Mortal_source文件，Luci版本为21.02，内核版本为5.4》"
+GONGGAO g "《openwrt_amlogic文件，编译N1和晶晨系列盒子专用，Luci版本为18.06，内核版本为5.4》"
+echo
+echo
 }
 
 
