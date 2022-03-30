@@ -211,7 +211,7 @@ function install_bootstrap() {
   
   if [[ ${Anzhuang_shibai} == "1" ]]; then
     rm -rf /tmp/luci-theme-bootstrap.ipk
-    wget --tries=4 -q -P /tmp https://ghproxy.com/https://github.com/shidahuilang/openwrt-package/blob/usb/zhuti/luci-theme-bootstrap_18.06.ipk -O /tmp/luci-theme-bootstrap.ipk
+    wget --tries=4 -q -P /tmp https://ghproxy.com/https://github.com/makebl/openwrt-package/blob/usb/zhuti/luci-theme-bootstrap_18.06.ipk -O /tmp/luci-theme-bootstrap.ipk
     if [[ $? -ne 0 ]]; then
       wget --tries=4 -q -P /tmp https://archive.openwrt.org/releases/packages-18.06/aarch64_cortex-a72/luci/luci-theme-bootstrap_git-18.235.62437-6503756-1_all.ipk -O /tmp/luci-theme-bootstrap.ipk
       if [[ $? -ne 0 ]]; then
