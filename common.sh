@@ -172,7 +172,7 @@ esac
 echo "
 src-git helloworld https://github.com/fw876/helloworld
 src-git passwall https://github.com/shidahuilang/openwrt-passwall
-src-git make https://github.com/279437541/openwrt-package.git;${REPO_BRANCH}
+src-git make https://github.com/makebl/openwrt-package.git;${REPO_BRANCH}
 " >> $HOME_PATH/feeds.conf.default
 sed -i '/^\s*$/d' "$HOME_PATH/feeds.conf.default"
 }
@@ -418,7 +418,7 @@ if [[ `grep -c "CONFIG_PACKAGE_luci-app-unblockneteasemusic=y" ${HOME_PATH}/.con
 fi
 
 if [[ `grep -c "CONFIG_PACKAGE_ntfs-3g=y" ${HOME_PATH}/.config` -eq '1' ]]; then
-  mkdir -p ${HOME_PATH}/files/etc/hotplug.d/block && curl -fsSL  https://raw.githubusercontent.com/279437541/openwrt-package/usb/block/10-mount > ${HOME_PATH}/files/etc/hotplug.d/block/10-mount
+  mkdir -p ${HOME_PATH}/files/etc/hotplug.d/block && curl -fsSL  https://raw.githubusercontent.com/makebl/openwrt-package/usb/block/10-mount > ${HOME_PATH}/files/etc/hotplug.d/block/10-mount
 fi
 
 if [[ `grep -c "CONFIG_TARGET_x86=y" ${HOME_PATH}/.config` -eq '1' ]] || [[ `grep -c "CONFIG_TARGET_rockchip=y" ${HOME_PATH}/.config` -eq '1' ]] || [[ `grep -c "CONFIG_TARGET_bcm27xx=y" ${HOME_PATH}/.config` -eq '1' ]]; then
