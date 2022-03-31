@@ -106,18 +106,12 @@ x86)
   } || {
     export BOOT_Type="legacy"
   }
-  CPUmodel="$(cat "/tmp/sysinfo/model" |cut -d ":" -f1|sed 's/\ CPU//g'|sed 's/[ \t]*$//g')"
+  export CPUmodel="$(cat /proc/cpuinfo |grep 'model name' |awk 'END {print}' |cut -f2 -d: |sed 's/^[ ]*//g'|sed 's/\ CPU//g')"
   if [[ "$(echo ${CPUmodel} |grep -c 'Intel')" -ge '1' ]]; then
-    CPU_model="${CPUmodel%Intel*}"
-  elif [[ "$(echo ${CPUmodel} |grep -c 'AMD')" -ge '1' ]]; then
-    CPU_model="${CPUmodel%AMD*}"
+    export Cpu_Device="$(echo "${CPUmodel}" |awk '{print $2}')"
+    export CURRENT_Device="$(echo "${CPUmodel}" |sed "s/${Cpu_Device}//g")"
   else
-    CPU_model=""
-  fi
-  if [[ -n "${CPU_model}" ]]; then
-    CURRENT_Device="$(echo "${CPUmodel}" |sed "s/${CPU_model}//g")"
-  else
-    CURRENT_Device="${CPUmodel}"
+    export CURRENT_Device="${CPUmodel}"
   fi
 ;;
 rockchip | bcm27xx | mxs | sunxi | zynq)
@@ -206,23 +200,40 @@ else
   -c)
       Github="$(grep Github= /bin/openwrt_info | cut -d "=" -f2)"
       TIME h "执行：更换[Github地址]操作"
-      TIME y "地址格式：https://github.com/帐号/仓库"
-      TIME z  "正确地址示例：https://github.com/shidahuilang/openwrt"
+      TIME y "正确地址格式：https://github.com/shidahuilang/openwrt"
       TIME h  "现在所用地址为：${Github}"
       echo
-      read -p "请输入新的Github地址(直接回车为不修改,退出程序)：" Input_Other
+      export YUMING="请输入新的Github地址(直接回车为不修改,退出程序)"      
+      while :; do
+      dogithub=""
+      read -p "${YUMING}：" Input_Other
       Input_Other="${Input_Other:-"$Github"}"
-      Github_uci=$(uci get autoupdate.@login[0].github 2>/dev/null)
+      if [[ "$(echo ${Input_Other} |grep -c 'https://github.com/.*/.*')" == '1' ]]; then
+        dogithub="Y"
+      fi
+      case $dogithub in
+      Y)
+        export Input_Other="${Input_Other}"
+      break
+      ;;
+      *)
+        export YUMING="敬告：您输入的Github地址无效,请输入正确格式的Github地址,或留空回车退出!"
+      ;;
+      esac
+      done
+      export Github_uci=$(uci get autoupdate.@login[0].github 2>/dev/null)
       [[ -n "${Github_uci}" ]] && [[ "${Github_uci}" != "${Input_Other}" ]] && {
-        ApAuthor="${Input_Other%.git}"
-        custom_github_url="${ApAuthor##*com/}"
-        current_github_url="$(grep Warehouse= /bin/openwrt_info | cut -d "=" -f2)"
-        sed -i "s?${current_github_url}?${custom_github_url}?g" /bin/openwrt_info
-        Input_Other="$(grep Github= /bin/openwrt_info | cut -d "=" -f2)"
+        export ApAuthor="${Input_Other%.git*}"
+        export custm_github_url="${ApAuthor##*com/}"
+        export curret_github_url="$(grep Warehouse= /bin/openwrt_info | cut -d "=" -f2)"
+        sed -i "s?${curret_github_url}?${custm_github_url}?g" /bin/openwrt_info
+        export Input_Other="$(grep Github= /bin/openwrt_info | cut -d "=" -f2)"
         uci set autoupdate.@login[0].github=${Input_Other}
         uci commit autoupdate
         TIME y "Github 地址已更换为: ${Input_Other}"
         TIME y "UCI 设置已更新!"
+        export custm_github_url=""
+        export curret_github_url=""	
         echo
       }
 
@@ -255,7 +266,7 @@ else
 fi
 
 TIME g "检测机器是否联网..."
-curl -o /tmp/baidu.html -s -w %{time_namelookup}: http://www.baidu.com
+curl -o /tmp/baidu.html -s -w %{time_namelookup}: http://www.baidu.com > /dev/null 2>&1
 if [[ -f /tmp/baidu.html ]] && [[ `grep -c "百度一下" /tmp/baidu.html` -ge '1' ]]; then
 	rm -rf /tmp/baidu.html
   TIME y "您的网络正常!"
@@ -275,7 +286,7 @@ if [[ $? -ne 0 ]];then
     TIME y "获取云端API数据成功!"
   fi
   if [[ $? -ne 0 ]];then
-    TIME r "获取云端API数据失败,您更改的Github地址为无效地址,或者您的仓库是私库,或者云端发布已被删除!"
+    TIME r "获取云端API数据失败,您现在所用的Github地址上没检测到云端存在,或您的仓库为私库!"
     echo
     exit 1
   else
@@ -296,8 +307,10 @@ export CLOUD_Version="$(egrep -o "${CLOUD_CHAZHAO}-[0-9]+-${BOOT_Type}-[a-zA-Z0-
 export CLOUD_Firmware="$(echo ${CLOUD_Version} | egrep -o "${SOURCE}-${DEFAULT_Device}-[0-9]+")"
 [[ -z "${CLOUD_Version}" ]] && {
   TIME r "获取云端固件版本信息失败,如果是x86的话,注意固件的引导模式是否对应,或者是蛋痛的脚本作者修改过脚本导致版本信息不一致!"
+  echo "版本信息不一致" > /tmp/format_tags
   exit 1
 } || {
+  rm -rf /tmp/format_tags > /dev/null 2>&1
   TIME y "获取云端固件版本成功,进行对比本地版本和云端版本!"
 }
 

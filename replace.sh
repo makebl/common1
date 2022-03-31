@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-
 #====================================================
 #!/bin/bash
 # https://github.com/shidahuilang/langlang
 # common Module by 大灰狼
 # matrix.target=${Modelfile}
 #====================================================
+
 
 # 字体颜色配置
 Green="\033[32m"
@@ -74,6 +74,7 @@ opkg list | awk '{print $1}' > ${Download_Path}/Installed_PKG_List
 export PKG_List="${Download_Path}/Installed_PKG_List"
 export Kernel="$(egrep -o "Version: [0-9]+\.[0-9]+\.[0-9]+" /usr/lib/opkg/info/kernel.control |sed s/[[:space:]]//g |cut -d ":" -f2)"
 
+
 case ${Firmware_SFX} in
 .img.gz | .img )
   [ -d /sys/firmware/efi ] && {
@@ -81,9 +82,20 @@ case ${Firmware_SFX} in
   } || {
     export BOOT_Type="legacy"
   }
+  if [[ -f /etc/openwrt_upgrade ]]; then
+    export CURRENT_Device="$(grep CURRENT_Device= /etc/openwrt_upgrade | cut -c16-100)"
+  else
+    export CPUmodel="$(cat /proc/cpuinfo |grep 'model name' |awk 'END {print}' |cut -f2 -d: |sed 's/^[ ]*//g'|sed 's/\ CPU//g')"
+    if [[ "$(echo ${CPUmodel} |grep -c 'Intel')" -ge '1' ]]; then
+      export Cpu_Device="$(echo "${CPUmodel}" |awk '{print $2}')"
+      export CURRENT_Device="$(echo "${CPUmodel}" |sed "s/${Cpu_Device}//g")"
+    else
+      export CURRENT_Device="${CPUmodel}"
+  fi
 ;;
 *)
   export BOOT_Type="sysupgrade"
+  export CURRENT_Device="$(jsonfilter -e '@.model.id' < /etc/board.json | tr ',' '_')"
 esac
 
 opapi() {
@@ -96,14 +108,15 @@ if [[ $? -ne 0 ]];then
   fi
   if [[ $? -ne 0 ]];then
     print_error "获取固件版本信息失败,请检测网络,或者您更改的Github地址为无效地址,或者您的仓库是私库,或者发布已被删除!"
-    echo
     exit 1
   fi
 fi
 }
 
 menuaz() {
-  ECHOG "正在下载云端固件,请耐心等待..."
+  echo
+  echo
+  ECHOG "正在下载编号[ ${BianHao} ]云端固件,请耐心等待..."
   cd ${Download_Path}
   [[ "$(cat ${Download_Path}/Installed_PKG_List)" =~ curl ]] && {
     export Google_Check=$(curl -I -s --connect-timeout 8 google.com -w %{http_code} | tail -n1)
@@ -113,7 +126,6 @@ menuaz() {
         wget -q --show-progress --progress=bar:force:noscroll "https://pd.zwc365.com/${Release_download}/${Firmware}" -O ${Firmware}
         if [[ $? -ne 0 ]];then
           print_error "下载云端固件失败,请尝试手动安装!"
-          echo
           exit 1
         else
           print_ok "下载云端固件成功!"
@@ -208,7 +220,7 @@ menuws() {
   echo
   ECHOYY " 当前源码：${SOURCE} / ${LUCI_EDITION} / ${Kernel}"
   ECHOYY " 固件格式：${BOOT_Type}${Firmware_SFX}"
-  ECHOYY " 设备型号：${DEFAULT_Device}"
+  ECHOYY " 设备型号：${CURRENT_Device}"
   echo
   if [[ -z "${CLOUD_Version_1}" ]] && [[ -z "${CLOUD_Version_2}" ]] && [[ -z "${CLOUD_Version_3}" ]]; then
    print_error "无其他作者固件,如需要更换请先编译出 ${tixinggg} 的固件!"
@@ -235,19 +247,22 @@ menuws() {
   read -p " ${XUANZHEOP}： " CHOOSE
   case $CHOOSE in
     1)
-      Firmware="${CLOUD_Firmware1}"
+      export Firmware="${CLOUD_Firmware1}"
+      export BianHao="1"
       menuaz
       anzhuang
     break
     ;;
     2)
-      Firmware="${CLOUD_Firmware2}"
+      export Firmware="${CLOUD_Firmware2}"
+      export BianHao="2"
       menuaz
       anzhuang
     break
     ;;
     3)
-      Firmware="${CLOUD_Firmware3}"
+      export Firmware="${CLOUD_Firmware3}"
+      export BianHao="3"
       menuaz
       anzhuang
     break
