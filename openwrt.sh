@@ -58,7 +58,7 @@ function ip_install() {
   echo
   echo
   export YUMING="请输入您的IP"
-  ECHOYY "${YUMING}[比如:192.168.2.1]"
+  ECHOYY "${YUMING}[比如:192.168.2.2]"
   while :; do
   domainy=""
   read -p " ${YUMING}：" domain
@@ -211,7 +211,7 @@ function install_bootstrap() {
   
   if [[ ${Anzhuang_shibai} == "1" ]]; then
     rm -rf /tmp/luci-theme-bootstrap.ipk
-    wget --tries=4 -q -P /tmp https://ghproxy.com/https://github.com/makebl/openwrt-package/blob/usb/zhuti/luci-theme-bootstrap_18.06.ipk -O /tmp/luci-theme-bootstrap.ipk
+    wget --tries=4 -q -P /tmp https://ghproxy.com/https://github.com/shidahuilang/openwrt-package/blob/usb/zhuti/luci-theme-bootstrap_18.06.ipk -O /tmp/luci-theme-bootstrap.ipk
     if [[ $? -ne 0 ]]; then
       wget --tries=4 -q -P /tmp https://archive.openwrt.org/releases/packages-18.06/aarch64_cortex-a72/luci/luci-theme-bootstrap_git-18.235.62437-6503756-1_all.ipk -O /tmp/luci-theme-bootstrap.ipk
       if [[ $? -ne 0 ]]; then
@@ -257,7 +257,7 @@ function install_material() {
   
   if [[ ${Anzhuang_shibai} == "1" ]]; then
     rm -rf /tmp/luci-theme-material.ipk
-    wget --tries=4 -q -P /tmp https://ghproxy.com/https://github.com/makebl/openwrt-package/blob/usb/zhuti/luci-theme-material_21.02.ipk -O /tmp/luci-theme-material.ipk
+    wget --tries=4 -q -P /tmp https://ghproxy.com/https://github.com/shidahuilang/openwrt-package/blob/usb/zhuti/luci-theme-material_21.02.ipk -O /tmp/luci-theme-material.ipk
     if [[ $? -ne 0 ]]; then
       wget --tries=4 -q -P /tmp https://archive.openwrt.org/releases/packages-21.02/aarch64_cortex-a72/luci/luci-theme-material_git-21.295.66888-fc702bc_all.ipk -O /tmp/luci-theme-material.ipk
         if [[ $? -ne 0 ]]; then
