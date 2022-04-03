@@ -214,7 +214,6 @@ esac
 echo "
 src-git helloworld https://github.com/fw876/helloworld
 src-git passwall https://github.com/shidahuilang/openwrt-passwall
-src-git OpenClash https://github.com/shidahuilang/OpenClash
 src-git dahuilang https://github.com/makebl/openwrt-package.git;${REPO_BRANCH}
 " >> $HOME_PATH/feeds.conf.default
 sed -i '/^\s*$/d' "$HOME_PATH/feeds.conf.default"
