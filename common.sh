@@ -169,12 +169,6 @@ elif [[ "${matrixtarget}" == "Lede_nanopi_r2s" ]]; then
   fi
   export SOURCE="Lede_nanopi_r2s"
   export LUCI_EDITION="18.06"
-  elif [[ "${matrixtarget}" == "Lede_nanopi_r2s" ]]; then
-  export ZZZ_PATH="${HOME_PATH}/package/default-settings/files/zzz-default-settings"
-  if [[ ! -f "${ZZZ_PATH}" ]]; then
-    TIME r "上游源码作者修改了zzz-default-settings文件的路径或者名称，找编译脚本的作者及时修改"
-    exit 1
-  fi
 
 elif [[ "${matrixtarget}" == "Lede_nanopi_r4s" ]]; then
   export ZZZ_PATH="${HOME_PATH}/package/default-settings/files/zzz-default-settings"
