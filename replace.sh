@@ -6,7 +6,6 @@
 # matrix.target=${Modelfile}
 #====================================================
 
-
 # 字体颜色配置
 Green="\033[32m"
 Red="\033[31m"
@@ -91,11 +90,13 @@ case ${Firmware_SFX} in
       export CURRENT_Device="$(echo "${CPUmodel}" |sed "s/${Cpu_Device}//g")"
     else
       export CURRENT_Device="${CPUmodel}"
+    fi
   fi
 ;;
 *)
   export BOOT_Type="sysupgrade"
   export CURRENT_Device="$(jsonfilter -e '@.model.id' < /etc/board.json | tr ',' '_')"
+;;
 esac
 
 opapi() {
@@ -284,7 +285,7 @@ menu() {
   if [[ ${SOURCE} == "Lede" ]]; then
     export MAINTAIN_1="18.06-Tianling"
     export MAINTAIN_2="21.02-Mortal"
-    export MAINTAIN_3="20.07-Lienol"
+    export MAINTAIN_3="22.03-Lienol"
     export tixinggg="Tianling、Mortal或Lienol"
     opapi
     Firmware_Path
@@ -301,7 +302,7 @@ menu() {
     clear
   elif [[ ${SOURCE} == "Mortal" ]]; then
     export MAINTAIN_1="18.06-Lede"
-    export MAINTAIN_2="20.07-Lienol"
+    export MAINTAIN_2="22.03-Lienol"
     export MAINTAIN_3="18.06-Tianling"
     export tixinggg="Lede、Lienol或Tianling"
     opapi
@@ -310,7 +311,7 @@ menu() {
   elif [[ ${SOURCE} == "Tianling" ]]; then
     export MAINTAIN_1="18.06-Lede"
     export MAINTAIN_2="21.02-Mortal"
-    export MAINTAIN_3="20.07-Lienol"
+    export MAINTAIN_3="22.03-Lienol"
     export tixinggg="Lede、Mortal或Lienol"
     opapi
     Firmware_Path

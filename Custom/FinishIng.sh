@@ -1,8 +1,6 @@
-# Put your custom commands here that should be executed once
-# the system init finished. By default this file does nothing.
-
+#!/bin/bash
 cat /dev/null > /etc/bench.log
-echo " (CpuMark : 297821.987633" >> /etc/bench.log
+echo " (CpuMark : 2297821.3987633" >> /etc/bench.log
 echo " Scores)" >> /etc/bench.log
 
 if [ -f "/etc/bench.log" ]; then

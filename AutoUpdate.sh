@@ -17,6 +17,7 @@ clear
 echo
 echo
 echo -e "${Yellow}详细参数：
+
 /overlay 可用:		${Overlay_Available}
 /tmp 可用:		${TMP_Available}M
 固件下载位置:		${Download_Path}
@@ -31,6 +32,7 @@ Github 地址:		${Github}
 作者仓库:		${Library}
 固件名称:		${LOCAL_Version}
 固件格式:		${BOOT_Type}${Firmware_SFX}
+
 ${White}"
 exit 0
 }
