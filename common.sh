@@ -117,6 +117,27 @@ if [[ "${REPO_BRANCH}" == "master" ]]; then
   echo "SOURCE=Lede" >> $GITHUB_ENV
   echo "LUCI_EDITION=18.06" >> $GITHUB_ENV
   echo "MAINTAIN=Lean's" >> $GITHUB_ENV
+  
+elif [[ "${REPO_BRANCH}" == "master" ]]; then
+  echo "ZZZ_PATH=${GITHUB_WORKSPACE}/openwrt/package/lean/default-settings/files/zzz-default-settings" >> $GITHUB_ENV
+  if [[ ! -f "${GITHUB_WORKSPACE}/openwrt/package/lean/default-settings/files/zzz-default-settings" ]]; then
+    TIME r "上游源码作者修改了zzz-default-settings文件的路径或者名称，找编译脚本的作者及时修改"
+    exit 1
+  fi
+  echo "SOURCE=Lede_nanopi_r2s" >> $GITHUB_ENV
+  echo "LUCI_EDITION=18.06" >> $GITHUB_ENV
+  echo "MAINTAIN=Lean's" >> $GITHUB_ENV
+  
+elif [[ "${REPO_BRANCH}" == "master" ]]; then
+  echo "ZZZ_PATH=${GITHUB_WORKSPACE}/openwrt/package/lean/default-settings/files/zzz-default-settings" >> $GITHUB_ENV
+  if [[ ! -f "${GITHUB_WORKSPACE}/openwrt/package/lean/default-settings/files/zzz-default-settings" ]]; then
+    TIME r "上游源码作者修改了zzz-default-settings文件的路径或者名称，找编译脚本的作者及时修改"
+    exit 1
+  fi
+  echo "SOURCE=Lede_nanopi_r4s" >> $GITHUB_ENV
+  echo "LUCI_EDITION=18.06" >> $GITHUB_ENV
+  echo "MAINTAIN=Lean's" >> $GITHUB_ENV  
+  
 elif [[ "${REPO_BRANCH}" == "22.03" ]]; then
   echo "ZZZ_PATH=${GITHUB_WORKSPACE}/openwrt/package/default-settings/files/zzz-default-settings" >> $GITHUB_ENV
   if [[ ! -f "${GITHUB_WORKSPACE}/openwrt/package/default-settings/files/zzz-default-settings" ]]; then
