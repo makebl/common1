@@ -105,6 +105,7 @@ echo "Upgrade_Date=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
 echo "Firmware_Date=$(date +%Y-%m%d-%H%M)" >> $GITHUB_ENV
 echo "Compte_Date=$(date +%Y年%m月%d号%H时%M分)" >> $GITHUB_ENV
 echo "Tongzhi_Date=$(date +%Y年%m月%d日)" >> $GITHUB_ENV
+echo "Gujian_Date=$(date +%m%d)" >> $GITHUB_ENV
 
 
 # github用的变量，如果有修改，下面Bendi_variable也要同步修改
@@ -818,13 +819,13 @@ cd ${TARGET_BSGET}
 mkdir -p ipk
 cp -rf $(find $HOME_PATH/bin/packages/ -type f -name "*.ipk") ipk/ && sync
 sudo tar -czf ipk.tar.gz ipk && sudo rm -rf ipk && sync
-rename -v "s/^immortalwrt/openwrt/" *
-if [[ -f ${GITHUB_WORKSPACE}/Clear ]]; then
-  cp -Rf ${GITHUB_WORKSPACE}/Clear ${TARGET_BSGET}/Clear.sh
-  chmod +x ${TARGET_BSGET}/Clear.sh && source ${TARGET_BSGET}/Clear.sh
-  rm -rf ${TARGET_BSGET}/Clear.sh
+if [[ `ls -1 | grep -c "immortalwrt"` -ge '1' ]]; then
+  rename -v "s/^immortalwrt/openwrt/" *
 fi
-rename -v "s/^openwrt/${SOURCE}/" *
+for X in $(cat "${CLEAR_PATH}" |sed 's/rm -rf//g' |sed 's/rm -fr//g' |sed 's/\r//' |sed 's/ //g' |cut -d '-' -f4- |sed '/^$/d' |sed 's/^/*/g' |sed 's/$/*/g'); do
+   rm -rf "${X}"
+done
+rename -v "s/^openwrt/${Gujian_Date}-${SOURCE}/" *
 echo "FIRMWARE=$PWD" >> $GITHUB_ENV
 
 cd $HOME_PATH
