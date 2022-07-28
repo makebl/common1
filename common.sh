@@ -1,10 +1,7 @@
-#!/usr/bin/env bash
-#====================================================
 #!/bin/bash
 # https://github.com/shidahuilang/openwrt
 # common Module by 大灰狼
 # matrix.target=${matrixtarget}
-#====================================================
 
 function TIME() {
 Compte=$(date +%Y年%m月%d号%H时%M分)
@@ -323,14 +320,14 @@ src-git helloworld https://github.com/fw876/helloworld
 src-git passwall https://github.com/xiaorouji/openwrt-passwall;packages
 src-git passwall1 https://github.com/xiaorouji/openwrt-passwall;luci
 src-git passwall2 https://github.com/xiaorouji/openwrt-passwall2;main
-src-git danshui https://github.com/makebl/openwrt-package.git;${REPO_BRANCH}
+src-git makebl https://github.com/makebl/openwrt-package.git;${REPO_BRANCH}
 " >> $HOME_PATH/feeds.conf.default
 sed -i '/^#/d' "$HOME_PATH/feeds.conf.default"
 sed -i '/^$/d' "$HOME_PATH/feeds.conf.default"
 }
 
 function sbin_openwrt() {
-echo "正在执行：给固件增加[openwrt]命令"
+echo "正在执行：给固件增加[openwrt和tools]命令"
 [[ -f $BUILD_PATH/openwrt.sh ]] && cp -Rf $BUILD_PATH/openwrt.sh $BASE_PATH/sbin/openwrt
 [[ -f $BUILD_PATH/tools.sh ]] && cp -Rf $BUILD_PATH/tools.sh $BASE_PATH/sbin/tools
 chmod 777 $BASE_PATH/sbin/tools
@@ -642,7 +639,7 @@ fi
 if [[ `grep -c "CONFIG_PACKAGE_luci-theme-argon=y" ${HOME_PATH}/.config` -eq '1' ]]; then
   pmg="$(echo "$(date +%d)" | sed 's/^.//g')"
   mkdir -p $HOME_PATH/files/www/luci-static/argon/background
-  curl -fsSL  https://raw.githubusercontent.com/shidahuilang/openwrt-package/usb/argon/jpg/${pmg}.jpg > $HOME_PATH/files/www/luci-static/argon/background/moren.jpg
+  curl -fsSL  https://raw.githubusercontent.com/281677160/openwrt-package/usb/argon/jpg/${pmg}.jpg > $HOME_PATH/files/www/luci-static/argon/background/moren.jpg
   if [[ $? -ne 0 ]]; then
     echo "拉取文件错误,请检测网络"
     exit 1
@@ -692,7 +689,7 @@ if [[ `grep -c "CONFIG_PACKAGE_luci-app-unblockneteasemusic=y" ${HOME_PATH}/.con
 fi
 
 if [[ `grep -c "CONFIG_PACKAGE_ntfs-3g=y" ${HOME_PATH}/.config` -eq '1' ]]; then
-  mkdir -p ${HOME_PATH}/files/etc/hotplug.d/block && curl -fsSL  https://raw.githubusercontent.com/shidahuilang/openwrt-package/usb/block/10-mount > ${HOME_PATH}/files/etc/hotplug.d/block/10-mount
+  mkdir -p ${HOME_PATH}/files/etc/hotplug.d/block && curl -fsSL  https://raw.githubusercontent.com/281677160/openwrt-package/usb/block/10-mount > ${HOME_PATH}/files/etc/hotplug.d/block/10-mount
   if [[ $? -ne 0 ]]; then
     echo "拉取文件错误,请检测网络"
     exit 1
@@ -813,10 +810,10 @@ echo "正在执行：files大法，设置固件无烦恼"
 if [[ -d "${GITHUB_WORKSPACE}/OP_DIY" ]]; then
   cp -Rf $HOME_PATH/build/common/${SOURCE}/* $BUILD_PATH
   cp -Rf ${GITHUB_WORKSPACE}/OP_DIY/${matrixtarget}/* $BUILD_PATH
-elif [[ ${matrixtarget} == "nanopi_r2s" ]]; then
-  cp -Rf $HOME_PATH/build/common/nanopi_r2s/* $BUILD_PATH
-elif [[ ${matrixtarget} == "nanopi_r4s" ]]; then
-  cp -Rf $HOME_PATH/build/common/nanopi_r4s/* $BUILD_PATH
+elif [[ ${matrixtarget} == "Lede_nanopi_r2s" ]]; then
+  cp -Rf $HOME_PATH/build/common/Lede_nanopi_r2s/* $BUILD_PATH
+elif [[ ${matrixtarget} == "Lede_nanopi_r4s" ]]; then
+  cp -Rf $HOME_PATH/build/common/Lede_nanopi_r4s/* $BUILD_PATH
 else
   cp -Rf $HOME_PATH/build/common/${SOURCE}/* $BUILD_PATH
 fi
@@ -834,7 +831,7 @@ rm -rf $HOME_PATH/files/{LICENSE,README,REA*.md}
 function Diy_webweb() {
 curl -fsSL https://raw.githubusercontent.com/makebl/common/main/Custom/FinishIng.sh > $BASE_PATH/etc/FinishIng.sh
 if [[ $? -ne 0 ]]; then
-  wget -P $BASE_PATH/etc https://raw.githubusercontent.com/shidahuilang/common/main/Custom/FinishIng.sh -O $BASE_PATH/etc/FinishIng.sh
+  wget -P $BASE_PATH/etc https://raw.githubusercontent.com/makebl/common/main/Custom/FinishIng.sh -O $BASE_PATH/etc/FinishIng.sh
 fi
 chmod 775 $BASE_PATH/etc/FinishIng.sh
 curl -fsSL https://raw.githubusercontent.com/makebl/common/main/Custom/FinishIng > $BASE_PATH/etc/init.d/FinishIng
@@ -976,7 +973,7 @@ function Diy_Notice() {
 TIME y "第一次用我仓库的，请不要拉取任何插件，先SSH进入固件配置那里看过我脚本实在是没有你要的插件才再拉取"
 TIME y "拉取插件应该单独拉取某一个你需要的插件，别一下子就拉取别人一个插件包，这样容易增加编译失败概率"
 TIME r "修改IP、DNS、网关，请输入命令：openwrt"
-TIME r "在线更新命令：openwrt，工具箱输入命令：tools"
+TIME r "如果您的机子在线更新固件可用，而又编译了，也可请输入命令查看在线更新操作：openwrt"
 }
 
 
@@ -986,7 +983,6 @@ Plug_in2="$(echo "${Plug_in}" | grep -v '^#' |sed '/INCLUDE/d' |sed '/=m/d' |sed
 echo "${Plug_in2}" >Plug-in
 CPUNAME="$(cat /proc/cpuinfo |grep 'model name' |awk 'END {print}' |cut -f2 -d: |sed 's/^[ ]*//g')"
 CPUCORES="$(cat /proc/cpuinfo | grep 'cpu cores' |awk 'END {print}' | cut -f2 -d: | sed 's/^[ ]*//g')"
-
 if [[ "${REPO_BRANCH}" == "openwrt-18.06" ]] || [[ "${REPO_BRANCH}" == "openwrt-21.02" ]]; then
   export KERNEL_PATC=""
   export KERNEL_PATC="$(egrep KERNEL_PATCHVER:=[0-9]+\.[0-9]+ $HOME_PATH/target/linux/${TARGET_BOARD}/Makefile |cut -d "=" -f2)"
