@@ -855,7 +855,6 @@ if [[ -d "${GITHUB_WORKSPACE}/OP_DIY" ]]; then
   cp -Rf ${GITHUB_WORKSPACE}/OP_DIY/${matrixtarget}/* $BUILD_PATH
 else
   cp -Rf $HOME_PATH/build/common/${SOURCE}/* $BUILD_PATH
-  cp -Rf $HOME_PATH/build/common/${nanopi_r2s}/* $BUILD_PATH
 fi
 
 if [ -n "$(ls -A "$BUILD_PATH/diy" 2>/dev/null)" ]; then
@@ -1190,7 +1189,6 @@ fi
 Diy_conf
 Diy_webweb
 Diy_${SOURCE}
-Diy_${nanopi_r2s}
 Diy_amlogic
 Diy_part_sh
 Diy_indexhtm
