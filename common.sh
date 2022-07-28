@@ -375,9 +375,11 @@ sed -i '/DISTRIB_REVISION/d' /etc/openwrt_release
 echo "DISTRIB_REVISION='21.02'" >> /etc/openwrt_release
 sed -i '/DISTRIB_DESCRIPTION/d' /etc/openwrt_release
 echo "DISTRIB_DESCRIPTION='OpenWrt '" >> /etc/openwrt_release
+
 sed -i '/luciname/d' /usr/lib/lua/luci/version.lua
 sed -i '/luciversion/d' /usr/lib/lua/luci/version.lua
 echo "luciname    = \"Immortalwrt-21.02\"" >> /usr/lib/lua/luci/version.lua
+
 exit 0
 EOF
 
@@ -438,6 +440,7 @@ sed -i '/DISTRIB_REVISION/d' /etc/openwrt_release
 echo "DISTRIB_REVISION='immortalwrt-18.06'" >> /etc/openwrt_release
 sed -i '/DISTRIB_DESCRIPTION/d' /etc/openwrt_release
 echo "DISTRIB_DESCRIPTION='OpenWrt '" >> /etc/openwrt_release
+
 exit 0
 EOF
 }
@@ -639,7 +642,7 @@ fi
 if [[ `grep -c "CONFIG_PACKAGE_luci-theme-argon=y" ${HOME_PATH}/.config` -eq '1' ]]; then
   pmg="$(echo "$(date +%d)" | sed 's/^.//g')"
   mkdir -p $HOME_PATH/files/www/luci-static/argon/background
-  curl -fsSL  https://raw.githubusercontent.com/281677160/openwrt-package/usb/argon/jpg/${pmg}.jpg > $HOME_PATH/files/www/luci-static/argon/background/moren.jpg
+  curl -fsSL  https://raw.githubusercontent.com/makebl/openwrt-package/usb/argon/jpg/${pmg}.jpg > $HOME_PATH/files/www/luci-static/argon/background/moren.jpg
   if [[ $? -ne 0 ]]; then
     echo "拉取文件错误,请检测网络"
     exit 1
@@ -689,7 +692,7 @@ if [[ `grep -c "CONFIG_PACKAGE_luci-app-unblockneteasemusic=y" ${HOME_PATH}/.con
 fi
 
 if [[ `grep -c "CONFIG_PACKAGE_ntfs-3g=y" ${HOME_PATH}/.config` -eq '1' ]]; then
-  mkdir -p ${HOME_PATH}/files/etc/hotplug.d/block && curl -fsSL  https://raw.githubusercontent.com/281677160/openwrt-package/usb/block/10-mount > ${HOME_PATH}/files/etc/hotplug.d/block/10-mount
+  mkdir -p ${HOME_PATH}/files/etc/hotplug.d/block && curl -fsSL  https://raw.githubusercontent.com/makebl/openwrt-package/usb/block/10-mount > ${HOME_PATH}/files/etc/hotplug.d/block/10-mount
   if [[ $? -ne 0 ]]; then
     echo "拉取文件错误,请检测网络"
     exit 1
@@ -810,10 +813,10 @@ echo "正在执行：files大法，设置固件无烦恼"
 if [[ -d "${GITHUB_WORKSPACE}/OP_DIY" ]]; then
   cp -Rf $HOME_PATH/build/common/${SOURCE}/* $BUILD_PATH
   cp -Rf ${GITHUB_WORKSPACE}/OP_DIY/${matrixtarget}/* $BUILD_PATH
-#elif [[ ${matrixtarget} == "nanopi_r2s" ]]; then
-  #cp -Rf $HOME_PATH/build/common/nanopi_r2s/* $BUILD_PATH
-#elif [[ ${matrixtarget} == "nanopi_r4s" ]]; then
-  #cp -Rf $HOME_PATH/build/common/nanopi_r4s/* $BUILD_PATH
+ elif [[ ${matrixtarget} == "nanopi_r2s" ]]; then
+  cp -Rf $HOME_PATH/build/common/nanopi_r2s/* $BUILD_PATH
+elif [[ ${matrixtarget} == "nanopi_r4s" ]]; then
+  cp -Rf $HOME_PATH/build/common/nanopi_r4s/* $BUILD_PATH
 else
   cp -Rf $HOME_PATH/build/common/${SOURCE}/* $BUILD_PATH
 fi
@@ -983,6 +986,7 @@ Plug_in2="$(echo "${Plug_in}" | grep -v '^#' |sed '/INCLUDE/d' |sed '/=m/d' |sed
 echo "${Plug_in2}" >Plug-in
 CPUNAME="$(cat /proc/cpuinfo |grep 'model name' |awk 'END {print}' |cut -f2 -d: |sed 's/^[ ]*//g')"
 CPUCORES="$(cat /proc/cpuinfo | grep 'cpu cores' |awk 'END {print}' | cut -f2 -d: | sed 's/^[ ]*//g')"
+
 if [[ "${REPO_BRANCH}" == "openwrt-18.06" ]] || [[ "${REPO_BRANCH}" == "openwrt-21.02" ]]; then
   export KERNEL_PATC=""
   export KERNEL_PATC="$(egrep KERNEL_PATCHVER:=[0-9]+\.[0-9]+ $HOME_PATH/target/linux/${TARGET_BOARD}/Makefile |cut -d "=" -f2)"
