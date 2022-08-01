@@ -164,23 +164,7 @@ if [[ "${matrixtarget}" == "Lede_source" ]]; then
   export SOURCE="Lede"
   export LUCI_EDITION="18.06"
   
-elif [[ "${matrixtarget}" == "Lede_nanopi_r2s" ]]; then
-  export ZZZ_PATH="${HOME_PATH}/package/default-settings/files/zzz-default-settings"
-  if [[ ! -f "${ZZZ_PATH}" ]]; then
-    TIME r "上游源码作者修改了zzz-default-settings文件的路径或者名称，找编译脚本的作者及时修改"
-    exit 1
-  fi
-  export SOURCE="Lede_nanopi_r2s"
-  export LUCI_EDITION="18.06"
 
-elif [[ "${matrixtarget}" == "Lede_nanopi_r4s" ]]; then
-  export ZZZ_PATH="${HOME_PATH}/package/default-settings/files/zzz-default-settings"
-  if [[ ! -f "${ZZZ_PATH}" ]]; then
-    TIME r "上游源码作者修改了zzz-default-settings文件的路径或者名称，找编译脚本的作者及时修改"
-    exit 1
-  fi
-  export SOURCE="Lede_nanopi_r4s"
-  export LUCI_EDITION="18.06"  
 elif [[ "${matrixtarget}" == "Lienol_source" ]]; then
   export ZZZ_PATH="${HOME_PATH}/package/default-settings/files/zzz-default-settings"
   if [[ ! -f "${ZZZ_PATH}" ]]; then
@@ -293,10 +277,6 @@ openwrt-18.06)
   # 给源码增加luci-app-ssr-plus为默认自选
   sed  -i  's/ luci-app-ssr-plus//g' target/linux/*/Makefile
   sed -i 's?DEFAULT_PACKAGES +=?DEFAULT_PACKAGES += luci-app-ssr-plus?g' target/linux/*/Makefile
-  
-  # 替换99-default-settings
-  chmod -R 777 $HOME_PATH/build/common/Convert
-  cp -Rf $HOME_PATH/build/common/Convert/1806-default-settings "$ZZZ_PATH"
 
 ;;
 openwrt-21.02)
@@ -308,10 +288,6 @@ openwrt-21.02)
   # 给源码增加luci-app-ssr-plus为默认自选
   sed  -i  's/ luci-app-ssr-plus//g' target/linux/*/Makefile
   sed -i 's?DEFAULT_PACKAGES +=?DEFAULT_PACKAGES += luci-app-ssr-plus?g' target/linux/*/Makefile
-  
-  # 替换99-default-settings
-  chmod -R 775 $HOME_PATH/build/common/Convert
-  source $HOME_PATH/build/common/Convert/Convert.sh
 
 ;;
 esac
