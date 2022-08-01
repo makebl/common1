@@ -202,7 +202,7 @@ else
   -c)
       Github="$(grep Github= /bin/openwrt_info | cut -d "=" -f2)"
       TIME h "执行：更换[Github地址]操作"
-      TIME y "正确地址格式：https://github.com/shidahuilang/openwrt"
+      TIME y "正确地址格式：https://github.com/makebl/shuai"
       TIME h  "现在所用地址为：${Github}"
       echo
       export YUMING="请输入新的Github地址(直接回车为不修改,退出程序)"      
