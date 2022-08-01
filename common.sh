@@ -105,7 +105,7 @@ echo "Upgrade_Date=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
 echo "Firmware_Date=$(date +%Y-%m%d-%H%M)" >> $GITHUB_ENV
 echo "Compte_Date=$(date +%Y年%m月%d号%H时%M分)" >> $GITHUB_ENV
 echo "Tongzhi_Date=$(date +%Y年%m月%d日)" >> $GITHUB_ENV
-echo "Gujian_Date=$(date +%m%d)" >> $GITHUB_ENV
+
 
 
 # github用的变量，如果有修改，下面Bendi_variable也要同步修改
