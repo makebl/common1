@@ -120,25 +120,7 @@ if [[ "${REPO_BRANCH}" == "master" ]]; then
   echo "LUCI_EDITION=18.06" >> $GITHUB_ENV
   echo "MAINTAIN=Lean's" >> $GITHUB_ENV
   
-elif [[ "${REPO_BRANCH}" == "master" ]]; then
-  echo "ZZZ_PATH=${GITHUB_WORKSPACE}/openwrt/package/lean/default-settings/files/zzz-default-settings" >> $GITHUB_ENV
-  if [[ ! -f "${GITHUB_WORKSPACE}/openwrt/package/lean/default-settings/files/zzz-default-settings" ]]; then
-    TIME r "上游源码作者修改了zzz-default-settings文件的路径或者名称，找编译脚本的作者及时修改"
-    exit 1
-  fi
-  echo "SOURCE=nanopi_r2s" >> $GITHUB_ENV
-  echo "LUCI_EDITION=18.06" >> $GITHUB_ENV
-  echo "MAINTAIN=Lean's" >> $GITHUB_ENV
-  
-elif [[ "${REPO_BRANCH}" == "master" ]]; then
-  echo "ZZZ_PATH=${GITHUB_WORKSPACE}/openwrt/package/lean/default-settings/files/zzz-default-settings" >> $GITHUB_ENV
-  if [[ ! -f "${GITHUB_WORKSPACE}/openwrt/package/lean/default-settings/files/zzz-default-settings" ]]; then
-    TIME r "上游源码作者修改了zzz-default-settings文件的路径或者名称，找编译脚本的作者及时修改"
-    exit 1
-  fi
-  echo "SOURCE=nanopi_r4s" >> $GITHUB_ENV
-  echo "LUCI_EDITION=18.06" >> $GITHUB_ENV
-  echo "MAINTAIN=Lean's" >> $GITHUB_ENV  
+
   
 elif [[ "${REPO_BRANCH}" == "22.03" ]]; then
   echo "ZZZ_PATH=${GITHUB_WORKSPACE}/openwrt/package/default-settings/files/zzz-default-settings" >> $GITHUB_ENV
@@ -184,23 +166,6 @@ if [[ "${matrixtarget}" == "Lede_source" ]]; then
   export SOURCE="Lede"
   export LUCI_EDITION="18.06"
   
-elif [[ "${matrixtarget}" == "Lede_nanopi_r2s" ]]; then
-  export ZZZ_PATH="${HOME_PATH}/package/default-settings/files/zzz-default-settings"
-  if [[ ! -f "${ZZZ_PATH}" ]]; then
-    TIME r "上游源码作者修改了zzz-default-settings文件的路径或者名称，找编译脚本的作者及时修改"
-    exit 1
-  fi
-  export SOURCE="nanopi_r2s"
-  export LUCI_EDITION="18.06"
-
-elif [[ "${matrixtarget}" == "Lede_nanopi_r4s" ]]; then
-  export ZZZ_PATH="${HOME_PATH}/package/default-settings/files/zzz-default-settings"
-  if [[ ! -f "${ZZZ_PATH}" ]]; then
-    TIME r "上游源码作者修改了zzz-default-settings文件的路径或者名称，找编译脚本的作者及时修改"
-    exit 1
-  fi
-  export SOURCE="nanopi_r4s"
-  export LUCI_EDITION="18.06"  
 elif [[ "${matrixtarget}" == "Lienol_source" ]]; then
   export ZZZ_PATH="${HOME_PATH}/package/default-settings/files/zzz-default-settings"
   if [[ ! -f "${ZZZ_PATH}" ]]; then
@@ -556,7 +521,7 @@ fi
 if [[ `grep -c "CONFIG_PACKAGE_luci-theme-argon=y" ${HOME_PATH}/.config` -eq '1' ]]; then
   pmg="$(echo "$(date +%d)" | sed 's/^.//g')"
   mkdir -p $HOME_PATH/files/www/luci-static/argon/background
-  curl -fsSL  https://raw.githubusercontent.com/shidahuilang/openwrt-package/usb/argon/jpg/${pmg}.jpg > $HOME_PATH/files/www/luci-static/argon/background/moren.jpg
+  curl -fsSL  https://raw.githubusercontent.com/makebl/openwrt-package/usb/argon/jpg/${pmg}.jpg > $HOME_PATH/files/www/luci-static/argon/background/moren.jpg
   if [[ $? -ne 0 ]]; then
     echo "拉取文件错误,请检测网络"
     exit 1
@@ -606,7 +571,7 @@ if [[ `grep -c "CONFIG_PACKAGE_luci-app-unblockneteasemusic=y" ${HOME_PATH}/.con
 fi
 
 if [[ `grep -c "CONFIG_PACKAGE_ntfs-3g=y" ${HOME_PATH}/.config` -eq '1' ]]; then
-  mkdir -p ${HOME_PATH}/files/etc/hotplug.d/block && curl -fsSL  https://raw.githubusercontent.com/shidahuilang/openwrt-package/usb/block/10-mount > ${HOME_PATH}/files/etc/hotplug.d/block/10-mount
+  mkdir -p ${HOME_PATH}/files/etc/hotplug.d/block && curl -fsSL  https://raw.githubusercontent.com/makebl/openwrt-package/usb/block/10-mount > ${HOME_PATH}/files/etc/hotplug.d/block/10-mount
   if [[ $? -ne 0 ]]; then
     echo "拉取文件错误,请检测网络"
     exit 1
@@ -725,9 +690,19 @@ fi
 
 function Diy_files() {
 echo "正在执行：files大法，设置固件无烦恼"
+
 if [[ -d "${GITHUB_WORKSPACE}/OP_DIY" ]]; then
   cp -Rf $HOME_PATH/build/common/${SOURCE}/* $BUILD_PATH
   cp -Rf ${GITHUB_WORKSPACE}/OP_DIY/${matrixtarget}/* $BUILD_PATH
+  
+elif [[ ${matrixtarget} == "nanopi_r2s" ]]; then
+  cp -Rf $HOME_PATH/build/common/nanopi_r2s/* $BUILD_PATH
+  
+elif [[ ${matrixtarget} == "nanopi_r4s" ]]; then
+  cp -Rf $HOME_PATH/build/common/nanopi_r4s/* $BUILD_PATH 
+  
+elif [[ ${matrixtarget} == "openwrt_amlogic" ]]; then
+  cp -Rf $HOME_PATH/build/common/openwrt_amlogic/* $BUILD_PATH   
 else
   cp -Rf $HOME_PATH/build/common/${SOURCE}/* $BUILD_PATH
 fi
@@ -745,14 +720,14 @@ rm -rf $HOME_PATH/files/{LICENSE,README,REA*.md}
 function Diy_zzz() {
 echo "正在执行：在zzz-default-settings文件加条执行命令"
 
-curl -fsSL https://raw.githubusercontent.com/shidahuilang/common/main/Custom/FinishIng.sh > $BASE_PATH/etc/FinishIng.sh
+curl -fsSL https://raw.githubusercontent.com/makebl/common/main/Custom/FinishIng.sh > $BASE_PATH/etc/FinishIng.sh
 if [[ $? -ne 0 ]]; then
-  wget -q -O FinishIng.sh -P $BASE_PATH/etc https://raw.githubusercontent.com/shidahuilang/common/main/Custom/FinishIng.sh
+  wget -q -O FinishIng.sh -P $BASE_PATH/etc https://raw.githubusercontent.com/makebl/common/main/Custom/FinishIng.sh
 fi
 chmod 775 $BASE_PATH/etc/FinishIng.sh
-curl -fsSL https://raw.githubusercontent.com/shidahuilang/common/main/Custom/webweb.sh > $BASE_PATH/etc/webweb.sh
+curl -fsSL https://raw.githubusercontent.com/makebl/common/main/Custom/webweb.sh > $BASE_PATH/etc/webweb.sh
 if [[ $? -ne 0 ]]; then
-  wget -q -O webweb.sh -P $BASE_PATH/etc https://raw.githubusercontent.com/shidahuilang/common/main/Custom/webweb.sh
+  wget -q -O webweb.sh -P $BASE_PATH/etc https://raw.githubusercontent.com/makebl/common/main/Custom/webweb.sh
 fi
 chmod 775 $BASE_PATH/etc/webweb.sh
 sed -i '/webweb.sh/d' "$ZZZ_PATH"
@@ -853,6 +828,29 @@ if [[ "${REPO_BRANCH}" == "22.03" ]] || [[ "${REPO_BRANCH}" == "openwrt-21.02" ]
 fi
 }
 
+function Diy_part_sh() {
+echo "正在执行：运行$DIY_PART_SH文件"
+cd $HOME_PATH
+rm -rf master > /dev/null 2>&1
+rm -rf dev > /dev/null 2>&1
+/bin/bash $BUILD_PATH/$DIY_PART_SH
+rm -rf package/luci-app-openclash > /dev/null 2>&1
+if [ -n "$(ls -A "master" 2>/dev/null)" ]; then
+  git clone -b master --depth 1 https://github.com/vernesong/OpenClash package/luci-app-openclash
+  echo "正在使用master分支的openclash"
+elif [ -n "$(ls -A "dev" 2>/dev/null)" ]; then
+  git clone -b dev --depth 1 https://github.com/vernesong/OpenClash package/luci-app-openclash
+  echo "正在使用dev分支的openclash"
+else
+  echo "没发现该分支的openclash，默认使用master分支"
+  git clone -b master --depth 1 https://github.com/vernesong/OpenClash package/luci-app-openclash
+  echo "正在使用master分支的openclash"
+fi
+rm -rf master > /dev/null 2>&1
+rm -rf dev > /dev/null 2>&1
+}
+
+
 function Diy_Notice() {
 TIME y "第一次用我仓库的，请不要拉取任何插件，先SSH进入固件配置那里看过我脚本实在是没有你要的插件才再拉取"
 TIME y "拉取插件应该单独拉取某一个你需要的插件，别一下子就拉取别人一个插件包，这样容易增加编译失败概率"
@@ -865,6 +863,7 @@ function Diy_xinxi() {
 Plug_in="$(grep -i 'CONFIG_PACKAGE_luci-app' $HOME_PATH/.config && grep -i 'CONFIG_PACKAGE_luci-theme' $HOME_PATH/.config)"
 Plug_in2="$(echo "${Plug_in}" | grep -v '^#' |sed '/INCLUDE/d' |sed '/=m/d' |sed '/_Transparent_Proxy/d' |sed '/qbittorrent_static/d' |sed 's/CONFIG_PACKAGE_//g' |sed 's/=y//g' |sed 's/^/、/g' |sed 's/$/\"/g' |awk '$0=NR$0' |sed 's/^/TIME g \"       /g')"
 echo "${Plug_in2}" >Plug-in
+sed -i '/qbittorrent-simple_dynamic/d' Plug-in > /dev/null 2>&1
 CPUNAME="$(cat /proc/cpuinfo |grep 'model name' |awk 'END {print}' |cut -f2 -d: |sed 's/^[ ]*//g')"
 CPUCORES="$(cat /proc/cpuinfo | grep 'cpu cores' |awk 'END {print}' | cut -f2 -d: | sed 's/^[ ]*//g')"
 
