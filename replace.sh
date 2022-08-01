@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #====================================================
 #!/bin/bash
-# https://github.com/shidahuilang/openwrt
+# https://github.com/shidahuilang/langlang
 # common Module by 大灰狼
 # matrix.target=${Modelfile}
 #====================================================
@@ -122,9 +122,9 @@ menuaz() {
   [[ "$(cat ${Download_Path}/Installed_PKG_List)" =~ curl ]] && {
     export Google_Check=$(curl -I -s --connect-timeout 8 google.com -w %{http_code} | tail -n1)
     if [ ! "$Google_Check" == 301 ];then
-      rm -rf "${Firmware}" && curl -# -LJO "https://ghproxy.com/${Release_download}/${Firmware}"
+      wget -q --show-progress --progress=bar:force:noscroll "https://ghproxy.com/${Release_download}/${Firmware}" -O ${Firmware}
       if [[ $? -ne 0 ]];then
-        wget -q "https://pd.zwc365.com/${Release_download}/${Firmware}" -O ${Firmware}
+        wget -q --show-progress --progress=bar:force:noscroll "https://pd.zwc365.com/${Release_download}/${Firmware}" -O ${Firmware}
         if [[ $? -ne 0 ]];then
           print_error "下载云端固件失败,请尝试手动安装!"
           exit 1
@@ -135,9 +135,9 @@ menuaz() {
         print_ok "下载云端固件成功!"
       fi
     else
-      rm -rf "${Firmware}" && curl -# -LJO "${Release_download}/${Firmware}"
+      wget -q --show-progress --progress=bar:force:noscroll "${Release_download}/${Firmware}" -O ${Firmware}
       if [[ $? -ne 0 ]];then
-        wget -q "https://ghproxy.com/${Release_download}/${Firmware}" -O ${Firmware}
+        wget -q --show-progress --progress=bar:force:noscroll "https://ghproxy.com/${Release_download}/${Firmware}" -O ${Firmware}
         if [[ $? -ne 0 ]];then
           print_error "下载云端固件失败,请尝试手动安装!"
           echo
@@ -291,6 +291,24 @@ menu() {
     Firmware_Path
     menuws
     clear
+  elif [[ ${SOURCE} == "nanopi_r2s" ]]; then
+    export MAINTAIN_1="18.06-nanopi_r2s"
+    export MAINTAIN_2="21.02-nanopi_r2s"
+    export MAINTAIN_3="22.03-nanopi_r2s"
+    export tixinggg="Lede、Mortal或Tianling或nanopi_r2s"
+    opapi
+    Firmware_Path
+    menuws
+    clear 
+  elif [[ ${SOURCE} == "nanopi_r4s" ]]; then
+    export MAINTAIN_1="18.06-nanopi_r4s"
+    export MAINTAIN_2="21.02-nanopi_r4s"
+    export MAINTAIN_3="22.03-nanopi_r4s"
+    export tixinggg="Lede、Mortal或Tianling或nanopi_r4s"
+    opapi
+    Firmware_Path
+    menuws
+    clear        
   elif [[ ${SOURCE} == "Lienol" ]]; then
     export MAINTAIN_1="18.06-Lede"
     export MAINTAIN_2="21.02-Mortal"
