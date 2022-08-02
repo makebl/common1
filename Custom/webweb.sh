@@ -35,8 +35,8 @@ if [[ -f /etc/config/argon ]]; then
   uci commit argon
 fi
 
-if [[ `grep -c "danshui" /etc/opkg/distfeeds.conf` -ge '1' ]]; then
-  sed -i '/danshui/d' /etc/opkg/distfeeds.conf
+if [[ `grep -c "makebl" /etc/opkg/distfeeds.conf` -ge '1' ]]; then
+  sed -i '/makebl/d' /etc/opkg/distfeeds.conf
 fi
 if [[ `grep -c "helloworld" /etc/opkg/distfeeds.conf` -ge '1' ]]; then
   sed -i '/helloworld/d' /etc/opkg/distfeeds.conf
