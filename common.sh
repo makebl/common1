@@ -694,14 +694,6 @@ if [[ -d "${GITHUB_WORKSPACE}/OP_DIY" ]]; then
   cp -Rf $HOME_PATH/build/common/${SOURCE}/* $BUILD_PATH
   cp -Rf ${GITHUB_WORKSPACE}/OP_DIY/${matrixtarget}/* $BUILD_PATH
   
-  elif [[ ${matrixtarget} == "nanopi_r2s" ]]; then
-  cp -Rf $HOME_PATH/build/common/nanopi_r2s/* $BUILD_PATH
-  
-elif [[ ${matrixtarget} == "nanopi_r4s" ]]; then
-  cp -Rf $HOME_PATH/build/common/nanopi_r4s/* $BUILD_PATH 
-  
-elif [[ ${matrixtarget} == "openwrt_amlogic" ]]; then
-  cp -Rf $HOME_PATH/build/common/openwrt_amlogic/* $BUILD_PATH   
 else
   cp -Rf $HOME_PATH/build/common/${SOURCE}/* $BUILD_PATH
 fi
