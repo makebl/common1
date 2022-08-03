@@ -118,8 +118,6 @@ if [[ "${REPO_BRANCH}" == "master" ]]; then
   echo "SOURCE=Lede" >> $GITHUB_ENV
   echo "LUCI_EDITION=18.06" >> $GITHUB_ENV
   echo "MAINTAIN=Lean's" >> $GITHUB_ENV
-  
-  
 elif [[ "${REPO_BRANCH}" == "22.03" ]]; then
   echo "ZZZ_PATH=${GITHUB_WORKSPACE}/openwrt/package/default-settings/files/zzz-default-settings" >> $GITHUB_ENV
   if [[ ! -f "${GITHUB_WORKSPACE}/openwrt/package/default-settings/files/zzz-default-settings" ]]; then
@@ -163,8 +161,6 @@ if [[ "${matrixtarget}" == "Lede_source" ]]; then
   fi
   export SOURCE="Lede"
   export LUCI_EDITION="18.06"
-  
-
 elif [[ "${matrixtarget}" == "Lienol_source" ]]; then
   export ZZZ_PATH="${HOME_PATH}/package/default-settings/files/zzz-default-settings"
   if [[ ! -f "${ZZZ_PATH}" ]]; then
