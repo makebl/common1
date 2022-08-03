@@ -342,6 +342,13 @@ if [[ -f $BUILD_PATH/tools.sh ]]; then
   cp -Rf $BUILD_PATH/tools.sh $BASE_PATH/usr/bin/tools
   chmod 777 $BASE_PATH/usr/bin/tools
 fi
+
+if [[ -f $BUILD_PATH/qinglong.sh ]]; then
+  echo "正在执行：给固件增加[qinglong]命令"
+  [[ ! -d "$BASE_PATH/usr/bin" ]] && mkdir $BASE_PATH/usr/bin
+  cp -Rf $BUILD_PATH/qinglong.sh $BASE_PATH/usr/bin/qinglong
+  chmod 777 $BASE_PATH/usr/bin/qinglong
+fi
 }
 
 function Diy_Lede() {
