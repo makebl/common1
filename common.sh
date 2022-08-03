@@ -249,8 +249,8 @@ case "${REPO_BRANCH}" in
 master)
   
   # 给固件LUCI做个标记
-# sed -i '/DISTRIB_RECOGNIZE/d' "$BASE_PATH/etc/openwrt_release"
-#  echo -e "\nDISTRIB_RECOGNIZE='18'" >> "$BASE_PATH/etc/openwrt_release" && sed -i '/^\s*$/d' "$BASE_PATH/etc/openwrt_release"
+ sed -i '/DISTRIB_RECOGNIZE/d' "$BASE_PATH/etc/openwrt_release"
+ echo -e "\nDISTRIB_RECOGNIZE='18'" >> "$BASE_PATH/etc/openwrt_release" && sed -i '/^\s*$/d' "$BASE_PATH/etc/openwrt_release"
 
 ;;
 22.03)
@@ -271,16 +271,16 @@ master)
 openwrt-18.06)
   
   # 给固件LUCI做个标记
- # sed -i '/DISTRIB_RECOGNIZE/d' "$BASE_PATH/etc/openwrt_release"
- # echo -e "\nDISTRIB_RECOGNIZE='18'" >> "$BASE_PATH/etc/openwrt_release" && sed -i '/^\s*$/d' "$BASE_PATH/etc/openwrt_release"
+  sed -i '/DISTRIB_RECOGNIZE/d' "$BASE_PATH/etc/openwrt_release"
+  echo -e "\nDISTRIB_RECOGNIZE='18'" >> "$BASE_PATH/etc/openwrt_release" && sed -i '/^\s*$/d' "$BASE_PATH/etc/openwrt_release"
   
   # 给源码增加luci-app-ssr-plus为默认自选
   sed  -i  's/ luci-app-ssr-plus//g' target/linux/*/Makefile
   sed -i 's?DEFAULT_PACKAGES +=?DEFAULT_PACKAGES += luci-app-ssr-plus?g' target/linux/*/Makefile
   
   # 替换99-default-settings
- # chmod -R 777 $HOME_PATH/build/common/Convert
- # cp -Rf $HOME_PATH/build/common/Convert/1806-default-settings "$ZZZ_PATH"
+  chmod -R 777 $HOME_PATH/build/common/Convert
+  cp -Rf $HOME_PATH/build/common/Convert/1806-default-settings "$ZZZ_PATH"
 
 ;;
 openwrt-21.02)
@@ -694,6 +694,14 @@ if [[ -d "${GITHUB_WORKSPACE}/OP_DIY" ]]; then
   cp -Rf $HOME_PATH/build/common/${SOURCE}/* $BUILD_PATH
   cp -Rf ${GITHUB_WORKSPACE}/OP_DIY/${matrixtarget}/* $BUILD_PATH
   
+ elif [[ ${matrixtarget} == "nanopi_r2s" ]]; then
+  cp -Rf $HOME_PATH/build/common/nanopi_r2s/* $BUILD_PATH
+  
+elif [[ ${matrixtarget} == "nanopi_r4s" ]]; then
+  cp -Rf $HOME_PATH/build/common/nanopi_r4s/* $BUILD_PATH 
+  
+elif [[ ${matrixtarget} == "openwrt_amlogic" ]]; then
+  cp -Rf $HOME_PATH/build/common/openwrt_amlogic/* $BUILD_PATH   
 else
   cp -Rf $HOME_PATH/build/common/${SOURCE}/* $BUILD_PATH
 fi
@@ -716,13 +724,13 @@ if [[ $? -ne 0 ]]; then
   wget -q -O FinishIng.sh -P $BASE_PATH/etc https://raw.githubusercontent.com/makebl/common/main/Custom/FinishIng.sh
 fi
 chmod 775 $BASE_PATH/etc/FinishIng.sh
-curl -fsSL https://raw.githubusercontent.com/makebl/common/main/Custom/webweb.sh > $BASE_PATH/etc/webweb.sh
-if [[ $? -ne 0 ]]; then
-  wget -q -O webweb.sh -P $BASE_PATH/etc https://raw.githubusercontent.com/makebl/common/main/Custom/webweb.sh
-fi
-chmod 775 $BASE_PATH/etc/webweb.sh
-sed -i '/webweb.sh/d' "$ZZZ_PATH"
-sed -i "/exit 0/i\source /etc/webweb.sh" "$ZZZ_PATH"
+# curl -fsSL https://raw.githubusercontent.com/makebl/common/main/Custom/webweb.sh > $BASE_PATH/etc/webweb.sh
+# if [[ $? -ne 0 ]]; then
+  # wget -q -O webweb.sh -P $BASE_PATH/etc https://raw.githubusercontent.com/makebl/common/main/Custom/webweb.sh
+# fi
+# chmod 775 $BASE_PATH/etc/webweb.sh
+# sed -i '/webweb.sh/d' "$ZZZ_PATH"
+# sed -i "/exit 0/i\source /etc/webweb.sh" "$ZZZ_PATH"
 
 sed -i '/etc\/init.d\/uhttpd\ restart/d' "$BASE_PATH/etc/rc.local"
 sed -i "/exit 0/i\/etc/init.d/uhttpd restart" "$BASE_PATH/etc/rc.local"
