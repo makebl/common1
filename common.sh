@@ -646,7 +646,6 @@ fi
 }
 
 function Diy_adguardhome() {
-## adguardhome编译时候带自选要不要编译内核了，此功能没用
 if [[ `grep -c "CONFIG_PACKAGE_luci-app-adguardhome=y" ${HOME_PATH}/.config` -eq '1' ]]; then
   echo "正在执行：给adguardhome下载核心"
   if [[ `grep -c "CONFIG_ARCH=\"x86_64\"" ${HOME_PATH}/.config` -eq '1' ]]; then
