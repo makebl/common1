@@ -273,10 +273,6 @@ openwrt-18.06)
   # 给源码增加luci-app-ssr-plus为默认自选
   sed  -i  's/ luci-app-ssr-plus//g' target/linux/*/Makefile
   sed -i 's?DEFAULT_PACKAGES +=?DEFAULT_PACKAGES += luci-app-ssr-plus?g' target/linux/*/Makefile
-  
-  # 替换99-default-settings
- # chmod -R 777 $HOME_PATH/build/common/Convert
-#  cp -Rf $HOME_PATH/build/common/Convert/1806-default-settings "$ZZZ_PATH"
 
 ;;
 openwrt-21.02)
@@ -288,13 +284,10 @@ openwrt-21.02)
   # 给源码增加luci-app-ssr-plus为默认自选
   sed  -i  's/ luci-app-ssr-plus//g' target/linux/*/Makefile
   sed -i 's?DEFAULT_PACKAGES +=?DEFAULT_PACKAGES += luci-app-ssr-plus?g' target/linux/*/Makefile
-  
-  # 替换99-default-settings
-  chmod -R 775 $HOME_PATH/build/common/Convert
-  source $HOME_PATH/build/common/Convert/Convert.sh
 
 ;;
 esac
+
 
 # 给feeds.conf.default增加插件源
 # 这里增加了源,要对应的删除/etc/opkg/distfeeds.conf插件源
