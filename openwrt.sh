@@ -85,7 +85,6 @@ function ip_install() {
   
   echo
   echo
-  ECHOYY "Clear password? [Y/n]"
   read -p " 是否清空密码?直接回车跳过，按[Y/y]回车确认清空密码：" YN
   case ${YN} in
     [Yy]) 
@@ -125,7 +124,7 @@ function dns_install() {
 }
 
 function wg_install() {
-  export YUMING="请输入您的主路由IP（gateway）"
+  export YUMING="请输入您的主路由IP（网关）"
   ECHOYY "${YUMING}[比如:192.168.2.1]"
   while :; do
   domainw=""
@@ -138,8 +137,8 @@ function wg_install() {
     export domainwg="${domainwg}"
     uci set network.lan.gateway="${domainwg}"
     uci commit network
-    judge "网关 修改"
-    ECHOG "您的网关为：${domainwg}"
+    judge "DNS 修改"
+    ECHOG "您的DNS为：${domainwg}"
   break
   ;;
   *)
@@ -154,7 +153,6 @@ function install_ws() {
   ip_install
   echo
   echo
-  ECHOYY "modify DNS? [Y/n]"
   read -p " 是否设置DNS?主路由一般无需设置DSN,直接回车跳过，旁路由按[Y/y]设置：" YN
   case ${YN} in
     [Yy]) 
@@ -166,7 +164,6 @@ function install_ws() {
   esac
   echo
   echo
-  ECHOYY "modify gateway? [Y/n]"
   read -p " 是否设置网关?主路由无需设置网关,直接回车跳过，旁路由按[Y/y]设置：" YN
   case ${YN} in
     [Yy]) 
@@ -176,8 +173,11 @@ function install_ws() {
       ECHOR "您已跳过网关设置"
     ;;
   esac
-    print_ok "正在重启openwrt，请稍等一会进入后台..."
-    reboot -f
+  echo
+  echo
+  ECHOG "正在为您重启openwrt中，预计需要1~2分钟，请稍后..."
+  echo
+  reboot -f
 }
 
 function first_boot() {
@@ -211,7 +211,7 @@ function install_bootstrap() {
   
   if [[ ${Anzhuang_shibai} == "1" ]]; then
     rm -rf /tmp/luci-theme-bootstrap.ipk
-    wget --tries=4 -q -P /tmp https://ghproxy.com/https://github.com/makebl/openwrt-package/blob/usb/zhuti/luci-theme-bootstrap_18.06.ipk -O /tmp/luci-theme-bootstrap.ipk
+    wget --tries=4 -q -P /tmp https://ghproxy.com/https://github.com/shidahuilang/openwrt-package/blob/usb/zhuti/luci-theme-bootstrap_18.06.ipk -O /tmp/luci-theme-bootstrap.ipk
     if [[ $? -ne 0 ]]; then
       wget --tries=4 -q -P /tmp https://archive.openwrt.org/releases/packages-18.06/aarch64_cortex-a72/luci/luci-theme-bootstrap_git-18.235.62437-6503756-1_all.ipk -O /tmp/luci-theme-bootstrap.ipk
       if [[ $? -ne 0 ]]; then
@@ -257,7 +257,7 @@ function install_material() {
   
   if [[ ${Anzhuang_shibai} == "1" ]]; then
     rm -rf /tmp/luci-theme-material.ipk
-    wget --tries=4 -q -P /tmp https://ghproxy.com/https://github.com/makebl/openwrt-package/blob/usb/zhuti/luci-theme-material_21.02.ipk -O /tmp/luci-theme-material.ipk
+    wget --tries=4 -q -P /tmp https://ghproxy.com/https://github.com/shidahuilang/openwrt-package/blob/usb/zhuti/luci-theme-material_21.02.ipk -O /tmp/luci-theme-material.ipk
     if [[ $? -ne 0 ]]; then
       wget --tries=4 -q -P /tmp https://archive.openwrt.org/releases/packages-21.02/aarch64_cortex-a72/luci/luci-theme-material_git-21.295.66888-fc702bc_all.ipk -O /tmp/luci-theme-material.ipk
         if [[ $? -ne 0 ]]; then
@@ -301,38 +301,38 @@ menu() {
   ECHOYY " 4. 转换成其他源码作者固件(不保留配置)"
   ECHOY " 5. 查看状态信息"
   ECHOYY " 6. 更换检测固件的gihub地址"
-  ECHOY " 7. 修改IP/DNS/网关(modify IP/DNS/gateway)"
-  ECHOYY " 8. 清空密码(Clear password)"
-  ECHOY " 9. 尝试修复因主题错误进了不LUCI(Attempt to fix Luci error)"
-  ECHOYY " 10. 恢复出厂设置(Restore factory settings)"
-  ECHOY " Q. 退出菜单(EXIT)"
+  ECHOY " 7. 修改IP/DSN/网关(会进行重启操作)"
+  ECHOYY " 8. 清空密码(会进行重启操作)"
+  ECHOY " 9. 尝试修复因主题错误进了不LUCI(强制重新安装官方主题,会进行重启操作)"
+  ECHOYY " 10. 恢复出厂设置(会进行重启操作)"
+  ECHOY " Q. 退出菜单"
   echo
   XUANZHEOP="请输入数字,或按[Q/q]退出菜单"
   while :; do
   read -p " ${XUANZHEOP}： " CHOOSE
   case $CHOOSE in
     1)
-      AutoUpdate
+      bash /bin/AutoUpdate.sh
     break
     ;;
     2)
-      AutoUpdate -n
+      bash /bin/AutoUpdate.sh -n
     break
     ;;
     3)
-      AutoUpdate -t
+      bash /bin/AutoUpdate.sh -t
     break
     ;;
     4)
-      replace
+      bash /bin/replace.sh
     break
     ;;
     5)
-      AutoUpdate -h
+      bash /bin/AutoUpdate.sh -h
     break
     ;;
     6)
-      AutoUpdate -c
+      bash /bin/AutoUpdate.sh -c
     break
     ;;
     7)
@@ -341,7 +341,10 @@ menu() {
     ;;
     8)
       passwd -d root
-      print_ok "清空密码完成"
+      echo
+      ECHOG "密码已清空，正在为您重启openwrt中，请稍后从新登录..."
+      echo
+      reboot
     break
     ;;
     9)
@@ -368,11 +371,11 @@ menuws() {
   clear
   echo  
   ECHOB "  请选择执行命令编码"
-  ECHOY " 1. 修改IP/DNS/网关(modify IP/DNS/gateway)"
-  ECHOYY " 2. 清空密码(Clear password)"
-  ECHOY " 3. 尝试修复因主题错误进了不LUCI(Attempt to fix Luci error)"
-  ECHOYY " 4. 恢复出厂设置(Restore factory settings)"
-  ECHOY " 5. 退出菜单(EXIT)"
+  ECHOY " 1. 修改IP/DSN/网关(会进行重启操作)"
+  ECHOYY " 2. 清空密码(会进行重启操作)"
+  ECHOY " 3. 尝试修复因主题错误进了不LUCI(强制重新安装官方主题,会进行重启操作)"
+  ECHOYY " 4. 恢复出厂设置(会进行重启操作)"
+  ECHOY " 5. 退出菜单"
   echo
   XUANZHEOP="请输入数字"
   while :; do
@@ -384,7 +387,10 @@ menuws() {
     ;;
     2)
       passwd -d root
-      print_ok "清空密码完成"
+      echo
+      ECHOG "密码已清空，正在为您重启openwrt中，请稍后从新登录..."
+      echo
+      reboot
     break
     ;;
     3)
@@ -407,7 +413,7 @@ menuws() {
     done
 }
 
-if [[ -f "/bin/openwrt_info" ]] && [[ -f "/usr/bin/AutoUpdate" ]];then
+if [[ -f /bin/openwrt_info ]] && [[ -f /bin/AutoUpdate.sh ]];then
   menu "$@"
 else
   menuws "$@"
