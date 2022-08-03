@@ -317,7 +317,7 @@ function sbin_openwrt() {
 echo "正在执行：给固件增加[openwrt和tools和qinglong]命令"
 [[ -f $BUILD_PATH/openwrt.sh ]] && cp -Rf $BUILD_PATH/openwrt.sh $BASE_PATH/sbin/openwrt
 [[ -f $BUILD_PATH/tools.sh ]] && cp -Rf $BUILD_PATH/tools.sh $BASE_PATH/sbin/tools
-[[ -f $BUILD_PATH/qinglong.sh ]] && cp -Rf $BUILD_PATH/tools.sh $BASE_PATH/sbin/qinglong
+[[ -f $BUILD_PATH/qinglong.sh ]] && cp -Rf $BUILD_PATH/qinglong.sh $BASE_PATH/sbin/qinglong
 chmod 777 $BASE_PATH/sbin/tools
 chmod 777 $BASE_PATH/sbin/openwrt
 chmod 777 $BASE_PATH/sbin/qinglong
