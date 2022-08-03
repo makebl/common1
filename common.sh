@@ -724,13 +724,13 @@ if [[ $? -ne 0 ]]; then
   wget -q -O FinishIng.sh -P $BASE_PATH/etc https://raw.githubusercontent.com/makebl/common/main/Custom/FinishIng.sh
 fi
 chmod 775 $BASE_PATH/etc/FinishIng.sh
-# curl -fsSL https://raw.githubusercontent.com/makebl/common/main/Custom/webweb.sh > $BASE_PATH/etc/webweb.sh
-# if [[ $? -ne 0 ]]; then
-  # wget -q -O webweb.sh -P $BASE_PATH/etc https://raw.githubusercontent.com/makebl/common/main/Custom/webweb.sh
-# fi
-# chmod 775 $BASE_PATH/etc/webweb.sh
-# sed -i '/webweb.sh/d' "$ZZZ_PATH"
-# sed -i "/exit 0/i\source /etc/webweb.sh" "$ZZZ_PATH"
+ curl -fsSL https://raw.githubusercontent.com/makebl/common/main/Custom/webweb.sh > $BASE_PATH/etc/webweb.sh
+ if [[ $? -ne 0 ]]; then
+   wget -q -O webweb.sh -P $BASE_PATH/etc https://raw.githubusercontent.com/makebl/common/main/Custom/webweb.sh
+ fi
+ chmod 775 $BASE_PATH/etc/webweb.sh
+ sed -i '/webweb.sh/d' "$ZZZ_PATH"
+ sed -i "/exit 0/i\source /etc/webweb.sh" "$ZZZ_PATH"
 
 sed -i '/etc\/init.d\/uhttpd\ restart/d' "$BASE_PATH/etc/rc.local"
 sed -i "/exit 0/i\/etc/init.d/uhttpd restart" "$BASE_PATH/etc/rc.local"
