@@ -85,6 +85,7 @@ function ip_install() {
   
   echo
   echo
+  ECHOYY "Clear password? [Y/n]"
   read -p " 是否清空密码?直接回车跳过，按[Y/y]回车确认清空密码：" YN
   case ${YN} in
     [Yy]) 
@@ -124,7 +125,7 @@ function dns_install() {
 }
 
 function wg_install() {
-  export YUMING="请输入您的主路由IP（网关）"
+  export YUMING="请输入您的主路由IP（gateway）"
   ECHOYY "${YUMING}[比如:192.168.2.1]"
   while :; do
   domainw=""
@@ -137,8 +138,8 @@ function wg_install() {
     export domainwg="${domainwg}"
     uci set network.lan.gateway="${domainwg}"
     uci commit network
-    judge "DNS 修改"
-    ECHOG "您的DNS为：${domainwg}"
+    judge "网关 修改"
+    ECHOG "您的网关为：${domainwg}"
   break
   ;;
   *)
@@ -153,6 +154,7 @@ function install_ws() {
   ip_install
   echo
   echo
+  ECHOYY "modify DNS? [Y/n]"
   read -p " 是否设置DNS?主路由一般无需设置DSN,直接回车跳过，旁路由按[Y/y]设置：" YN
   case ${YN} in
     [Yy]) 
@@ -164,6 +166,7 @@ function install_ws() {
   esac
   echo
   echo
+  ECHOYY "modify gateway? [Y/n]"
   read -p " 是否设置网关?主路由无需设置网关,直接回车跳过，旁路由按[Y/y]设置：" YN
   case ${YN} in
     [Yy]) 
@@ -173,11 +176,8 @@ function install_ws() {
       ECHOR "您已跳过网关设置"
     ;;
   esac
-  echo
-  echo
-  ECHOG "正在为您重启openwrt中，预计需要1~2分钟，请稍后..."
-  echo
-  reboot -f
+    print_ok "正在重启openwrt，请稍等一会进入后台..."
+    reboot -f
 }
 
 function first_boot() {
@@ -301,38 +301,38 @@ menu() {
   ECHOYY " 4. 转换成其他源码作者固件(不保留配置)"
   ECHOY " 5. 查看状态信息"
   ECHOYY " 6. 更换检测固件的gihub地址"
-  ECHOY " 7. 修改IP/DSN/网关(会进行重启操作)"
-  ECHOYY " 8. 清空密码(会进行重启操作)"
-  ECHOY " 9. 尝试修复因主题错误进了不LUCI(强制重新安装官方主题,会进行重启操作)"
-  ECHOYY " 10. 恢复出厂设置(会进行重启操作)"
-  ECHOY " Q. 退出菜单"
+  ECHOY " 7. 修改IP/DNS/网关(modify IP/DNS/gateway)"
+  ECHOYY " 8. 清空密码(Clear password)"
+  ECHOY " 9. 尝试修复因主题错误进了不LUCI(Attempt to fix Luci error)"
+  ECHOYY " 10. 恢复出厂设置(Restore factory settings)"
+  ECHOY " Q. 退出菜单(EXIT)"
   echo
   XUANZHEOP="请输入数字,或按[Q/q]退出菜单"
   while :; do
   read -p " ${XUANZHEOP}： " CHOOSE
   case $CHOOSE in
     1)
-      bash /bin/AutoUpdate.sh
+      AutoUpdate
     break
     ;;
     2)
-      bash /bin/AutoUpdate.sh -n
+      AutoUpdate -n
     break
     ;;
     3)
-      bash /bin/AutoUpdate.sh -t
+      AutoUpdate -t
     break
     ;;
     4)
-      bash /bin/replace.sh
+      replace
     break
     ;;
     5)
-      bash /bin/AutoUpdate.sh -h
+      AutoUpdate -h
     break
     ;;
     6)
-      bash /bin/AutoUpdate.sh -c
+      AutoUpdate -c
     break
     ;;
     7)
@@ -341,10 +341,7 @@ menu() {
     ;;
     8)
       passwd -d root
-      echo
-      ECHOG "密码已清空，正在为您重启openwrt中，请稍后从新登录..."
-      echo
-      reboot
+      print_ok "清空密码完成"
     break
     ;;
     9)
@@ -371,11 +368,11 @@ menuws() {
   clear
   echo  
   ECHOB "  请选择执行命令编码"
-  ECHOY " 1. 修改IP/DSN/网关(会进行重启操作)"
-  ECHOYY " 2. 清空密码(会进行重启操作)"
-  ECHOY " 3. 尝试修复因主题错误进了不LUCI(强制重新安装官方主题,会进行重启操作)"
-  ECHOYY " 4. 恢复出厂设置(会进行重启操作)"
-  ECHOY " 5. 退出菜单"
+  ECHOY " 1. 修改IP/DNS/网关(modify IP/DNS/gateway)"
+  ECHOYY " 2. 清空密码(Clear password)"
+  ECHOY " 3. 尝试修复因主题错误进了不LUCI(Attempt to fix Luci error)"
+  ECHOYY " 4. 恢复出厂设置(Restore factory settings)"
+  ECHOY " 5. 退出菜单(EXIT)"
   echo
   XUANZHEOP="请输入数字"
   while :; do
@@ -387,10 +384,7 @@ menuws() {
     ;;
     2)
       passwd -d root
-      echo
-      ECHOG "密码已清空，正在为您重启openwrt中，请稍后从新登录..."
-      echo
-      reboot
+      print_ok "清空密码完成"
     break
     ;;
     3)
@@ -413,7 +407,7 @@ menuws() {
     done
 }
 
-if [[ -f /bin/openwrt_info ]] && [[ -f /bin/AutoUpdate.sh ]];then
+if [[ -f "/bin/openwrt_info" ]] && [[ -f "/usr/bin/AutoUpdate" ]];then
   menu "$@"
 else
   menuws "$@"
