@@ -827,6 +827,27 @@ if [[ "${REPO_BRANCH}" == "22.03" ]] || [[ "${REPO_BRANCH}" == "openwrt-21.02" ]
 fi
 }
 
+function Diy_part_sh() {
+echo "正在执行：运行$DIY_PART_SH文件"
+cd $HOME_PATH
+rm -rf master > /dev/null 2>&1
+rm -rf dev > /dev/null 2>&1
+/bin/bash $BUILD_PATH/$DIY_PART_SH
+rm -rf package/luci-app-openclash > /dev/null 2>&1
+if [ -n "$(ls -A "master" 2>/dev/null)" ]; then
+  git clone -b master --depth 1 https://github.com/vernesong/OpenClash package/luci-app-openclash
+  echo "正在使用master分支的openclash"
+elif [ -n "$(ls -A "dev" 2>/dev/null)" ]; then
+  git clone -b dev --depth 1 https://github.com/vernesong/OpenClash package/luci-app-openclash
+  echo "正在使用dev分支的openclash"
+else
+  echo "没发现该分支的openclash，默认使用master分支"
+  git clone -b master --depth 1 https://github.com/vernesong/OpenClash package/luci-app-openclash
+  echo "正在使用master分支的openclash"
+fi
+rm -rf master > /dev/null 2>&1
+rm -rf dev > /dev/null 2>&1
+}
 
 function Diy_Notice() {
 TIME y "第一次用我仓库的，请不要拉取任何插件，先SSH进入固件配置那里看过我脚本实在是没有你要的插件才再拉取"
