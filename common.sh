@@ -1039,6 +1039,7 @@ Diy_${SOURCE}
 Diy_amlogic
 /bin/bash $BUILD_PATH/$DIY_PART_SH
 Diy_indexhtm
+Diy_part_sh
 Diy_patches
 Diy_upgrade1
 
