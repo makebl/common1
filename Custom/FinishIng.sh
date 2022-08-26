@@ -1,3 +1,4 @@
+#!/bin/bash
 opkg install /*_*_*.ipk
 rm -f /*_*_*.ipk
 
