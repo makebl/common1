@@ -1024,7 +1024,6 @@ if [[ ! "${bendi_script}" == "1" ]]; then
 fi
 Diy_files
 Diy_zzz
-download_ipk
 sbin_openwrt
 Diy_adguardhome
 Diy_Language
