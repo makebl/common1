@@ -1,3 +1,7 @@
+# ipk
+opkg install /*_*_*.ipk
+rm -f /*_*_*.ipk
+
 # slim 固件本地 opkg 配置
 if ls -l /local_feed/*.ipk &>/dev/null;then
     sed -ri 's@^[^#]@#&@' /etc/opkg/distfeeds.conf
