@@ -1,11 +1,9 @@
-#!/bin/bash
-cat /dev/null > /etc/bench.log
-echo " (CpuMark : 2297821.3987633" >> /etc/bench.log
-echo " Scores)" >> /etc/bench.log
-
-if [ -f "/etc/bench.log" ]; then
- sed -i '/coremark/d' /etc/crontabs/root
- crontab /etc/crontabs/root
+# slim 固件本地 opkg 配置
+if ls -l /local_feed/*.ipk &>/dev/null;then
+    sed -ri 's@^[^#]@#&@' /etc/opkg/distfeeds.conf
+    grep -E '/local_feed' /etc/opkg/customfeeds.conf || echo 'src/gz local file:///local_feed' >> /etc/opkg/customfeeds.conf
+    # 取消签名，暂时解决不了
+    sed -ri '/check_signature/s@^[^#]@#&@' /etc/opkg.conf
 fi
 
 exit 0
