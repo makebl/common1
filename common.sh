@@ -47,6 +47,8 @@ echo "AUTOMATIC_AMLOGIC=${AUTOMATIC_AMLOGIC}" >> $GITHUB_ENV
 echo "BY_INFORMATION=${BY_INFORMATION}" >> $GITHUB_ENV
 echo "Library=${Warehouse##*/}" >> $GITHUB_ENV
 echo "matrixtarget=${matrixtarget}" >> $GITHUB_ENV
+echo "DOCKER_ID=${DOCKER_ID}" >> $GITHUB_ENV
+echo "DOCKER_PASSWD=${DOCKER_PASSWD}" >> $GITHUB_ENV
 }
 
 function Diy_settings() {
