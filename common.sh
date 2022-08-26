@@ -316,6 +316,18 @@ sed -i '/^#/d' "$HOME_PATH/feeds.conf.default"
 sed -i '/^$/d' "$HOME_PATH/feeds.conf.default"
 }
 
+function download_ipk(){
+    local mirror_url=https://mirrors.cloud.tencent.com/lede/snapshots/packages/x86_64/packages/
+    local ipk_name=$1 dir=files/
+    local i=0
+    while [ "$i" -le 5 ];do
+        ipk_name=$(curl -s ${mirror_url} | grep -Po  'href="\K'$ipk_name'_\d[^"]+')
+        [ -n "$ipk_name" ] && break
+        let i++
+    done
+    wget ${mirror_url}${ipk_name} -O ${dir}${ipk_name}
+}
+
 function sbin_openwrt() {
 echo "正在执行：给固件增加[openwrt和tools和qinglong]命令"
 [[ -f $BUILD_PATH/openwrt.sh ]] && cp -Rf $BUILD_PATH/openwrt.sh $BASE_PATH/sbin/openwrt
