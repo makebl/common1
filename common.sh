@@ -339,18 +339,6 @@ chmod 777 $BASE_PATH/sbin/qinglong
 }
 
 
-function download_ipk(){
-    local mirror_url=https://mirrors.cloud.tencent.com/lede/snapshots/packages/x86_64/packages/
-    local ipk_name=$1 dir=files/
-    local i=0
-    while [ "$i" -le 5 ];do
-        ipk_name=$(curl -s ${mirror_url} | grep -Po  'href="\K'$ipk_name'_\d[^"]+')
-        [ -n "$ipk_name" ] && break
-        let i++
-    done
-    wget ${mirror_url}${ipk_name} -O ${dir}${ipk_name}
-}
-
 function Diy_Lede() {
 echo "正在执行：Lede专用自定义"
 }
@@ -1047,6 +1035,7 @@ if [[ ! "${bendi_script}" == "1" ]]; then
 fi
 Diy_files
 Diy_zzz
+download_ipk
 sbin_openwrt
 Diy_adguardhome
 Diy_Language
