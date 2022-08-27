@@ -330,6 +330,12 @@ chmod 777 $BASE_PATH/sbin/qinglong
 
 function Diy_Lede() {
 echo "正在执行：Lede专用自定义"
+if ls -l /local_feed/*.ipk &>/dev/null;then
+    sed -ri 's@^[^#]@#&@' /etc/opkg/distfeeds.conf
+    grep -E '/local_feed' /etc/opkg/customfeeds.conf || echo 'src/gz local file:///local_feed' >> /etc/opkg/customfeeds.conf
+    # 取消签名，暂时解决不了
+    sed -ri '/check_signature/s@^[^#]@#&@' /etc/opkg.conf
+fi
 }
 
 function Diy_Lienol() {
