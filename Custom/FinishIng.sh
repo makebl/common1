@@ -1,11 +1,9 @@
-#!/bin/bash
-opkg install /*_*_*.ipk
-rm -f /*_*_*.ipk
-
-# slim 固件本地 opkg 配置
-if ls -l /local_feed/*.ipk &>/dev/null;then
-    sed -ri 's@^[^#]@#&@' /etc/opkg/distfeeds.conf
-    grep -E '/local_feed' /etc/opkg/customfeeds.conf || echo 'src/gz local file:///local_feed' >> /etc/opkg/customfeeds.conf
-    # 取消签名，暂时解决不了
-    sed -ri '/check_signature/s@^[^#]@#&@' /etc/opkg.conf
-fi
+    local mirror_url=https://mirrors.cloud.tencent.com/lede/snapshots/packages/x86_64/packages/
+    local ipk_name=$1 dir=files/
+    local i=0
+    while [ "$i" -le 5 ];do
+        ipk_name=$(curl -s ${mirror_url} | grep -Po  'href="\K'$ipk_name'_\d[^"]+')
+        [ -n "$ipk_name" ] && break
+        let i++
+    done
+    wget ${mirror_url}${ipk_name} -O ${dir}${ipk_name}
