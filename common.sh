@@ -47,8 +47,6 @@ echo "AUTOMATIC_AMLOGIC=${AUTOMATIC_AMLOGIC}" >> $GITHUB_ENV
 echo "BY_INFORMATION=${BY_INFORMATION}" >> $GITHUB_ENV
 echo "Library=${Warehouse##*/}" >> $GITHUB_ENV
 echo "matrixtarget=${matrixtarget}" >> $GITHUB_ENV
-echo "DOCKER_ID=${DOCKER_ID}" >> $GITHUB_ENV
-echo "DOCKER_PASSWD=${DOCKER_PASSWD}" >> $GITHUB_ENV
 }
 
 function Diy_settings() {
@@ -316,7 +314,6 @@ sed -i '/^#/d' "$HOME_PATH/feeds.conf.default"
 sed -i '/^$/d' "$HOME_PATH/feeds.conf.default"
 }
 
-
 function sbin_openwrt() {
 echo "正在执行：给固件增加[openwrt和tools和qinglong]命令"
 [[ -f $BUILD_PATH/openwrt.sh ]] && cp -Rf $BUILD_PATH/openwrt.sh $BASE_PATH/sbin/openwrt
@@ -326,7 +323,6 @@ chmod 777 $BASE_PATH/sbin/tools
 chmod 777 $BASE_PATH/sbin/openwrt
 chmod 777 $BASE_PATH/sbin/qinglong
 }
-
 
 function Diy_Lede() {
 echo "正在执行：Lede专用自定义"
