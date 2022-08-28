@@ -330,11 +330,6 @@ chmod 777 $BASE_PATH/sbin/qinglong
 
 function Diy_Lede() {
 echo "正在执行：Lede专用自定义"
-sed -ri 's@^[^#]@#&@' /etc/opkg/distfeeds.conf
-grep -E '/local_feed' /etc/opkg/customfeeds.conf || echo 'src/gz local file:///local_feed' >> /etc/opkg/customfeeds.conf
-# 取消签名，暂时解决不了
-sed -ri '/check_signature/s@^[^#]@#&@' /etc/opkg.conf
-
 }
 
 function Diy_Lienol() {
@@ -871,7 +866,10 @@ echo "${Plug_in2}" >Plug-in
 sed -i '/qbittorrent-simple_dynamic/d' Plug-in > /dev/null 2>&1
 CPUNAME="$(cat /proc/cpuinfo |grep 'model name' |awk 'END {print}' |cut -f2 -d: |sed 's/^[ ]*//g')"
 CPUCORES="$(cat /proc/cpuinfo | grep 'cpu cores' |awk 'END {print}' | cut -f2 -d: | sed 's/^[ ]*//g')"
-
+sed -ri 's@^[^#]@#&@' /etc/opkg/distfeeds.conf
+grep -E '/local_feed' /etc/opkg/customfeeds.conf || echo 'src/gz local file:///local_feed' >> /etc/opkg/customfeeds.conf
+# 取消签名，暂时解决不了
+sed -ri '/check_signature/s@^[^#]@#&@' /etc/opkg.conf
 
 if [[ "${REPO_BRANCH}" == "openwrt-18.06" ]] || [[ "${REPO_BRANCH}" == "openwrt-21.02" ]]; then
   export KERNEL_PATC=""
