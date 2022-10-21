@@ -553,7 +553,7 @@ fi
 if [[ `grep -c "CONFIG_PACKAGE_luci-theme-argon=y" ${HOME_PATH}/.config` -eq '1' ]]; then
   pmg="$(echo "$(date +%d)" | sed 's/^.//g')"
   mkdir -p $HOME_PATH/files/www/luci-static/argon/background
-  curl -fsSL  https://raw.githubusercontent.com/makebl/openwrt-package/usb/argon/jpg/${pmg}.jpg > $HOME_PATH/files/www/luci-static/argon/background/moren.jpg
+  curl -fsSL  https://raw.githubusercontent.com/shidahuilang/openwrt-package/usb/argon/jpg/${pmg}.jpg > $HOME_PATH/files/www/luci-static/argon/background/moren.jpg
   if [[ $? -ne 0 ]]; then
     echo "拉取文件错误,请检测网络"
     exit 1
@@ -603,7 +603,7 @@ if [[ `grep -c "CONFIG_PACKAGE_luci-app-unblockneteasemusic=y" ${HOME_PATH}/.con
 fi
 
 if [[ `grep -c "CONFIG_PACKAGE_ntfs-3g=y" ${HOME_PATH}/.config` -eq '1' ]]; then
-  mkdir -p ${HOME_PATH}/files/etc/hotplug.d/block && curl -fsSL  https://raw.githubusercontent.com/makebl/openwrt-package/usb/block/10-mount > ${HOME_PATH}/files/etc/hotplug.d/block/10-mount
+  mkdir -p ${HOME_PATH}/files/etc/hotplug.d/block && curl -fsSL  https://raw.githubusercontent.com/shidahuilang/openwrt-package/usb/block/10-mount > ${HOME_PATH}/files/etc/hotplug.d/block/10-mount
   if [[ $? -ne 0 ]]; then
     echo "拉取文件错误,请检测网络"
     exit 1
@@ -751,14 +751,14 @@ rm -rf $HOME_PATH/files/{LICENSE,README,REA*.md}
 function Diy_zzz() {
 echo "正在执行：在zzz-default-settings文件加条执行命令"
 
-curl -fsSL https://raw.githubusercontent.com/makebl/common/main/Custom/FinishIng.sh > $BASE_PATH/etc/FinishIng.sh
+curl -fsSL https://raw.githubusercontent.com/shidahuilang/common/main/Custom/FinishIng.sh > $BASE_PATH/etc/FinishIng.sh
 if [[ $? -ne 0 ]]; then
-  wget -q -O FinishIng.sh -P $BASE_PATH/etc https://raw.githubusercontent.com/makebl/common/main/Custom/FinishIng.sh
+  wget -q -O FinishIng.sh -P $BASE_PATH/etc https://raw.githubusercontent.com/shidahuilang/common/main/Custom/FinishIng.sh
 fi
 chmod 775 $BASE_PATH/etc/FinishIng.sh
-curl -fsSL https://raw.githubusercontent.com/makebl/common/main/Custom/webweb.sh > $BASE_PATH/etc/webweb.sh
+curl -fsSL https://raw.githubusercontent.com/shidahuilang/common/main/Custom/webweb.sh > $BASE_PATH/etc/webweb.sh
 if [[ $? -ne 0 ]]; then
-  wget -q -O webweb.sh -P $BASE_PATH/etc https://raw.githubusercontent.com/makebl/common/main/Custom/webweb.sh
+  wget -q -O webweb.sh -P $BASE_PATH/etc https://raw.githubusercontent.com/shidahuilang/common/main/Custom/webweb.sh
 fi
 chmod 775 $BASE_PATH/etc/webweb.sh
 sed -i '/webweb.sh/d' "$ZZZ_PATH"
