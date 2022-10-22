@@ -8,6 +8,7 @@
       OpenWrt AutoBuild by DaHuiLang
            Lede_nanopi_r4s
  -----------------------------------------------------
-       update----->openwrt
-       tools------>tools
+       升级固件---->openwrt
+       工具箱------>tools
+       青龙安装---->qinglong
  -----------------------------------------------------

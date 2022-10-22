@@ -796,7 +796,7 @@ memuaz() {
   1)
     export Api_Client="true"
     export Npm_yilai="true"
-    export Sys_kj="10"
+    export Sys_kj="4"
     export Ql_nvjdc="和maiark面板"
     ECHOG " 安装青龙+任务+依赖+maiark面板"
     qinglong_nvjdc
@@ -805,7 +805,7 @@ memuaz() {
   2)
     export Api_Client="true"
     export Npm_yilai="false"
-    export Sys_kj="10"
+    export Sys_kj="4"
     export Ql_nvjdc="和maiark面板"
     ECHOG " 安装青龙+任务+maiark面板（依赖自行在青龙面板安装）"
     qinglong_nvjdc
@@ -814,7 +814,7 @@ memuaz() {
   3)
     export Api_Client="false"
     export Npm_yilai="true"
-    export Sys_kj="5"
+    export Sys_kj="4"
     export Ql_nvjdc=""
     ECHOG " 安装青龙+任务+依赖"
     azqinglong
@@ -823,7 +823,7 @@ memuaz() {
   4)
     export Api_Client="false"
     export Npm_yilai="false"
-    export Sys_kj="5"
+    export Sys_kj="4"
     export Ql_nvjdc=""
     ECHOG " 安装青龙+任务（依赖自行在青龙面板安装）"
     azqinglong

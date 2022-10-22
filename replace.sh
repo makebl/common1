@@ -291,6 +291,24 @@ menu() {
     Firmware_Path
     menuws
     clear
+  elif [[ ${SOURCE} == "nanopi_r2s" ]]; then
+    export MAINTAIN_1="18.06-nanopi_r2s"
+    export MAINTAIN_2="21.02-nanopi_r2s"
+    export MAINTAIN_3="22.03-nanopi_r2s"
+    export tixinggg="Lede、Mortal或Tianling或nanopi_r2s"
+    opapi
+    Firmware_Path
+    menuws
+    clear 
+  elif [[ ${SOURCE} == "nanopi_r4s" ]]; then
+    export MAINTAIN_1="18.06-nanopi_r4s"
+    export MAINTAIN_2="21.02-nanopi_r4s"
+    export MAINTAIN_3="22.03-nanopi_r4s"
+    export tixinggg="Lede、Mortal或Tianling或nanopi_r4s"
+    opapi
+    Firmware_Path
+    menuws
+    clear        
   elif [[ ${SOURCE} == "Lienol" ]]; then
     export MAINTAIN_1="18.06-Lede"
     export MAINTAIN_2="21.02-Mortal"

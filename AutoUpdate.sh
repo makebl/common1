@@ -17,7 +17,6 @@ clear
 echo
 echo
 echo -e "${Yellow}详细参数：
-
 /overlay 可用:		${Overlay_Available}
 /tmp 可用:		${TMP_Available}M
 固件下载位置:		${Download_Path}
@@ -32,7 +31,6 @@ Github 地址:		${Github}
 作者仓库:		${Library}
 固件名称:		${LOCAL_Version}
 固件格式:		${BOOT_Type}${Firmware_SFX}
-
 ${White}"
 exit 0
 }
@@ -202,7 +200,7 @@ else
   -c)
       Github="$(grep Github= /bin/openwrt_info | cut -d "=" -f2)"
       TIME h "执行：更换[Github地址]操作"
-      TIME y "正确地址格式：https://github.com/makebl/shuai"
+      TIME y "正确地址格式：https://github.com/shidahuilang/openwrt"
       TIME h  "现在所用地址为：${Github}"
       echo
       export YUMING="请输入新的Github地址(直接回车为不修改,退出程序)"      
