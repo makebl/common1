@@ -865,6 +865,28 @@ if [[ "${REPO_BRANCH}" == "22.03" ]] || [[ "${REPO_BRANCH}" == "openwrt-21.02" ]
 fi
 }
 
+function Diy_part_sh() {
+cd ${HOME_PATH}
+echo "正在执行：运行$DIY_PART_SH文件"
+source "${BUILD_PATH}/${DIY_PART_SH}"
+
+# 修正连接数
+echo -e "\nnet.netfilter.nf_conntrack_max=165535" >>package/base-files/files/etc/sysctl.conf
+
+# openclash分支选择
+find . -name 'luci-app-openclash' | xargs -i rm -rf {}
+if [[ "${OpenClash_branch}" == "master" ]]; then
+  git clone -b master --depth 1 https://github.com/vernesong/OpenClash package/luci-app-openclash
+  echo "正在使用master分支的openclash"
+elif [[ "${OpenClash_branch}" == "dev" ]]; then
+  git clone -b dev --depth 1 https://github.com/vernesong/OpenClash package/luci-app-openclash
+  echo "正在使用dev分支的openclash"
+else
+  echo "没发现该分支的openclash，默认使用master分支"
+  git clone -b master --depth 1 https://github.com/vernesong/OpenClash package/luci-app-openclash
+  echo "正在使用master分支的openclash"
+fi
+}
 
 function Diy_Notice() {
 TIME r ""
@@ -1061,7 +1083,7 @@ fi
 Diy_conf
 Diy_${SOURCE}
 Diy_amlogic
-/bin/bash $BUILD_PATH/$DIY_PART_SH
+Diy_part_sh
 Diy_indexhtm
 Diy_patches
 Diy_upgrade1
