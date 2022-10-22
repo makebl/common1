@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #====================================================
-#	Author:	281677160
+#	Author:	shidahuilang
 #	Dscription: openwrt onekey Management
 #	github: https://github.com/shidahuilang/openwrt
 #====================================================
