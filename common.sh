@@ -112,6 +112,7 @@ export Cpu_Cores="$(cat /proc/cpuinfo | grep 'cpu cores' |awk 'END {print}' | cu
 export RAM_total="$(free -h |awk 'NR==2' |awk '{print $(2)}' |sed 's/.$//')"
 export RAM_available="$(free -h |awk 'NR==2' |awk '{print $(7)}' |sed 's/.$//')"
 
+
 # github用的变量，如果有修改，下面Bendi_variable也要同步修改
 
 if [[ "${REPO_BRANCH}" == "master" ]]; then
@@ -245,8 +246,7 @@ function Diy_feeds() {
 echo "正在执行：更新插件源,让源码更多插件存在"
 # 拉库和做标记
 
-./scripts/feeds clean
-./scripts/feeds update -a > /dev/null 2>&1
+./scripts/feeds clean && ./scripts/feeds update -a > /dev/null 2>&1
 
 case "${REPO_BRANCH}" in
 master)
@@ -867,15 +867,11 @@ fi
 }
 
 
-
-
-
 function Diy_Notice() {
-TIME r ""
 TIME y "第一次用我仓库的，请不要拉取任何插件，先SSH进入固件配置那里看过我脚本实在是没有你要的插件才再拉取"
 TIME y "拉取插件应该单独拉取某一个你需要的插件，别一下子就拉取别人一个插件包，这样容易增加编译失败概率"
 TIME r "修改IP、DNS、网关，请输入命令：openwrt"
-TIME r "如果您的机子在线更新固件可用，而又编译了，也可请输入命令查看在线更新操作：openwrt"
+TIME r "在线更新命令：openwrt，工具箱输入命令：tools,安装青龙输入qinglong"
 TIME r ""
 TIME r ""
 TIME g "CPU性能：8370C > 8272CL > 8171M > E5系列"
@@ -891,8 +887,8 @@ Plug_in="$(grep -i 'CONFIG_PACKAGE_luci-app' $HOME_PATH/.config && grep -i 'CONF
 Plug_in2="$(echo "${Plug_in}" | grep -v '^#' |sed '/INCLUDE/d' |sed '/=m/d' |sed '/_Transparent_Proxy/d' |sed '/qbittorrent_static/d' |sed 's/CONFIG_PACKAGE_//g' |sed 's/=y//g' |sed 's/^/、/g' |sed 's/$/\"/g' |awk '$0=NR$0' |sed 's/^/TIME g \"       /g')"
 echo "${Plug_in2}" >Plug-in
 sed -i '/qbittorrent-simple_dynamic/d' Plug-in > /dev/null 2>&1
-#CPUNAME="$(cat /proc/cpuinfo |grep 'model name' |awk 'END {print}' |cut -f2 -d: |sed 's/^[ ]*//g')"
-#CPUCORES="$(cat /proc/cpuinfo | grep 'cpu cores' |awk 'END {print}' | cut -f2 -d: | sed 's/^[ ]*//g')"
+CPUNAME="$(cat /proc/cpuinfo |grep 'model name' |awk 'END {print}' |cut -f2 -d: |sed 's/^[ ]*//g')"
+CPUCORES="$(cat /proc/cpuinfo | grep 'cpu cores' |awk 'END {print}' | cut -f2 -d: | sed 's/^[ ]*//g')"
 
 
 if [[ "${REPO_BRANCH}" == "openwrt-18.06" ]] || [[ "${REPO_BRANCH}" == "openwrt-21.02" ]]; then
@@ -1011,19 +1007,18 @@ elif [[ "${REGULAR_UPDATE}" == "true" ]] && [[ -n "${REPO_TOKEN}" ]]; then
   TIME b "云端路径: ${Github_Release}"
   TIME g "《编译成功后，会自动把固件发布到指定地址，然后才会生成云端路径》"
   TIME g "《普通的那个发布固件跟云端的发布路径是两码事，如果你不需要普通发布的可以不用打开发布功能》"
-  TIME g "修改IP、DNS、网关或者在线更新，请输入命令：openwrt"
+  TIME g "修改IP、DNS、网关或者在线更新，请输入命令：openwrt或者tools"
   echo
 else
   echo
 fi
 echo
 TIME z " 系统空间      类型   总数  已用  可用 使用率"
-cd ../ && df -hT $PWD && cd ${HOME_PATH}
+cd ../ && df -hT $PWD && cd $HOME_PATH
 echo
-TIME z " 您现在编译所用的服务器CPU型号为 ${Model_Name} "
-TIME z " 在此服务器分配核心数为 [ ${Cpu_Cores} ] ,线程数为 $(nproc) "
-TIME z " 在此服务器分配内存为 [ ${RAM_total} ] ,现剩余内存为 [ ${RAM_available} ] "
-TIME r ""
+TIME z "  本编译 服务器的 CPU型号为 [ ${CPUNAME} ]"
+echo
+TIME z "  使用 核心数 为 [ ${CPUCORES} ], 线程数为 [ $(nproc) ]"
 echo
 if [ -n "$(ls -A "${HOME_PATH}/EXT4" 2>/dev/null)" ]; then
   chmod -R +x ${HOME_PATH}/EXT4
