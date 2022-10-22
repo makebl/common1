@@ -139,43 +139,64 @@ export RAM_available="$(free -h |awk 'NR==2' |awk '{print $(7)}' |sed 's/.$//')"
 # github用的变量，如果有修改，下面Bendi_variable也要同步修改
 
 if [[ "${REPO_BRANCH}" == "master" ]]; then
-  echo "ZZZ_PATH=${GITHUB_WORKSPACE}/openwrt/package/lean/default-settings/files/zzz-default-settings" >> ${GITHUB_ENV}
+  echo "ZZZ_PATH=${GITHUB_WORKSPACE}/openwrt/package/lean/default-settings/files/zzz-default-settings" >> $GITHUB_ENV
   if [[ ! -f "${GITHUB_WORKSPACE}/openwrt/package/lean/default-settings/files/zzz-default-settings" ]]; then
-    TIME r "上游源码作者修改了zzz-default-settings文件的路径或者名称，找编译脚本的作者及时更正脚本代码"
+    TIME r "上游源码作者修改了zzz-default-settings文件的路径或者名称，找编译脚本的作者及时修改"
     exit 1
   fi
-  echo "SOURCE=Lede" >> ${GITHUB_ENV}
-  echo "LUCI_EDITION=18.06" >> ${GITHUB_ENV}
-  echo "MAINTAIN=Lean's" >> ${GITHUB_ENV}
+  echo "SOURCE=Lede" >> $GITHUB_ENV
+  echo "LUCI_EDITION=18.06" >> $GITHUB_ENV
+  echo "MAINTAIN=Lean's" >> $GITHUB_ENV
+  
+elif [[ "${REPO_BRANCH}" == "master" ]]; then
+  echo "ZZZ_PATH=${GITHUB_WORKSPACE}/openwrt/package/lean/default-settings/files/zzz-default-settings" >> $GITHUB_ENV
+  if [[ ! -f "${GITHUB_WORKSPACE}/openwrt/package/lean/default-settings/files/zzz-default-settings" ]]; then
+    TIME r "上游源码作者修改了zzz-default-settings文件的路径或者名称，找编译脚本的作者及时修改"
+    exit 1
+  fi
+  echo "SOURCE=nanopi_r2s" >> $GITHUB_ENV
+  echo "LUCI_EDITION=18.06" >> $GITHUB_ENV
+  echo "MAINTAIN=Lean's" >> $GITHUB_ENV
+  
+elif [[ "${REPO_BRANCH}" == "master" ]]; then
+  echo "ZZZ_PATH=${GITHUB_WORKSPACE}/openwrt/package/lean/default-settings/files/zzz-default-settings" >> $GITHUB_ENV
+  if [[ ! -f "${GITHUB_WORKSPACE}/openwrt/package/lean/default-settings/files/zzz-default-settings" ]]; then
+    TIME r "上游源码作者修改了zzz-default-settings文件的路径或者名称，找编译脚本的作者及时修改"
+    exit 1
+  fi
+  echo "SOURCE=nanopi_r4s" >> $GITHUB_ENV
+  echo "LUCI_EDITION=18.06" >> $GITHUB_ENV
+  echo "MAINTAIN=Lean's" >> $GITHUB_ENV  
+  
 elif [[ "${REPO_BRANCH}" == "21.02" ]]; then
-  echo "ZZZ_PATH=${GITHUB_WORKSPACE}/openwrt/package/default-settings/files/zzz-default-settings" >> ${GITHUB_ENV}
+  echo "ZZZ_PATH=${GITHUB_WORKSPACE}/openwrt/package/default-settings/files/zzz-default-settings" >> $GITHUB_ENV
   if [[ ! -f "${GITHUB_WORKSPACE}/openwrt/package/default-settings/files/zzz-default-settings" ]]; then
-    TIME r "上游源码作者修改了zzz-default-settings文件的路径或者名称，找编译脚本的作者及时更正脚本代码"
+    TIME r "上游源码作者修改了zzz-default-settings文件的路径或者名称，找编译脚本的作者及时修改"
     exit 1
   fi
-  echo "SOURCE=Lienol" >> ${GITHUB_ENV}
-  echo "LUCI_EDITION=21.02" >> ${GITHUB_ENV}
-  echo "MAINTAIN=Lienol's" >> ${GITHUB_ENV}
+  echo "SOURCE=Lienol" >> $GITHUB_ENV
+  echo "LUCI_EDITION=21.02" >> $GITHUB_ENV
+  echo "MAINTAIN=Lienol's" >> $GITHUB_ENV
 elif [[ "${REPO_BRANCH}" == "openwrt-18.06" ]]; then
-  echo "ZZZ_PATH=${GITHUB_WORKSPACE}/openwrt/package/emortal/default-settings/files/99-default-settings" >> ${GITHUB_ENV}
+  echo "ZZZ_PATH=${GITHUB_WORKSPACE}/openwrt/package/emortal/default-settings/files/99-default-settings" >> $GITHUB_ENV
   if [[ ! -f "${GITHUB_WORKSPACE}/openwrt/package/emortal/default-settings/files/99-default-settings" ]]; then
-    TIME r "上游源码作者修改了zzz-default-settings文件的路径或者名称，找编译脚本的作者及时更正脚本代码"
+    TIME r "上游源码作者修改了zzz-default-settings文件的路径或者名称，找编译脚本的作者及时修改"
     exit 1
   fi
-  echo "SOURCE=Tianling" >> ${GITHUB_ENV}
-  echo "LUCI_EDITION=18.06" >> ${GITHUB_ENV}
-  echo "MAINTAIN=CTCGFW's" >> ${GITHUB_ENV}
+  echo "SOURCE=Tianling" >> $GITHUB_ENV
+  echo "LUCI_EDITION=18.06" >> $GITHUB_ENV
+  echo "MAINTAIN=CTCGFW's" >> $GITHUB_ENV
 elif [[ "${REPO_BRANCH}" == "openwrt-21.02" ]]; then
-  echo "ZZZ_PATH=${GITHUB_WORKSPACE}/openwrt/package/emortal/default-settings/files/99-default-settings" >> ${GITHUB_ENV}
+  echo "ZZZ_PATH=${GITHUB_WORKSPACE}/openwrt/package/emortal/default-settings/files/99-default-settings" >> $GITHUB_ENV
   if [[ ! -f "${GITHUB_WORKSPACE}/openwrt/package/emortal/default-settings/files/99-default-settings" ]]; then
-    TIME r "上游源码作者修改了zzz-default-settings文件的路径或者名称，找编译脚本的作者及时更正脚本代码"
+    TIME r "上游源码作者修改了zzz-default-settings文件的路径或者名称，找编译脚本的作者及时修改"
     exit 1
   fi
-  echo "SOURCE=Mortal" >> ${GITHUB_ENV}
-  echo "LUCI_EDITION=21.02" >> ${GITHUB_ENV}
-  echo "MAINTAIN=CTCGFW's" >> ${GITHUB_ENV}
+  echo "SOURCE=Mortal" >> $GITHUB_ENV
+  echo "LUCI_EDITION=21.02" >> $GITHUB_ENV
+  echo "MAINTAIN=CTCGFW's" >> $GITHUB_ENV
 else
-  echo "没发现该源码的分支，应该是上游源码作者修改了该分支号或者删除了该分支"
+  echo "没发现该源码的分支，如果您没更改过的话，应该是上游仓库修改了，请同步上游仓库"
   exit 1
 fi
 }
@@ -185,23 +206,41 @@ function Bendi_variable() {
 if [[ "${matrixtarget}" == "Lede_source" ]]; then
   export ZZZ_PATH="${HOME_PATH}/package/lean/default-settings/files/zzz-default-settings"
   if [[ ! -f "${ZZZ_PATH}" ]]; then
-    TIME r "上游源码作者修改了zzz-default-settings文件的路径或者名称，找编译脚本的作者及时更正脚本代码"
+    TIME r "上游源码作者修改了zzz-default-settings文件的路径或者名称，找编译脚本的作者及时修改"
     exit 1
   fi
   export SOURCE="Lede"
   export LUCI_EDITION="18.06"
+  
+elif [[ "${matrixtarget}" == "Lede_nanopi_r2s" ]]; then
+  export ZZZ_PATH="${HOME_PATH}/package/default-settings/files/zzz-default-settings"
+  if [[ ! -f "${ZZZ_PATH}" ]]; then
+    TIME r "上游源码作者修改了zzz-default-settings文件的路径或者名称，找编译脚本的作者及时修改"
+    exit 1
+  fi
+  export SOURCE="nanopi_r2s"
+  export LUCI_EDITION="18.06"
+
+elif [[ "${matrixtarget}" == "Lede_nanopi_r4s" ]]; then
+  export ZZZ_PATH="${HOME_PATH}/package/default-settings/files/zzz-default-settings"
+  if [[ ! -f "${ZZZ_PATH}" ]]; then
+    TIME r "上游源码作者修改了zzz-default-settings文件的路径或者名称，找编译脚本的作者及时修改"
+    exit 1
+  fi
+  export SOURCE="nanopi_r4s"
+  export LUCI_EDITION="18.06"  
 elif [[ "${matrixtarget}" == "Lienol_source" ]]; then
   export ZZZ_PATH="${HOME_PATH}/package/default-settings/files/zzz-default-settings"
   if [[ ! -f "${ZZZ_PATH}" ]]; then
-    TIME r "上游源码作者修改了zzz-default-settings文件的路径或者名称，找编译脚本的作者及时更正脚本代码"
+    TIME r "上游源码作者修改了zzz-default-settings文件的路径或者名称，找编译脚本的作者及时修改"
     exit 1
   fi
   export SOURCE="Lienol"
-  export LUCI_EDITION="21.02"
+  export LUCI_EDITION="22.03"
 elif [[ "${matrixtarget}" == "Tianling_source" ]]; then
   export ZZZ_PATH="${HOME_PATH}/package/emortal/default-settings/files/99-default-settings"
   if [[ ! -f "${ZZZ_PATH}" ]]; then
-    TIME r "上游源码作者修改了zzz-default-settings文件的路径或者名称，找编译脚本的作者及时更正脚本代码"
+    TIME r "上游源码作者修改了zzz-default-settings文件的路径或者名称，找编译脚本的作者及时修改"
     exit 1
   fi
   export SOURCE="Tianling"
@@ -209,7 +248,7 @@ elif [[ "${matrixtarget}" == "Tianling_source" ]]; then
 elif [[ "${matrixtarget}" == "Mortal_source" ]]; then
   export ZZZ_PATH="${HOME_PATH}/package/emortal/default-settings/files/99-default-settings"
   if [[ ! -f "${ZZZ_PATH}" ]]; then
-    TIME r "上游源码作者修改了zzz-default-settings文件的路径或者名称，找编译脚本的作者及时更正脚本代码"
+    TIME r "上游源码作者修改了zzz-default-settings文件的路径或者名称，找编译脚本的作者及时修改"
     exit 1
   fi
   export SOURCE="Mortal"
@@ -217,7 +256,7 @@ elif [[ "${matrixtarget}" == "Mortal_source" ]]; then
 elif [[ "${matrixtarget}" == "openwrt_amlogic" ]]; then
   export ZZZ_PATH="${HOME_PATH}/package/lean/default-settings/files/zzz-default-settings"
   if [[ ! -f "${ZZZ_PATH}" ]]; then
-    TIME r "上游源码作者修改了zzz-default-settings文件的路径或者名称，找编译脚本的作者及时更正脚本代码"
+    TIME r "上游源码作者修改了zzz-default-settings文件的路径或者名称，找编译脚本的作者及时修改"
     exit 1
   fi
   export SOURCE="Lede"
