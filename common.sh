@@ -1069,7 +1069,7 @@ fi
 Diy_conf
 Diy_${SOURCE}
 Diy_amlogic
-Diy_part_sh
+/bin/bash $BUILD_PATH/$DIY_PART_SH
 Diy_indexhtm
 Diy_patches
 Diy_upgrade1
