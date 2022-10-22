@@ -149,6 +149,55 @@ if [[ "${REPO_BRANCH}" == "master" ]]; then
   echo "MAINTAIN=Lean's" >> ${GITHUB_ENV}
 elif [[ "${REPO_BRANCH}" == "21.02" ]]; then
   echo "ZZZ_PATH=${GITHUB_WORKSPACE}/openwrt/package/default-settings/files/zzz-default-settings" >> ${GITHUB_ENV}
+  
+elif [[ "${REPO_BRANCH}" == "master" ]]; then
+  echo "ZZZ_PATH=${GITHUB_WORKSPACE}/openwrt/package/lean/default-settings/files/zzz-default-settings" >> ${GITHUB_ENV}
+  if [[ ! -f "${GITHUB_WORKSPACE}/openwrt/package/lean/default-settings/files/zzz-default-settings" ]]; then
+    TIME r "上游源码作者修改了zzz-default-settings文件的路径或者名称，找编译脚本的作者及时更正脚本代码"
+    exit 1
+  fi
+  echo "SOURCE=nanopi_r4s" >> ${GITHUB_ENV}
+  echo "LUCI_EDITION=18.06" >> ${GITHUB_ENV}
+  echo "MAINTAIN=Lean's" >> ${GITHUB_ENV}
+elif [[ "${REPO_BRANCH}" == "18.06" ]]; then
+  echo "ZZZ_PATH=${GITHUB_WORKSPACE}/openwrt/package/default-settings/files/zzz-default-settings" >> ${GITHUB_ENV}  
+
+elif [[ "${REPO_BRANCH}" == "master" ]]; then
+  echo "ZZZ_PATH=${GITHUB_WORKSPACE}/openwrt/package/lean/default-settings/files/zzz-default-settings" >> ${GITHUB_ENV}
+  if [[ ! -f "${GITHUB_WORKSPACE}/openwrt/package/lean/default-settings/files/zzz-default-settings" ]]; then
+    TIME r "上游源码作者修改了zzz-default-settings文件的路径或者名称，找编译脚本的作者及时更正脚本代码"
+    exit 1
+  fi
+  echo "SOURCE=nanopi_r5s" >> ${GITHUB_ENV}
+  echo "LUCI_EDITION=18.06" >> ${GITHUB_ENV}
+  echo "MAINTAIN=Lean's" >> ${GITHUB_ENV}
+elif [[ "${REPO_BRANCH}" == "18.06" ]]; then
+  echo "ZZZ_PATH=${GITHUB_WORKSPACE}/openwrt/package/default-settings/files/zzz-default-settings" >> ${GITHUB_ENV}  
+  
+elif [[ "${REPO_BRANCH}" == "master" ]]; then
+  echo "ZZZ_PATH=${GITHUB_WORKSPACE}/openwrt/package/lean/default-settings/files/zzz-default-settings" >> ${GITHUB_ENV}
+  if [[ ! -f "${GITHUB_WORKSPACE}/openwrt/package/lean/default-settings/files/zzz-default-settings" ]]; then
+    TIME r "上游源码作者修改了zzz-default-settings文件的路径或者名称，找编译脚本的作者及时更正脚本代码"
+    exit 1
+  fi
+  echo "SOURCE=nanopi_r2c" >> ${GITHUB_ENV}
+  echo "LUCI_EDITION=18.06" >> ${GITHUB_ENV}
+  echo "MAINTAIN=Lean's" >> ${GITHUB_ENV}
+elif [[ "${REPO_BRANCH}" == "18.06" ]]; then
+  echo "ZZZ_PATH=${GITHUB_WORKSPACE}/openwrt/package/default-settings/files/zzz-default-settings" >> ${GITHUB_ENV}    
+
+elif [[ "${REPO_BRANCH}" == "master" ]]; then
+  echo "ZZZ_PATH=${GITHUB_WORKSPACE}/openwrt/package/lean/default-settings/files/zzz-default-settings" >> ${GITHUB_ENV}
+  if [[ ! -f "${GITHUB_WORKSPACE}/openwrt/package/lean/default-settings/files/zzz-default-settings" ]]; then
+    TIME r "上游源码作者修改了zzz-default-settings文件的路径或者名称，找编译脚本的作者及时更正脚本代码"
+    exit 1
+  fi
+  echo "SOURCE=nanopi_r2s" >> ${GITHUB_ENV}
+  echo "LUCI_EDITION=18.06" >> ${GITHUB_ENV}
+  echo "MAINTAIN=Lean's" >> ${GITHUB_ENV}
+elif [[ "${REPO_BRANCH}" == "18.06" ]]; then
+  echo "ZZZ_PATH=${GITHUB_WORKSPACE}/openwrt/package/default-settings/files/zzz-default-settings" >> ${GITHUB_ENV}    
+
   if [[ ! -f "${GITHUB_WORKSPACE}/openwrt/package/default-settings/files/zzz-default-settings" ]]; then
     TIME r "上游源码作者修改了zzz-default-settings文件的路径或者名称，找编译脚本的作者及时更正脚本代码"
     exit 1
@@ -327,8 +376,7 @@ src-git helloworld https://github.com/fw876/helloworld
 src-git passwall https://github.com/xiaorouji/openwrt-passwall;packages
 src-git passwall1 https://github.com/xiaorouji/openwrt-passwall;luci
 src-git passwall2 https://github.com/xiaorouji/openwrt-passwall2;main
-src-git danshui https://github.com/makebl/openwrt-package.git;${REPO_BRANCH}
-src-git dahuilang https://github.com/makebl/openwrt-package.git;${REPO_BRANCH}
+src-git makebl https://github.com/makebl/openwrt-package.git;${REPO_BRANCH}
 " >> ${HOME_PATH}/feeds.conf.default
 sed -i '/^#/d' "${HOME_PATH}/feeds.conf.default"
 sed -i '/^$/d' "${HOME_PATH}/feeds.conf.default"
@@ -841,6 +889,16 @@ echo "正在执行：files大法，设置固件无烦恼"
 if [[ -d "${GITHUB_WORKSPACE}/OP_DIY" ]]; then
   cp -Rf ${HOME_PATH}/build/common/${SOURCE}/* ${BUILD_PATH}
   cp -Rf ${GITHUB_WORKSPACE}/OP_DIY/${matrixtarget}/* ${BUILD_PATH}
+  
+elif [[ ${matrixtarget} == "nanopi_r2s" ]]; then
+  cp -Rf $HOME_PATH/build/common/nanopi_r2s/* $BUILD_PATH
+elif [[ ${matrixtarget} == "nanopi_r4s" ]]; then
+  cp -Rf $HOME_PATH/build/common/nanopi_r4s/* $BUILD_PATH
+elif [[ ${matrixtarget} == "nanopi_r2c" ]]; then
+  cp -Rf $HOME_PATH/build/common/nanopi_r2c/* $BUILD_PATH
+elif [[ ${matrixtarget} == "nanopi_r5s" ]]; then
+  cp -Rf $HOME_PATH/build/common/nanopi_r5s/* $BUILD_PATH  
+  
 else
   cp -Rf ${HOME_PATH}/build/common/${SOURCE}/* ${BUILD_PATH}
 fi
