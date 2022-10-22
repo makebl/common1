@@ -1047,11 +1047,10 @@ make defconfig > /dev/null 2>&1
 }
 
 function Diy_Notice() {
-TIME r ""
 TIME y "第一次用我仓库的，请不要拉取任何插件，先SSH进入固件配置那里看过我脚本实在是没有你要的插件才再拉取"
 TIME y "拉取插件应该单独拉取某一个你需要的插件，别一下子就拉取别人一个插件包，这样容易增加编译失败概率"
 TIME r "修改IP、DNS、网关，请输入命令：openwrt"
-TIME r "如果您的机子在线更新固件可用，而又编译了，也可请输入命令查看在线更新操作：openwrt"
+TIME r "在线更新命令：openwrt，工具箱输入命令：tools,安装青龙输入qinglong"
 TIME r ""
 TIME r ""
 TIME g "CPU性能：8370C > 8272CL > 8171M > E5系列"
@@ -1186,6 +1185,9 @@ echo
 TIME z " 系统空间      类型   总数  已用  可用 使用率"
 cd ../ && df -hT $PWD && cd ${HOME_PATH}
 echo
+TIME z "  您现在编译所用的服务器CPU型号为[ ${Model_Name} ]"
+TIME z "  在此服务器分配核心数为[ ${Cpu_Cores} ],线程数为[ $(nproc) ]"
+TIME z "  在此服务器分配内存为[ ${RAM_total} ],现剩余内存为[ ${RAM_available} ]"
 echo
 if [ -n "$(ls -A "${HOME_PATH}/EXT4" 2>/dev/null)" ]; then
   chmod -R +x ${HOME_PATH}/EXT4
