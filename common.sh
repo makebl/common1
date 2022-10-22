@@ -1186,7 +1186,9 @@ TIME z " 系统空间      类型   总数  已用  可用 使用率"
 cd ../ && df -hT $PWD && cd ${HOME_PATH}
 echo
 TIME z "  本编译 服务器的 CPU型号为 [ ${Model_Name} ]"
+echo
 TIME z "  使用 核心数 为 [ ${Cpu_Cores} ], 线程数为 [ $(nproc) ]"
+echo
 TIME z "  分配内存为[ ${RAM_total} ],现剩余内存为[ ${RAM_available} ]"
 echo
 if [ -n "$(ls -A "${HOME_PATH}/EXT4" 2>/dev/null)" ]; then
