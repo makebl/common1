@@ -1,6 +1,6 @@
 #!/bin/bash
 # https://github.com/shidahuilang/openwrt
-# common Module by 28677160
+# common Module by shidahuilang
 # matrix.target=${matrixtarget}
 
 function TIME() {
