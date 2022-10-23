@@ -179,7 +179,7 @@ elif [[ "${REPO_BRANCH}" == "21.02" ]]; then
   echo "SOURCE=Lienol" >> $GITHUB_ENV
   echo "LUCI_EDITION=21.02" >> $GITHUB_ENV
   echo "MAINTAIN=Lienol's" >> $GITHUB_ENV
-elif [[ "${REPO_BRANCH}" == "openwrt-18.06" ]]; then
+elif [[ "${REPO_BRANCH}" == "openwrt-18.06-k5.4" ]]; then
   echo "ZZZ_PATH=${GITHUB_WORKSPACE}/openwrt/package/emortal/default-settings/files/99-default-settings" >> $GITHUB_ENV
   if [[ ! -f "${GITHUB_WORKSPACE}/openwrt/package/emortal/default-settings/files/99-default-settings" ]]; then
     TIME r "上游源码作者修改了zzz-default-settings文件的路径或者名称，找编译脚本的作者及时修改"
@@ -294,7 +294,7 @@ master)
   find . -name 'luci-app-smartdns' -o -name 'smartdns' | xargs -i rm -rf {}
 
 ;;
-openwrt-18.06)
+openwrt-18.06-k5.4)
 
   # 删除重复插件（天灵18.06）
   find . -name 'luci-app-argon-config' -o -name 'luci-theme-argon' -o -name 'luci-theme-argonv3' -o -name 'luci-app-eqos' | xargs -i rm -rf {}
@@ -337,7 +337,7 @@ master)
   [[ -n "${DISTRIB}" ]] && sed -i "s?${DISTRIB}?OpenWrt ?g" "${ZZZ_PATH}"
 
 ;;
-openwrt-18.06)
+openwrt-18.06-k5.4)
   
   # 给固件LUCI做个标记
   sed -i '/DISTRIB_RECOGNIZE/d' "${BASE_PATH}/etc/openwrt_release"
