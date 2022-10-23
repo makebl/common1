@@ -562,7 +562,7 @@ if [[ "${REPO_BRANCH}" == "master" ]]; then
   sed -i 's/luciversion)%>)/luciversion)%>)-->/g' package/lean/autocore/files/*/index.htm
   sed -i 's#localtime  = os.date()#localtime  = os.date("%Y-%m-%d") .. " " .. translate(os.date("%A")) .. " " .. os.date("%X")#g' package/lean/autocore/files/*/index.htm
 fi
-if [[ "${REPO_BRANCH}" == "openwrt-18.06" ]]; then
+if [[ "${REPO_BRANCH}" == "openwrt-18.06-k5.4" ]]; then
   sed -i 's/distversion)%>/distversion)%><!--/g' package/emortal/autocore/files/*/index.htm
   sed -i 's/luciversion)%>)/luciversion)%>)-->/g' package/emortal/autocore/files/*/index.htm
   sed -i 's#localtime  = os.date()#localtime  = os.date("%Y-%m-%d") .. " " .. translate(os.date("%A")) .. " " .. os.date("%X")#g' package/emortal/autocore/files/*/index.htm
