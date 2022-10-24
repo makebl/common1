@@ -411,9 +411,9 @@ if [[ "${AutoUpdate_Mode}" == "1" ]]; then
     chmod 775 "/etc/deletefile"
     source /etc/deletefile
   fi
-  curl -fsSL https://ghproxy.com/https://raw.githubusercontent.com/281677160/common/main/Custom/Detectionnetwork > /mnt/Detectionnetwork
+  curl -fsSL https://ghproxy.com/https://raw.githubusercontent.com/makebl/common/main/Custom/Detectionnetwork > /mnt/Detectionnetwork
   if [[ $? -ne 0 ]]; then
-    wget -P /mnt https://raw.githubusercontent.com/281677160/common/main/Custom/Detectionnetwork -O /mnt/Detectionnetwork
+    wget -P /mnt https://raw.githubusercontent.com/makebl/common/main/Custom/Detectionnetwork -O /mnt/Detectionnetwork
   fi
   if [[ $? -eq 0 ]]; then
     chmod 775 "/mnt/Detectionnetwork"
@@ -505,7 +505,7 @@ else
   -c)
       Github="$(grep Github= /bin/openwrt_info | cut -d "=" -f2)"
       TIME h "执行：更换[Github地址]操作"
-      TIME y "正确地址格式：https://github.com/帐号/仓库"
+      TIME y "正确地址格式：https://github.com/shidahuilang/openwrt"
       TIME h  "现在所用地址为：${Github}"
       echo
       export YUMING="请输入新的Github地址(直接回车为不修改,退出程序)"      
