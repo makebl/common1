@@ -5,21 +5,14 @@
 
 
 function Diy_Part1() {
-  if [[ -f "$BUILD_PATH/AutoUpdate.sh" ]]; then
-    echo "正在执行：给源码增加定时更新固件插件和设置插件和ttyd成默认自选"
-    rm -rf "$HOME_PATH/package/luci-app-autoupdate"
-    git clone https://github.com/shidahuilang/luci-app-autoupdate $HOME_PATH/package/luci-app-autoupdate > /dev/null 2>&1
-    [[ ! -d "$BASE_PATH/usr/bin" ]] && mkdir $BASE_PATH/usr/bin
-    cp -Rf $BUILD_PATH/AutoUpdate.sh $BASE_PATH/usr/bin/AutoUpdate
-    cp -Rf $BUILD_PATH/replace.sh $BASE_PATH/usr/bin/replace
-    chmod 777 $BASE_PATH/usr/bin/AutoUpdate $BASE_PATH/usr/bin/replace
-    sed  -i  's/ luci-app-ttyd//g' $HOME_PATH/target/linux/*/Makefile
-    sed  -i  's/ luci-app-autoupdate//g' $HOME_PATH/target/linux/*/Makefile
-    sed -i 's?DEFAULT_PACKAGES +=?DEFAULT_PACKAGES += luci-app-autoupdate luci-app-ttyd?g' $HOME_PATH/target/linux/*/Makefile
-    [[ -d $HOME_PATH/package/luci-app-autoupdate ]] && echo "增加定时更新插件成功"
-  else
-    echo "没发现AutoUpdate.sh文件存在，不能增加在线升级固件程序"
-  fi
+  rm -rf "$HOME_PATH/package/luci-app-autoupdate"
+  git clone https://github.com/shidahuilang/luci-app-autoupdate $HOME_PATH/package/luci-app-autoupdate > /dev/null 2>&1
+  [[ -f "$BUILD_PATH/AutoUpdate.sh" ]] && cp -Rf $BUILD_PATH/AutoUpdate.sh $BASE_PATH/bin/AutoUpdate.sh
+  [[ -f "$BUILD_PATH/replace.sh" ]] && cp -Rf $BUILD_PATH/replace.sh $BASE_PATH/bin/replace.sh
+  sed  -i  's/ luci-app-ttyd//g' $HOME_PATH/target/linux/*/Makefile
+  sed  -i  's/ luci-app-autoupdate//g' $HOME_PATH/target/linux/*/Makefile
+  sed -i 's?DEFAULT_PACKAGES +=?DEFAULT_PACKAGES += luci-app-autoupdate luci-app-ttyd?g' $HOME_PATH/target/linux/*/Makefile
+  [[ -d $HOME_PATH/package/luci-app-autoupdate ]] && echo "增加定时更新插件成功"
 }
 
 function GET_TARGET_INFO() {
