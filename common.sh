@@ -66,6 +66,7 @@ if [[ ! ${bendi_script} == "1" ]]; then
   echo "BY_INFORMATION=${BY_INFORMATION}" >> ${GITHUB_ENV}
   echo "Library=${Warehouse##*/}" >> ${GITHUB_ENV}
   echo "matrixtarget=${matrixtarget}" >> ${GITHUB_ENV}
+  echo "DOCKERTAG=${{ secrets.DOCKER_ID }}/openwrt-6p::${{matrix.target}}" >> ${GITHUB_ENV}
 
 fi
 }
@@ -134,7 +135,7 @@ echo "Firmware_Date=$(date +%Y-%m%d-%H%M)" >> ${GITHUB_ENV}
 echo "Compte_Date=$(date +%Y年%m月%d号%H时%M分)" >> ${GITHUB_ENV}
 echo "Tongzhi_Date=$(date +%Y年%m月%d日)" >> ${GITHUB_ENV}
 echo "Gujian_Date=$(date +%m.%d)" >> ${GITHUB_ENV}
-echo "DOCKERTAG=${{ secrets.DOCKER_ID }}/openwrt-6p:latest" >> ${GITHUB_ENV}
+
 
 export CPUNAME="$(cat /proc/cpuinfo |grep 'model name' |awk 'END {print}' |cut -f2 -d: |sed 's/^[ ]*//g')"
 export CPUCORES="$(cat /proc/cpuinfo | grep 'cpu cores' |awk 'END {print}' | cut -f2 -d: | sed 's/^[ ]*//g')"
