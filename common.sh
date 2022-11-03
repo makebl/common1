@@ -66,6 +66,7 @@ if [[ ! ${bendi_script} == "1" ]]; then
   echo "BY_INFORMATION=${BY_INFORMATION}" >> ${GITHUB_ENV}
   echo "Library=${Warehouse##*/}" >> ${GITHUB_ENV}
   echo "matrixtarget=${matrixtarget}" >> ${GITHUB_ENV}
+  echo "DOCKERTAG=${{ secrets.DOCKER_ID }}/openwrt-6p:latest" >> ${GITHUB_ENV}
 fi
 }
 
