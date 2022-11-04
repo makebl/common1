@@ -929,10 +929,7 @@ if [[ $? -ne 0 ]]; then
   wget -P ${BASE_PATH}/etc https://raw.githubusercontent.com/makebl/common/main/Custom/webweb.sh -O ${BASE_PATH}/etc/webweb.sh
 fi
 chmod 775 ${BASE_PATH}/etc/webweb.sh
-if [[ $? -ne 0 ]]; then
-  wget -P ${BASE_PATH}/etc https://raw.githubusercontent.com/makebl/common/main/Custom/ipk.sh -O ${BASE_PATH}/etc/ipk.sh
-fi
-chmod 775 ${BASE_PATH}/etc/ipk.sh
+
 }
 
 function Diy_zzz() {
