@@ -921,7 +921,7 @@ fi
 chmod 775 ${BASE_PATH}/etc/FinishIng.sh
 curl -fsSL https://raw.githubusercontent.com/makebl/common/main/Custom/FinishIng > ${BASE_PATH}/etc/init.d/FinishIng
 if [[ $? -ne 0 ]]; then
-  #wget -P ${BASE_PATH}/etc/init.d https://raw.githubusercontent.com/makebl/common/main/Custom/FinishIng -O ${BASE_PATH}/etc/init.d/FinishIng
+  wget -P ${BASE_PATH}/etc/init.d https://raw.githubusercontent.com/makebl/common/main/Custom/FinishIng -O ${BASE_PATH}/etc/init.d/FinishIng
 fi
 chmod 775 ${BASE_PATH}/etc/init.d/FinishIng
 curl -fsSL https://raw.githubusercontent.com/makebl/common/main/Custom/webweb.sh > ${BASE_PATH}/etc/webweb.sh
