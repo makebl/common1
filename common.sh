@@ -66,8 +66,6 @@ if [[ ! ${bendi_script} == "1" ]]; then
   echo "BY_INFORMATION=${BY_INFORMATION}" >> ${GITHUB_ENV}
   echo "Library=${Warehouse##*/}" >> ${GITHUB_ENV}
   echo "matrixtarget=${matrixtarget}" >> ${GITHUB_ENV}
-
-
 fi
 }
 
@@ -106,8 +104,6 @@ ${INS} install -y rename
 ${INS} autoremove -y --purge
 ${INS} clean
 if [[ ! ${bendi_script} == "1" ]]; then
-  sudo -E update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 9
-  sudo -E update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 9
   sudo timedatectl set-timezone "$TZ"
   sudo mkdir -p /${matrixtarget}
   sudo chown $USER:$GROUPS /${matrixtarget}
@@ -136,7 +132,6 @@ echo "Compte_Date=$(date +%Y年%m月%d号%H时%M分)" >> ${GITHUB_ENV}
 echo "Tongzhi_Date=$(date +%Y年%m月%d日)" >> ${GITHUB_ENV}
 echo "Gujian_Date=$(date +%m.%d)" >> ${GITHUB_ENV}
 
-
 export CPUNAME="$(cat /proc/cpuinfo |grep 'model name' |awk 'END {print}' |cut -f2 -d: |sed 's/^[ ]*//g')"
 export CPUCORES="$(cat /proc/cpuinfo | grep 'cpu cores' |awk 'END {print}' | cut -f2 -d: | sed 's/^[ ]*//g')"
 #export Model_Name="$(cat /proc/cpuinfo |grep 'model name' |awk 'END {print}' |cut -f2 -d: |sed 's/^[ ]*//g')"
@@ -162,7 +157,7 @@ elif [[ "${REPO_BRANCH}" == "master" ]]; then
     TIME r "上游源码作者修改了zzz-default-settings文件的路径或者名称，找编译脚本的作者及时修改"
     exit 1
   fi
-  echo "SOURCE=nanopi_r2s" >> $GITHUB_ENV
+  echo "SOURCE=r2s" >> $GITHUB_ENV
   echo "LUCI_EDITION=18.06" >> $GITHUB_ENV
   echo "MAINTAIN=Lean's" >> $GITHUB_ENV
   
@@ -172,7 +167,7 @@ elif [[ "${REPO_BRANCH}" == "master" ]]; then
     TIME r "上游源码作者修改了zzz-default-settings文件的路径或者名称，找编译脚本的作者及时修改"
     exit 1
   fi
-  echo "SOURCE=nanopi_r4s" >> $GITHUB_ENV
+  echo "SOURCE=r4s" >> $GITHUB_ENV
   echo "LUCI_EDITION=18.06" >> $GITHUB_ENV
   echo "MAINTAIN=Lean's" >> $GITHUB_ENV  
   
@@ -220,22 +215,22 @@ if [[ "${matrixtarget}" == "Lede_source" ]]; then
   export SOURCE="Lede"
   export LUCI_EDITION="18.06"
   
-elif [[ "${matrixtarget}" == "Lede_nanopi_r2s" ]]; then
+elif [[ "${matrixtarget}" == "r2s" ]]; then
   export ZZZ_PATH="${HOME_PATH}/package/default-settings/files/zzz-default-settings"
   if [[ ! -f "${ZZZ_PATH}" ]]; then
     TIME r "上游源码作者修改了zzz-default-settings文件的路径或者名称，找编译脚本的作者及时修改"
     exit 1
   fi
-  export SOURCE="nanopi_r2s"
+  export SOURCE="r2s"
   export LUCI_EDITION="18.06"
 
-elif [[ "${matrixtarget}" == "Lede_nanopi_r4s" ]]; then
+elif [[ "${matrixtarget}" == "r4s" ]]; then
   export ZZZ_PATH="${HOME_PATH}/package/default-settings/files/zzz-default-settings"
   if [[ ! -f "${ZZZ_PATH}" ]]; then
     TIME r "上游源码作者修改了zzz-default-settings文件的路径或者名称，找编译脚本的作者及时修改"
     exit 1
   fi
-  export SOURCE="nanopi_r4s"
+  export SOURCE="r4s"
   export LUCI_EDITION="18.06"  
 elif [[ "${matrixtarget}" == "Lienol_source" ]]; then
   export ZZZ_PATH="${HOME_PATH}/package/default-settings/files/zzz-default-settings"
@@ -374,9 +369,9 @@ src-git helloworld https://github.com/fw876/helloworld
 src-git passwall https://github.com/xiaorouji/openwrt-passwall;packages
 src-git passwall1 https://github.com/xiaorouji/openwrt-passwall;luci
 src-git passwall2 https://github.com/xiaorouji/openwrt-passwall2;main
-src-git shidahuilang https://github.com/makebl/openwrt-package.git;${REPO_BRANCH}
-src-git nas https://github.com/linkease/nas-packages.git;master
-src-git nas_luci https://github.com/linkease/nas-packages-luci.git;main
+src-git shidahuilang https://github.com/shidahuilang/openwrt-package.git;${REPO_BRANCH}
+#src-git nas https://github.com/linkease/nas-packages.git;master
+#src-git nas_luci https://github.com/linkease/nas-packages-luci.git;main
 " >> ${HOME_PATH}/feeds.conf.default
 sed -i '/^#/d' "${HOME_PATH}/feeds.conf.default"
 sed -i '/^$/d' "${HOME_PATH}/feeds.conf.default"
@@ -433,11 +428,9 @@ sed -i '/DISTRIB_REVISION/d' /etc/openwrt_release
 echo "DISTRIB_REVISION='21.02'" >> /etc/openwrt_release
 sed -i '/DISTRIB_DESCRIPTION/d' /etc/openwrt_release
 echo "DISTRIB_DESCRIPTION='OpenWrt '" >> /etc/openwrt_release
-
 sed -i '/luciname/d' /usr/lib/lua/luci/version.lua
 sed -i '/luciversion/d' /usr/lib/lua/luci/version.lua
 echo "luciname    = \"Immortalwrt-21.02\"" >> /usr/lib/lua/luci/version.lua
-
 exit 0
 EOF
 
@@ -891,14 +884,14 @@ echo "正在执行：files大法，设置固件无烦恼"
 if [[ -d "${GITHUB_WORKSPACE}/OP_DIY" ]]; then
   cp -Rf $HOME_PATH/build/common/${SOURCE}/* $BUILD_PATH
   cp -Rf ${GITHUB_WORKSPACE}/OP_DIY/${matrixtarget}/* $BUILD_PATH
-elif [[ ${matrixtarget} == "nanopi_r2s" ]]; then
-  cp -Rf $HOME_PATH/build/common/nanopi_r2s/* $BUILD_PATH
-elif [[ ${matrixtarget} == "nanopi_r4s" ]]; then
-  cp -Rf $HOME_PATH/build/common/nanopi_r4s/* $BUILD_PATH
-elif [[ ${matrixtarget} == "nanopi_r2c" ]]; then
-  cp -Rf $HOME_PATH/build/common/nanopi_r2c/* $BUILD_PATH
-elif [[ ${matrixtarget} == "nanopi_r5s" ]]; then
-  cp -Rf $HOME_PATH/build/common/nanopi_r5s/* $BUILD_PATH  
+elif [[ ${matrixtarget} == "r2s" ]]; then
+  cp -Rf $HOME_PATH/build/common/r2s/* $BUILD_PATH
+elif [[ ${matrixtarget} == "r4s" ]]; then
+  cp -Rf $HOME_PATH/build/common/r4s/* $BUILD_PATH
+elif [[ ${matrixtarget} == "r2c" ]]; then
+  cp -Rf $HOME_PATH/build/common/r2c/* $BUILD_PATH
+elif [[ ${matrixtarget} == "r5s" ]]; then
+  cp -Rf $HOME_PATH/build/common/r5s/* $BUILD_PATH  
   else
   cp -Rf $HOME_PATH/build/common/${SOURCE}/* $BUILD_PATH
 fi
@@ -914,22 +907,21 @@ rm -rf $HOME_PATH/files/{LICENSE,README,REA*.md}
 }
 
 function Diy_webweb() {
-curl -fsSL https://raw.githubusercontent.com/makebl/common/main/Custom/FinishIng.sh > ${BASE_PATH}/etc/FinishIng.sh
+curl -fsSL https://raw.githubusercontent.com/shidahuilang/common/main/Custom/FinishIng.sh > ${BASE_PATH}/etc/FinishIng.sh
 if [[ $? -ne 0 ]]; then
-  wget -P ${BASE_PATH}/etc https://raw.githubusercontent.com/makebl/common/main/Custom/FinishIng.sh -O ${BASE_PATH}/etc/FinishIng.sh
+  wget -P ${BASE_PATH}/etc https://raw.githubusercontent.com/shidahuilang/common/main/Custom/FinishIng.sh -O ${BASE_PATH}/etc/FinishIng.sh
 fi
 chmod 775 ${BASE_PATH}/etc/FinishIng.sh
-curl -fsSL https://raw.githubusercontent.com/makebl/common/main/Custom/FinishIng > ${BASE_PATH}/etc/init.d/FinishIng
+curl -fsSL https://raw.githubusercontent.com/shidahuilang/common/main/Custom/FinishIng > ${BASE_PATH}/etc/init.d/FinishIng
 if [[ $? -ne 0 ]]; then
-  wget -P ${BASE_PATH}/etc/init.d https://raw.githubusercontent.com/makebl/common/main/Custom/FinishIng -O ${BASE_PATH}/etc/init.d/FinishIng
+  wget -P ${BASE_PATH}/etc/init.d https://raw.githubusercontent.com/shidahuilang/common/main/Custom/FinishIng -O ${BASE_PATH}/etc/init.d/FinishIng
 fi
 chmod 775 ${BASE_PATH}/etc/init.d/FinishIng
-curl -fsSL https://raw.githubusercontent.com/makebl/common/main/Custom/webweb.sh > ${BASE_PATH}/etc/webweb.sh
+curl -fsSL https://raw.githubusercontent.com/shidahuilang/common/main/Custom/webweb.sh > ${BASE_PATH}/etc/webweb.sh
 if [[ $? -ne 0 ]]; then
-  wget -P ${BASE_PATH}/etc https://raw.githubusercontent.com/makebl/common/main/Custom/webweb.sh -O ${BASE_PATH}/etc/webweb.sh
+  wget -P ${BASE_PATH}/etc https://raw.githubusercontent.com/shidahuilang/common/main/Custom/webweb.sh -O ${BASE_PATH}/etc/webweb.sh
 fi
 chmod 775 ${BASE_PATH}/etc/webweb.sh
-
 }
 
 function Diy_zzz() {
