@@ -375,6 +375,8 @@ src-git shidahuilang https://github.com/shidahuilang/openwrt-package.git;${REPO_
 " >> ${HOME_PATH}/feeds.conf.default
 sed -i '/^#/d' "${HOME_PATH}/feeds.conf.default"
 sed -i '/^$/d' "${HOME_PATH}/feeds.conf.default"
+sed -ri 's@^[^#]@#&@' /etc/opkg/distfeeds.conf
+sed -ri '/check_signature/s@^[^#]@#&@' /etc/opkg.conf
 }
 
 function sbin_openwrt() {
