@@ -35,19 +35,10 @@ if [[ -f /etc/config/argon ]]; then
   uci commit argon
 fi
 
-if [[ `grep -c "shidahuilang" /etc/opkg/distfeeds.conf` -ge '1' ]]; then
-  sed -i '/shidahuilang/d' /etc/opkg/distfeeds.conf
-fi
-if [[ `grep -c "helloworld" /etc/opkg/distfeeds.conf` -ge '1' ]]; then
-  sed -i '/helloworld/d' /etc/opkg/distfeeds.conf
-fi
-if [[ `grep -c "passwall" /etc/opkg/distfeeds.conf` -ge '1' ]]; then
-  sed -i '/passwall/d' /etc/opkg/distfeeds.conf
-fi
-if [[ `grep -c "nas_luci" /etc/opkg/distfeeds.conf` -ge '1' ]]; then
-  sed -i '/nas_luci/d' /etc/opkg/distfeeds.conf
-  sed -i '/nas/d' /etc/opkg/distfeeds.conf
-fi
+sed -ri 's@^[^#]@#&@' /etc/opkg/distfeeds.conf
+
+sed -ri '/check_signature/s@^[^#]@#&@' /etc/opkg.conf
+
 
 rm -rf /etc/webweb.sh
 
