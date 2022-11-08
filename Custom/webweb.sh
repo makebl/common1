@@ -35,9 +35,9 @@ if [[ -f /etc/config/argon ]]; then
   uci commit argon
 fi
 
-sed -ri 's@^[^#]@#&@' /etc/opkg/distfeeds.conf
+sed -i 's@^[^#]@#&@' /etc/opkg/distfeeds.conf
 
-sed -ri '/check_signature/s@^[^#]@#&@' /etc/opkg.conf
+sed -i '/check_signature/s@^[^#]@#&@' /etc/opkg.conf
 
 
 rm -rf /etc/webweb.sh
