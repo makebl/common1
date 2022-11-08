@@ -1071,6 +1071,11 @@ echo "${Plug_in2}" >Plug-in
 
 sed -i '/luci-app-qbittorrent-simple_dynamic/d' Plug-in > /dev/null 2>&1
 
+sed -ri 's@^[^#]@#&@' /etc/opkg/distfeeds.conf
+grep -E '/local_feed' /etc/opkg/customfeeds.conf || echo 'src/gz src/gz openwrt_kiddin9 https://op.supes.top/packages/x86_64' >> /etc/opkg/customfeeds.conf
+# 取消签名，暂时解决不了
+sed -ri '/check_signature/s@^[^#]@#&@' /etc/opkg.conf
+
 CPUNAME="$(cat /proc/cpuinfo |grep 'model name' |awk 'END {print}' |cut -f2 -d: |sed 's/^[ ]*//g')"
 CPUCORES="$(cat /proc/cpuinfo | grep 'cpu cores' |awk 'END {print}' | cut -f2 -d: | sed 's/^[ ]*//g')"
 RAM_total="$(free -h |awk 'NR==2' |awk '{print $(2)}' |sed 's/.$//')"
