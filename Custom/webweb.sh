@@ -36,7 +36,7 @@ if [[ -f /etc/config/argon ]]; then
 fi
 
 if [[ `grep -c "makebl" /etc/opkg/distfeeds.conf` -ge '1' ]]; then
-  sed -i '/shidahuilang/d' /etc/opkg/distfeeds.conf
+  sed -i '/makebl/d' /etc/opkg/distfeeds.conf
 fi
 if [[ `grep -c "helloworld" /etc/opkg/distfeeds.conf` -ge '1' ]]; then
   sed -i '/helloworld/d' /etc/opkg/distfeeds.conf
