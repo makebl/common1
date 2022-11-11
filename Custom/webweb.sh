@@ -35,8 +35,8 @@ if [[ -f /etc/config/argon ]]; then
   uci commit argon
 fi
 
-if [[ `grep -c "shidahuilang" /etc/opkg/distfeeds.conf` -ge '1' ]]; then
-  sed -i '/shidahuilang/d' /etc/opkg/distfeeds.conf
+if [[ `grep -c "dahuilang" /etc/opkg/distfeeds.conf` -ge '1' ]]; then
+  sed -i '/dahuilang/d' /etc/opkg/distfeeds.conf
 fi
 if [[ `grep -c "helloworld" /etc/opkg/distfeeds.conf` -ge '1' ]]; then
   sed -i '/helloworld/d' /etc/opkg/distfeeds.conf
