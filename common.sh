@@ -881,6 +881,32 @@ if [[ `grep -c "CONFIG_PACKAGE_luci-app-openclash=y" ${HOME_PATH}/.config` -eq '
   fi
 fi
 
+if [[ `grep -c "CONFIG_PACKAGE_luci-app-adguardhome=y" ${HOME_PATH}/.config` -eq '1' ]]; then
+  echo "正在执行：给adguardhome下载核心"
+  rm -rf ${HOME_PATH}/AdGuardHome && rm -rf ${HOME_PATH}/files/usr/bin
+  if [[ "${Arch}" =~ (amd64|i386|arm64|armv7) ]]; then
+    downloader="curl -L -k --retry 2 --connect-timeout 20 -o"
+    latest_ver="$($downloader - https://api.github.com/repos/AdguardTeam/AdGuardHome/releases/latest 2>/dev/null|grep -E 'tag_name' |grep -E 'v[0-9.]+' -o 2>/dev/null)"
+    wget -q https://github.com/AdguardTeam/AdGuardHome/releases/download/${latest_ver}/AdGuardHome_linux_${Arch}.tar.gz
+    if [[ -f "AdGuardHome_linux_${Arch}.tar.gz" ]]; then
+      tar -zxvf AdGuardHome_linux_${Arch}.tar.gz -C ${HOME_PATH}
+      echo "核心下载成功"
+    else
+      echo "下载核心不成功"
+    fi
+    mkdir -p ${HOME_PATH}/files/usr/bin
+    if [[ -f "${HOME_PATH}/AdGuardHome/AdGuardHome" ]]; then
+      mv -f ${HOME_PATH}/AdGuardHome/AdGuardHome ${HOME_PATH}/files/usr/bin/
+      chmod 777 ${HOME_PATH}/files/usr/bin/AdGuardHome
+      echo "解压核心包成功,完成增加AdGuardHome核心工作"
+    else
+      echo "解压核心包失败,没能增加AdGuardHome核心"
+    fi
+    rm -rf ${HOME_PATH}/{AdGuardHome_linux_${Arch}.tar.gz,AdGuardHome}
+  fi
+fi
+}
+
 function Diy_files() {
 echo "正在执行：files大法，设置固件无烦恼"
 if [[ -d "${GITHUB_WORKSPACE}/OP_DIY" ]]; then
