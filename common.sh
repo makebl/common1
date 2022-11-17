@@ -838,7 +838,6 @@ fi
 
 function Diy_adguardhome() {
 if [[ `grep -c "CONFIG_PACKAGE_luci-app-adguardhome=y" ${HOME_PATH}/.config` -eq '1' ]]; then
-  echo "正在执行：给adguardhome下载核心"
   if [[ `grep -c "CONFIG_ARCH=\"x86_64\"" ${HOME_PATH}/.config` -eq '1' ]]; then
     Arch="amd64"
     echo "X86_64"
@@ -855,7 +854,8 @@ if [[ `grep -c "CONFIG_PACKAGE_luci-app-adguardhome=y" ${HOME_PATH}/.config` -eq
     echo "This model does not support automatic core download"
   fi
 	
-  if [[ "${Arch}" =~ (amd64|i386|arm64|armv7) ]]; then
+if [[ `grep -c "CONFIG_PACKAGE_luci-app-adguardhome=y" ${HOME_PATH}/.config` -eq '1' ]]; then
+  echo "正在执行：给adguardhome下载核心"
     downloader="curl -L -k --retry 2 --connect-timeout 20 -o"
     latest_ver="$($downloader - https://api.github.com/repos/AdguardTeam/AdGuardHome/releases/latest 2>/dev/null|grep -E 'tag_name' |grep -E 'v[0-9.]+' -o 2>/dev/null)"
     wget -q https://github.com/AdguardTeam/AdGuardHome/releases/download/${latest_ver}/AdGuardHome_linux_${Arch}.tar.gz
@@ -878,7 +878,7 @@ if [[ `grep -c "CONFIG_PACKAGE_luci-app-adguardhome=y" ${HOME_PATH}/.config` -eq
 fi
 
 
-  if [[ "${Arch}" =~ (amd64|i386|arm64|armv7) ]]; then
+if [[ `grep -c "CONFIG_PACKAGE_luci-app-openclash=y" ${HOME_PATH}/.config` -eq '1' ]]; then
   echo "正在执行：给openclash下载核心"
   if [[ "${Archclash}" =~ (amd64|386|armv7|armv8) ]]; then
     rm -rf ${HOME_PATH}/files/etc/openclash/core
