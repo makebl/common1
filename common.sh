@@ -876,8 +876,32 @@ if [[ `grep -c "CONFIG_PACKAGE_luci-app-adguardhome=y" ${HOME_PATH}/.config` -eq
     rm -rf ${HOME_PATH}/{AdGuardHome_linux_${Arch}.tar.gz,AdGuardHome}
   fi
 fi
-}
 
+
+  if [[ "${Arch}" =~ (amd64|i386|arm64|armv7) ]]; then
+  echo "正在执行：给openclash下载核心"
+  if [[ "${Archclash}" =~ (amd64|386|armv7|armv8) ]]; then
+    rm -rf ${HOME_PATH}/files/etc/openclash/core
+    rm -rf ${HOME_PATH}/clash-neihe && mkdir -p ${HOME_PATH}/clash-neihe
+    cd ${HOME_PATH}/clash-neihe
+    wget -q https://raw.githubusercontent.com/vernesong/OpenClash/master/core-lateset/dev/clash-linux-${Archclash}.tar.gz
+    if [[ $? -ne 0 ]];then
+      wget -q https://github.com/vernesong/OpenClash/releases/download/Clash/clash-linux-${Archclash}.tar.gz
+    fi
+    tar -zxvf clash-linux-${Archclash}.tar.gz
+    if [[ -f "${HOME_PATH}/clash-neihe/clash" ]]; then
+      mkdir -p ${HOME_PATH}/files/etc/openclash/core
+      mv -f ${HOME_PATH}/clash-neihe/clash ${HOME_PATH}/files/etc/openclash/core/clash
+      sudo chmod +x ${HOME_PATH}/files/etc/openclash/core/clash
+      echo "OpenClash增加内核成功"
+    else
+      echo "OpenClash增加内核失败"
+    fi
+    cd ${HOME_PATH}
+    rm -rf ${HOME_PATH}/clash-neihe
+  fi
+fi
+}
 
 function Diy_files() {
 echo "正在执行：files大法，设置固件无烦恼"
