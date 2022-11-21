@@ -49,6 +49,7 @@ popd
 
 sudo apt-get autoremove -y --purge
 sudo apt-get clean
+sudo sh -c 'echo openwrt > /etc/oprelyon'
 }
 
 function main(){
