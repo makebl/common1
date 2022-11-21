@@ -216,6 +216,8 @@ if [[ ! -f "/etc/oprelyon" ]]; then
   if [[ $? -ne 0 ]];then
     TIME r "依赖安装失败，请检测网络后再次尝试!"
     exit 1
+      else
+    sudo sh -c 'echo openwrt > /etc/oprelyon'
   fi
 fi
 }
