@@ -1,0 +1,37 @@
+#!/bin/sh
+
+touch /etc/crontabs/root
+
+chmod -R 0775 /etc/init.d /usr/share
+
+source /etc/openwrt_release
+if [[ ! "${DISTRIB_ARCH}" == "x86_64" ]]; then
+  sed -i "s?x86_64?${DISTRIB_TARGET}?g" /etc/banner
+fi
+
+if [[ `grep -c "dahuilang" /etc/opkg/distfeeds.conf` -ge '1' ]]; then
+  sed -i '/dahuilang/d' /etc/opkg/distfeeds.conf
+fi
+if [[ `grep -c "helloworld" /etc/opkg/distfeeds.conf` -ge '1' ]]; then
+  sed -i '/helloworld/d' /etc/opkg/distfeeds.conf
+fi
+if [[ `grep -c "passwall" /etc/opkg/distfeeds.conf` -ge '1' ]]; then
+  sed -i '/passwall/d' /etc/opkg/distfeeds.conf
+fi
+
+export luci_web=/usr/lib/lua/luci/view/admin_status/index.htm
+if [[ -f /etc/index.htm ]] && [[ `grep -c "pcdata(ver.distversion)%><!--" "${luci_web}"` -eq '0' ]]; then
+  sed -i 's/distversion)%>/distversion)%><!--/g' /etc/index.htm
+  sed -i 's/luciversion)%>)/luciversion)%>)-->/g' /etc/index.htm
+  sed -i 's#localtime  = .*#localtime  = os.date("%Y-%m-%d") .. " " .. os.date("%X") .. " " .. translate(os.date("%A")),#g' /etc/index.htm
+elif [[ `grep -c "pcdata(ver.distversion)%>" "${luci_web}"` -eq '1' ]] && [[ `grep -c "pcdata(ver.distversion)%><!--" "${luci_web}"` -eq '0' ]]; then
+  sed -i 's/distversion)%>/distversion)%><!--/g' "${luci_web}"
+  sed -i 's/luciversion)%>)/luciversion)%>)-->/g' "${luci_web}"
+  sed -i 's#localtime  = .*#localtime  = os.date("%Y-%m-%d") .. " " .. os.date("%X") .. " " .. translate(os.date("%A")),#g' "${luci_web}"
+fi
+
+sed -i 's?=== WARNING! =====================================?=================== WARNING! ====================?g' /etc/profile
+
+sed -i '/= "OpenWrt"/d' /usr/lib/lua/luci/version.lua
+
+

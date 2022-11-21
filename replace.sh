@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #====================================================
-#	Author:	shidahuilang
+#	MANUFACTURER:	shidahuilang
 #	Dscription: openwrt onekey Management
 #	github: https://github.com/shidahuilang/openwrt
 #====================================================
@@ -177,9 +177,9 @@ function anzhuang() {
 
 
 function Firmware_Path() {
-  export CLOUD_Version_1="$(egrep -o "${MAINTAIN_1}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
-  export CLOUD_Version_2="$(egrep -o "${MAINTAIN_2}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
-  export CLOUD_Version_3="$(egrep -o "${MAINTAIN_3}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+  export CLOUD_Version_1="$(egrep -o "${SOURCE_OWNER_1}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+  export CLOUD_Version_2="$(egrep -o "${SOURCE_OWNER_2}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
+  export CLOUD_Version_3="$(egrep -o "${SOURCE_OWNER_3}-${DEFAULT_Device}-[0-9]+-${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${API_PATH} | awk 'END {print}')"
 
   if [[ -n "${CLOUD_Version_1}" ]] && [[ -n "${CLOUD_Version_2}" ]] && [[ -n "${CLOUD_Version_3}" ]]; then
     CLOUD_Firmware1="${CLOUD_Version_1}"
@@ -283,35 +283,35 @@ menuws() {
 
 menu() {
   if [[ ${SOURCE} == "Lede" ]]; then
-    export MAINTAIN_1="18.06-Tianling"
-    export MAINTAIN_2="21.02-Mortal"
-    export MAINTAIN_3="21.02-Lienol"
+    export SOURCE_OWNER_1="18.06-Tianling"
+    export SOURCE_OWNER_2="21.02-Mortal"
+    export SOURCE_OWNER_3="21.02-Lienol"
     export tixinggg="Tianling、Mortal或Lienol"
     opapi
     Firmware_Path
     menuws
     clear
   elif [[ ${SOURCE} == "Lienol" ]]; then
-    export MAINTAIN_1="18.06-Lede"
-    export MAINTAIN_2="21.02-Mortal"
-    export MAINTAIN_3="18.06-Tianling"
+    export SOURCE_OWNER_1="18.06-Lede"
+    export SOURCE_OWNER_2="21.02-Mortal"
+    export SOURCE_OWNER_3="18.06-Tianling"
     export tixinggg="Lede、Mortal或Tianling"
     opapi
     Firmware_Path
     menuws
     clear
   elif [[ ${SOURCE} == "Mortal" ]]; then
-    export MAINTAIN_1="18.06-Lede"
-    export MAINTAIN_2="21.02-Lienol"
-    export MAINTAIN_3="18.06-Tianling"
+    export SOURCE_OWNER_1="18.06-Lede"
+    export SOURCE_OWNER_2="21.02-Lienol"
+    export SOURCE_OWNER_3="18.06-Tianling"
     export tixinggg="Lede、Lienol或Tianling"
     opapi
     Firmware_Path
     menuws
   elif [[ ${SOURCE} == "Tianling" ]]; then
-    export MAINTAIN_1="18.06-Lede"
-    export MAINTAIN_2="21.02-Mortal"
-    export MAINTAIN_3="21.02-Lienol"
+    export SOURCE_OWNER_1="18.06-Lede"
+    export SOURCE_OWNER_2="21.02-Mortal"
+    export SOURCE_OWNER_3="21.02-Lienol"
     export tixinggg="Lede、Mortal或Lienol"
     opapi
     Firmware_Path

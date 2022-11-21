@@ -5,18 +5,25 @@
 
 
 function Diy_Part1() {
-  rm -rf "$HOME_PATH/package/luci-app-autoupdate"
-  git clone https://github.com/shidahuilang/luci-app-autoupdate $HOME_PATH/package/luci-app-autoupdate > /dev/null 2>&1
-  [[ -f "$BUILD_PATH/AutoUpdate.sh" ]] && cp -Rf $BUILD_PATH/AutoUpdate.sh $BASE_PATH/bin/AutoUpdate.sh
-  [[ -f "$BUILD_PATH/replace.sh" ]] && cp -Rf $BUILD_PATH/replace.sh $BASE_PATH/bin/replace.sh
-  sed  -i  's/ luci-app-ttyd//g' $HOME_PATH/target/linux/*/Makefile
-  sed  -i  's/ luci-app-autoupdate//g' $HOME_PATH/target/linux/*/Makefile
-  sed -i 's?DEFAULT_PACKAGES +=?DEFAULT_PACKAGES += luci-app-autoupdate luci-app-ttyd?g' $HOME_PATH/target/linux/*/Makefile
-  [[ -d $HOME_PATH/package/luci-app-autoupdate ]] && echo "增加定时更新插件成功"
+  if [[ -f "$BUILD_PATH/AutoUpdate.sh" ]]; then
+    echo "正在执行：给源码增加定时更新固件插件和设置插件和ttyd成默认自选"
+    find . -name 'luci-app-autoupdate' | xargs -i rm -rf {}
+    git clone https://github.com/shidahuilang/luci-app-autoupdate $HOME_PATH/package/luci-app-autoupdate
+    [[ ! -d "$FILES_PATH/usr/bin" ]] && mkdir $FILES_PATH/usr/bin
+    cp $BUILD_PATH/AutoUpdate.sh $FILES_PATH/usr/bin/AutoUpdate
+    cp $BUILD_PATH/replace.sh $FILES_PATH/usr/bin/replace
+    sudo chmod +x $FILES_PATH/usr/bin/replace
+    sudo chmod +x $FILES_PATH/usr/bin/AutoUpdate
+    if [[ `grep -c "luci-app-autoupdate" ${HOME_PATH}/include/target.mk` -eq '0' ]]; then
+      sed -i 's?DEFAULT_PACKAGES:=?DEFAULT_PACKAGES:=luci-app-autoupdate luci-app-ttyd ?g' ${HOME_PATH}/include/target.mk
+    fi
+    [[ -d $HOME_PATH/package/luci-app-autoupdate ]] && echo "增加定时更新固件的插件成功"
+  else
+    echo "没发现AutoUpdate.sh文件存在，不能增加在线升级固件程序"
+  fi
 }
 
 function GET_TARGET_INFO() {
-	source $BUILD_PATH/common.sh && Make_upgrade
 	if [[ "${TARGET_PROFILE}" =~ (phicomm_k3|phicomm-k3) ]]; then
 		export Rename="${TARGET_PROFILE}"
 		export TARGET_PROFILE="phicomm_k3"
@@ -69,28 +76,39 @@ function GET_TARGET_INFO() {
 	;;
 	esac
 	
-	if [[ -f "$BASE_PATH/usr/bin/AutoUpdate" ]]; then
-	  export AutoUpdate_Version=$(egrep -o "Version=V[0-9]\.[0-9]" $BASE_PATH/usr/bin/AutoUpdate |cut -d "=" -f2 | sed 's/^.//g')
+	if [[ -f "$FILES_PATH/usr/bin/AutoUpdate" ]]; then
+	  export AutoUpdate_Version=$(egrep -o "Version=V[0-9]\.[0-9]" $FILES_PATH/usr/bin/AutoUpdate |cut -d "=" -f2 | sed 's/^.//g')
 	else
 	  export AutoUpdate_Version="7.1"
 	fi
-	export In_Firmware_Info="$BASE_PATH/bin/openwrt_info"
+	export In_Firmware_Info="$FILES_PATH/bin/openwrt_info"
 	export Github_Release="${Github}/releases/tag/AutoUpdate"
 	export Openwrt_Version="${SOURCE}-${TARGET_PROFILE}-${Upgrade_Date}"
-	export Github_API1="https://api.github.com/repos/${Warehouse}/releases/tags/AutoUpdate"
-	export Github_API2="${Github}/releases/download/AutoUpdate/Github_Tags"
-	export Release_download="https://github.com/${Warehouse}/releases/download/AutoUpdate"
+	export Github_API1="https://api.github.com/repos/${GIT_REPOSITORY}/releases/tags/AutoUpdate"
+	export Github_API2="${Github}/releases/download/AutoUpdate/zzz_api"
+	export Release_download="https://github.com/${GIT_REPOSITORY}/releases/download/AutoUpdate"
 	export LOCAL_CHAZHAO="${LUCI_EDITION}-${Openwrt_Version}"
 	export CLOUD_CHAZHAO="${LUCI_EDITION}-${SOURCE}-${TARGET_PROFILE}"
+	if [[ ! ${bendi_script} == "1" ]]; then
+	  echo "AutoUpdate_Version=${AutoUpdate_Version}" >> ${GITHUB_ENV}
+	  [[ -n "${Legacy_Firmware}" ]] && echo "Legacy_Firmware=${Legacy_Firmware}" >> ${GITHUB_ENV}
+	  [[ -n "${UEFI_Firmware}" ]] && echo "UEFI_Firmware=${UEFI_Firmware}" >> ${GITHUB_ENV}
+	  [[ -n "${Up_Firmware}" ]] && echo "Up_Firmware=${Up_Firmware}" >> ${GITHUB_ENV}
+	  echo "Firmware_SFX=${Firmware_SFX}" >> ${GITHUB_ENV}
+	  echo "Openwrt_Version=${Openwrt_Version}" >> ${GITHUB_ENV}
+	  echo "Github_Release=${Github_Release}" >> ${GITHUB_ENV}
+	fi
 }
 
 function Diy_Part2() {
 GET_TARGET_INFO
+touch ${In_Firmware_Info}
+sudo chmod +x ${In_Firmware_Info}
 cat >${In_Firmware_Info} <<-EOF
 Github=${Github}
-Author=${Author}
-Library=${Library}
-Warehouse=${Warehouse}
+MANUFACTURER=${MANUFACTURER}
+WAREHOUSE_MAN=${WAREHOUSE_MAN}
+GIT_REPOSITORY=${GIT_REPOSITORY}
 SOURCE=${SOURCE}
 LUCI_EDITION=${LUCI_EDITION}
 DEFAULT_Device=${TARGET_PROFILE}
