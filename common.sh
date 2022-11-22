@@ -283,7 +283,7 @@ master)
   find . -name 'adguardhome' -o -name 'luci-app-adguardhome' -o -name 'luci-app-wol' | xargs -i rm -rf {}
   find . -name 'mosdns' -o -name 'luci-app-mosdns' | xargs -i rm -rf {}
   find . -name 'luci-app-smartdns' -o -name 'smartdns' | xargs -i rm -rf {}
-  find . -name 'luci-app-netdata' -o -name 'netdata' | xargs -i rm -rf {}
+
 ;;
 21.02)
   
