@@ -899,7 +899,7 @@ fi
     cd ${HOME_PATH}
     rm -rf ${HOME_PATH}/clash-neihe
   fi
-fi
+
 }
 
 function Diy_files() {
