@@ -877,7 +877,7 @@ if [[ `grep -c "CONFIG_PACKAGE_luci-app-adguardhome=y" ${HOME_PATH}/.config` -eq
   fi
 fi
 
-
+if [[ `grep -c "CONFIG_PACKAGE_luci-app-openclash=y" ${HOME_PATH}/.config` -eq '1' ]]; then
   echo "正在执行：给openclash下载核心"
   if [[ "${Archclash}" =~ (amd64|386|armv7|armv8) ]]; then
     rm -rf ${HOME_PATH}/files/etc/openclash/core
