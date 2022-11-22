@@ -1281,6 +1281,7 @@ Diy_files
 Diy_zzz
 sbin_openwrt
 Diy_adguardhome
+Diy_openclash
 Diy_Language
 if [[ ! "${bendi_script}" == "1" ]]; then
   Make_defconfig
