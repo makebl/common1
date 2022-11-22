@@ -836,7 +836,7 @@ if [ -n "$(ls -A "${HOME_PATH}/Chajianlibiao" 2>/dev/null)" ]; then
 fi
 }
 
-function Diy_adguardhome() {
+function Diy_openclash() {
 if [[ `grep -c "CONFIG_ARCH=\"x86_64\"" ${HOME_PATH}/.config` -eq '1' ]]; then
   Arch="linux_amd64"
   Archclash="linux-amd64"
@@ -904,7 +904,52 @@ if [[ `grep -c "CONFIG_PACKAGE_luci-app-openclash=y" ${HOME_PATH}/.config` -eq '
   cd ${HOME_PATH}
   rm -rf ${HOME_PATH}/clash-neihe
 fi
+}
 
+function Diy_adguardhome() {
+if [[ `grep -c "CONFIG_ARCH=\"x86_64\"" ${HOME_PATH}/.config` -eq '1' ]]; then
+  Arch="linux_amd64"
+  Archclash="linux-amd64"
+  echo "amd64架构"
+elif [[ `grep -c "CONFIG_ARCH=\"i386\"" ${HOME_PATH}/.config` -eq '1' ]]; then
+  Arch="linux_386"
+  Archclash="linux-386"
+  echo "X86 32位架构"
+elif [[ `grep -c "CONFIG_ARCH=\"aarch64\"" ${HOME_PATH}/.config` -eq '1' ]]; then
+  Arch="linux_arm64"
+  Archclash="linux-arm64"
+  echo "arm64架构"
+elif [[ `grep -c "CONFIG_arm_v7=y" ${HOME_PATH}/.config` -eq '1' ]]; then
+  Arch="linux_armv7"
+  Archclash="linux-armv7"
+  echo "armv7架构"
+elif [[ `grep -c "CONFIG_ARCH=\"arm\"" ${HOME_PATH}/.config` -eq '1' ]] && [[ `grep -c "CONFIG_arm_v7=y" ${HOME_PATH}/.config` -eq '0' ]] && [[ `grep "CONFIG_TARGET_ARCH_PACKAGES" "${HOME_PATH}/.config" |grep -c "vfp"` -eq '1' ]]; then
+  Arch="linux_armv6"
+  Archclash="linux-armv6"
+  echo "armv6架构"
+elif [[ `grep -c "CONFIG_ARCH=\"arm\"" ${HOME_PATH}/.config` -eq '1' ]] && [[ `grep -c "CONFIG_arm_v7=y" ${HOME_PATH}/.config` -eq '0' ]] && [[ `grep "CONFIG_TARGET_ARCH_PACKAGES" "${HOME_PATH}/.config" |grep -c "vfp"` -eq '0' ]]; then
+  Arch="linux_armv5"
+  Archclash="linux-armv5"
+  echo "armv6架构"
+elif [[ `grep -c "CONFIG_ARCH=\"mips\"" ${HOME_PATH}/.config` -eq '1' ]]; then
+  Arch="linux_mips_softfloat"
+  Archclash="linux-mips-softfloat"
+  echo "mips架构"
+elif [[ `grep -c "CONFIG_ARCH=\"mips64\"" ${HOME_PATH}/.config` -eq '1' ]]; then
+  Arch="linux_mips64_softfloat"
+  Archclash="linux-mips64"
+  echo "mips架构"
+elif [[ `grep -c "CONFIG_ARCH=\"mipsel\"" ${HOME_PATH}/.config` -eq '1' ]]; then
+  Arch="linux_mipsle_softfloat"
+  Archclash="linux-mipsle-softfloat"
+  echo "mipsle架构"
+elif [[ `grep -c "CONFIG_ARCH=\"mips64el\"" ${HOME_PATH}/.config` -eq '1' ]]; then
+  Arch="linux_mips64le_softfloat"
+  Archclash="linux-mips64le"
+  echo "mipsle架构"
+else
+  echo "I don't know what the architecture is"
+fi
 if [[ `grep -c "CONFIG_PACKAGE_luci-app-adguardhome=y" ${HOME_PATH}/.config` -eq '1' ]]; then
   echo "正在执行：给adguardhome下载核心"
   rm -rf ${HOME_PATH}/AdGuardHome && rm -rf ${HOME_PATH}/files/usr/bin
