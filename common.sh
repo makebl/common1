@@ -876,7 +876,7 @@ if [[ `grep -c "CONFIG_PACKAGE_luci-app-adguardhome=y" ${HOME_PATH}/.config` -eq
     rm -rf ${HOME_PATH}/{AdGuardHome_linux_${Arch}.tar.gz,AdGuardHome}
   fi
 fi
-
+}
 if [[ `grep -c "CONFIG_PACKAGE_luci-app-openclash=y" ${HOME_PATH}/.config` -eq '1' ]]; then
   echo "正在执行：给openclash下载核心"
   if [[ "${Archclash}" =~ (amd64|386|armv7|armv8) ]]; then
@@ -900,7 +900,7 @@ if [[ `grep -c "CONFIG_PACKAGE_luci-app-openclash=y" ${HOME_PATH}/.config` -eq '
     rm -rf ${HOME_PATH}/clash-neihe
   fi
 
-
+}
 
 function Diy_files() {
 echo "正在执行：files大法，设置固件无烦恼"
