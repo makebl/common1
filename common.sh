@@ -926,8 +926,7 @@ if [[ `grep -c "CONFIG_PACKAGE_luci-app-adguardhome=y" ${HOME_PATH}/.config` -eq
     fi
     rm -rf ${HOME_PATH}/{AdGuardHome_linux_${Arch}.tar.gz,AdGuardHome}
   fi
-fi
-}
+
 
 function Diy_files() {
 echo "正在执行：files大法，设置固件无烦恼"
