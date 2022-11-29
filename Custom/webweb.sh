@@ -41,9 +41,7 @@ fi
 if [[ `grep -c "helloworld" /etc/opkg/distfeeds.conf` -ge '1' ]]; then
   sed -i '/helloworld/d' /etc/opkg/distfeeds.conf
 fi
-if [[ `grep -c "passwall" /etc/opkg/distfeeds.conf` -ge '1' ]]; then
-  sed -i '/passwall/d' /etc/opkg/distfeeds.conf
-fi
+
 
 
 
