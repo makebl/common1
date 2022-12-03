@@ -121,6 +121,7 @@ function Diy_variable() {
 cp -Rf `find ./ -maxdepth 1 -type d ! -path './openwrt' ! -path './'` openwrt
 echo "HOME_PATH=${GITHUB_WORKSPACE}/openwrt" >> ${GITHUB_ENV}
 echo "BUILD_PATH=${GITHUB_WORKSPACE}/openwrt/build/${matrixtarget}" >> ${GITHUB_ENV}
+echo "WAREHOUSE_MAN=${GIT_REPOSITORY##*/}" >> ${GITHUB_ENV}
 echo "BASE_PATH=${GITHUB_WORKSPACE}/openwrt/package/base-files/files" >> ${GITHUB_ENV}
 echo "NETIP=${GITHUB_WORKSPACE}/openwrt/package/base-files/files/etc/networkip" >> ${GITHUB_ENV}
 echo "DELETE=${GITHUB_WORKSPACE}/openwrt/package/base-files/files/etc/deletefile" >> ${GITHUB_ENV}
@@ -1019,7 +1020,7 @@ echo "${cpu_model}"
 case "${CPU_optimization}" in
 'qiyonge5')
   if [[ `echo "${cpu_model}" |grep -c "E5"` -ge '1' ]]; then
-    git clone -b main https://github.com/${Library}.git ${matrixtarget}
+    git clone -b main https://github.com/${GIT_REPOSITORY}.git ${matrixtarget}
     ARGET_PATH="${matrixtarget}/.github/workflows/compile.yml"
     TARGET1="$(grep 'target: \[' "${ARGET_PATH}" |sed 's/^[ ]*//g' |grep -v '^#' |sed 's/\[/\\&/' |sed 's/\]/\\&/')"
     TARGET2="target: \\[${matrixtarget}\\]"
@@ -1042,7 +1043,7 @@ case "${CPU_optimization}" in
 ;;
 *)
   if [[ `echo "${cpu_model}" |grep -c "${CPU_optimization}"` -eq '0' ]]; then
-    git clone -b main https://github.com/${Library}.git ${matrixtarget}
+    git clone -b main https://github.com/${GIT_REPOSITORY}.git ${matrixtarget}
     ARGET_PATH="${matrixtarget}/.github/workflows/compile.yml"
     TARGET1="$(grep 'target: \[' "${ARGET_PATH}" |sed 's/^[ ]*//g' |grep -v '^#' |sed 's/\[/\\&/' |sed 's/\]/\\&/')"
     TARGET2="target: \\[${matrixtarget}\\]"
