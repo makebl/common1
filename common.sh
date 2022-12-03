@@ -66,6 +66,7 @@ if [[ ! ${bendi_script} == "1" ]]; then
   echo "BY_INFORMATION=${BY_INFORMATION}" >> ${GITHUB_ENV}
   echo "Library=${Warehouse##*/}" >> ${GITHUB_ENV}
   echo "matrixtarget=${matrixtarget}" >> ${GITHUB_ENV}
+  echo "BUILD_PATH=${GITHUB_WORKSPACE}/openwrt/build/${matrixtarget}" >> ${GITHUB_ENV}
 
 fi
 }
@@ -1018,7 +1019,7 @@ echo "${cpu_model}"
 case "${CPU_optimization}" in
 'qiyonge5')
   if [[ `echo "${cpu_model}" |grep -c "E5"` -ge '1' ]]; then
-    git clone -b main https://github.com/${Warehouse}.git ${matrixtarget}
+    git clone -b main https://github.com/${Library}.git ${matrixtarget}
     ARGET_PATH="${matrixtarget}/.github/workflows/compile.yml"
     TARGET1="$(grep 'target: \[' "${ARGET_PATH}" |sed 's/^[ ]*//g' |grep -v '^#' |sed 's/\[/\\&/' |sed 's/\]/\\&/')"
     TARGET2="target: \\[${matrixtarget}\\]"
@@ -1041,7 +1042,7 @@ case "${CPU_optimization}" in
 ;;
 *)
   if [[ `echo "${cpu_model}" |grep -c "${CPU_optimization}"` -eq '0' ]]; then
-    git clone -b main https://github.com/${Warehouse}.git ${matrixtarget}
+    git clone -b main https://github.com/${Library}.git ${matrixtarget}
     ARGET_PATH="${matrixtarget}/.github/workflows/compile.yml"
     TARGET1="$(grep 'target: \[' "${ARGET_PATH}" |sed 's/^[ ]*//g' |grep -v '^#' |sed 's/\[/\\&/' |sed 's/\]/\\&/')"
     TARGET2="target: \\[${matrixtarget}\\]"
