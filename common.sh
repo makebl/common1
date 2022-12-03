@@ -1041,12 +1041,12 @@ case "${CPU_optimization}" in
 ;;
 *)
   if [[ `echo "${cpu_model}" |grep -c "${CPU_optimization}"` -eq '0' ]]; then
-    git clone -b main https://github.com/${GIT_REPOSITORY}.git ${FOLDER_NAME}
-    ARGET_PATH="${FOLDER_NAME}/.github/workflows/compile.yml"
+    git clone -b main https://github.com/${GIT_REPOSITORY}.git ${matrixtarget}
+    ARGET_PATH="${matrixtarget}/.github/workflows/compile.yml"
     TARGET1="$(grep 'target: \[' "${ARGET_PATH}" |sed 's/^[ ]*//g' |grep -v '^#' |sed 's/\[/\\&/' |sed 's/\]/\\&/')"
-    TARGET2="target: \\[${FOLDER_NAME}\\]"
+    TARGET2="target: \\[${matrixtarget}\\]"
     PATHS1="$(egrep "\- '.*'" "${ARGET_PATH}" |sed 's/^[ ]*//g' |grep -v "^#" |awk 'NR==1')"
-    PATHS2="- 'build/${FOLDER_NAME}/start-up/start'"
+    PATHS2="- 'build/${matrixtarget}/start-up/start'"
     if [[ -n ${PATHS1} ]] && [[ -n ${TARGET1} ]]; then
       sed -i "s?${PATHS1}?${PATHS2}?g" "${ARGET_PATH}"
       sed -i "s?${TARGET1}?${TARGET2}?g" "${ARGET_PATH}"
@@ -1054,8 +1054,8 @@ case "${CPU_optimization}" in
       echo "获取变量失败,请勿胡乱修改compile.yml文件"
       exit 1
     fi
-    mkdir -p ${FOLDER_NAME}/build/${FOLDER_NAME}/start-up
-    echo "${SOURCE}$(date +%Y年%m月%d号%H时%M分%S秒)" > ${FOLDER_NAME}/build/${FOLDER_NAME}/start-up/start
+    mkdir -p ${matrixtarget}/build/${matrixtarget}/start-up
+    echo "${SOURCE}$(date +%Y年%m月%d号%H时%M分%S秒)" > ${FOLDER_NAME}/build/${matrixtarget}/start-up/start
     export chonglaixx="非${CPU_optimization}-重新编译"
     export Continue_selecting="1"
   else
