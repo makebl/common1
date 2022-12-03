@@ -982,10 +982,7 @@ sed -i "/exit 0/i\source /etc/webweb.sh" "${ZZZ_PATH}"
 sed -i '/FinishIng/d' "${ZZZ_PATH}"
 sed -i "/exit 0/i\/etc/init.d/FinishIng enable" "${ZZZ_PATH}"
 }
-cd ${HOME_PATH}
-[[ ! -d "${HOME_PATH}/build_logo" ]] && mkdir -p ${HOME_PATH}/build_logo
-./scripts/diffconfig.sh > ${HOME_PATH}/build_logo/config.txt
-}
+
 function Make_defconfig() {
 echo "正在执行：识别源码编译为何机型"
 export TAR_BOARD1="$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' ${HOME_PATH}/.config)"
