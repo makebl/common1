@@ -1023,7 +1023,7 @@ echo "${cpu_model}"
 case "${CPU_optimization}" in
 'qiyonge5')
   if [[ `echo "${cpu_model}" |grep -c "E5"` -ge '1' ]]; then
-    git clone https://github.com/${GIT_REPOSITORY}.git ${FOLDER_NAME}
+    git clone -b main https://github.com/${GIT_REPOSITORY}.git ${FOLDER_NAME}
     ARGET_PATH="${FOLDER_NAME}/.github/workflows/compile.yml"
     TARGET1="$(grep 'target: \[' "${ARGET_PATH}" |sed 's/^[ ]*//g' |grep -v '^#' |sed 's/\[/\\&/' |sed 's/\]/\\&/')"
     TARGET2="target: \\[${FOLDER_NAME}\\]"
@@ -1046,7 +1046,7 @@ case "${CPU_optimization}" in
 ;;
 *)
   if [[ `echo "${cpu_model}" |grep -c "${CPU_optimization}"` -eq '0' ]]; then
-    git clone https://github.com/${GIT_REPOSITORY}.git ${FOLDER_NAME}
+    git clone -b main https://github.com/${GIT_REPOSITORY}.git ${FOLDER_NAME}
     ARGET_PATH="${FOLDER_NAME}/.github/workflows/compile.yml"
     TARGET1="$(grep 'target: \[' "${ARGET_PATH}" |sed 's/^[ ]*//g' |grep -v '^#' |sed 's/\[/\\&/' |sed 's/\]/\\&/')"
     TARGET2="target: \\[${FOLDER_NAME}\\]"
