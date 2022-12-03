@@ -812,10 +812,7 @@ if [[ `grep -c "CONFIG_TARGET_ROOTFS_EXT4FS=y" ${HOME_PATH}/.config` -eq '1' ]];
     echo "TIME g \" \"" >> ${HOME_PATH}/EXT4
   fi
 fi
-cd ${HOME_PATH}
-[[ ! -d "${HOME_PATH}/build_logo" ]] && mkdir -p ${HOME_PATH}/build_logo
-./scripts/diffconfig.sh > ${HOME_PATH}/build_logo/config.txt
-}
+
 
 if [ -n "$(ls -A "${HOME_PATH}/Chajianlibiao" 2>/dev/null)" ]; then
   echo "TIME y \"  插件冲突会导致编译失败，以上操作如非您所需，请关闭此次编译，重新开始编译，避开冲突重新选择插件\"" >>CHONGTU
