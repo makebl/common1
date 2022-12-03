@@ -66,7 +66,7 @@ if [[ ! ${bendi_script} == "1" ]]; then
   echo "BY_INFORMATION=${BY_INFORMATION}" >> ${GITHUB_ENV}
   echo "Library=${Warehouse##*/}" >> ${GITHUB_ENV}
   echo "matrixtarget=${matrixtarget}" >> ${GITHUB_ENV}
-  echo "BUILD_PATH=${GITHUB_WORKSPACE}/openwrt/build/${matrixtarget}" >> ${GITHUB_ENV}
+
 
 fi
 }
@@ -120,7 +120,7 @@ fi
 function Diy_variable() {
 cp -Rf `find ./ -maxdepth 1 -type d ! -path './openwrt' ! -path './'` openwrt
 echo "HOME_PATH=${GITHUB_WORKSPACE}/openwrt" >> ${GITHUB_ENV}
-echo "BUILD_PATH=${GITHUB_WORKSPACE}/openwrt/build/${matrixtarget}" >> ${GITHUB_ENV}
+echo "BUILD_PATH=${GITHUB_WORKSPACE}/openwrt/build/${FOLDER_NAME}" >> ${GITHUB_ENV}
 echo "WAREHOUSE_MAN=${GIT_REPOSITORY##*/}" >> ${GITHUB_ENV}
 echo "BASE_PATH=${GITHUB_WORKSPACE}/openwrt/package/base-files/files" >> ${GITHUB_ENV}
 echo "NETIP=${GITHUB_WORKSPACE}/openwrt/package/base-files/files/etc/networkip" >> ${GITHUB_ENV}
@@ -1002,16 +1002,16 @@ echo "FIRMWARE=$HOME_PATH/bin/targets/$TAR_BOARD1/$TAR_SUBTARGET1" >> ${GITHUB_E
 }
 
 function CPU_Priority() {
-export TARGET_BOARD="$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' build/${matrixtarget}/${CONFIG_FILE})"
-export TARGET_SUBTARGET="$(awk -F '[="]+' '/TARGET_SUBTARGET/{print $2}' build/${matrixtarget}/${CONFIG_FILE})"
-if [[ `grep -Eoc 'CONFIG_TARGET_x86_64=y' build/${matrixtarget}/${CONFIG_FILE}` -eq '1' ]]; then
+export TARGET_BOARD="$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' build/${FOLDER_NAME}/${CONFIG_FILE})"
+export TARGET_SUBTARGET="$(awk -F '[="]+' '/TARGET_SUBTARGET/{print $2}' build/${FOLDER_NAME}/${CONFIG_FILE})"
+if [[ `grep -Eoc 'CONFIG_TARGET_x86_64=y' build/${FOLDER_NAME}/${CONFIG_FILE}` -eq '1' ]]; then
   export TARGET_PROFILE="x86-64"
-elif [[ `grep -Eoc 'CONFIG_TARGET_x86=y' build/${matrixtarget}/${CONFIG_FILE}` -eq '1' ]]; then
+elif [[ `grep -Eoc 'CONFIG_TARGET_x86=y' build/${FOLDER_NAME}/${CONFIG_FILE}` -eq '1' ]]; then
   export TARGET_PROFILE="x86-32"
-elif [[ `grep -Eoc 'CONFIG_TARGET_armvirt_64_Default=y' build/${matrixtarget}/${CONFIG_FILE}` -eq '1' ]]; then
+elif [[ `grep -Eoc 'CONFIG_TARGET_armvirt_64_Default=y' build/${FOLDER_NAME}/${CONFIG_FILE}` -eq '1' ]]; then
   export TARGET_PROFILE="Armvirt_64"
 else
-  export TARGET_PROFILE="$(grep -Eo "CONFIG_TARGET.*DEVICE.*=y" build/${matrixtarget}/${CONFIG_FILE} | sed -r 's/.*DEVICE_(.*)=y/\1/')"
+  export TARGET_PROFILE="$(grep -Eo "CONFIG_TARGET.*DEVICE.*=y" build/${FOLDER_NAME}/${CONFIG_FILE} | sed -r 's/.*DEVICE_(.*)=y/\1/')"
 fi
 
 cpu_model=`cat /proc/cpuinfo  |grep 'model name' |gawk -F : '{print $2}' | uniq -c  | sed 's/^ \+[0-9]\+ //g'`
@@ -1020,12 +1020,12 @@ echo "${cpu_model}"
 case "${CPU_optimization}" in
 'qiyonge5')
   if [[ `echo "${cpu_model}" |grep -c "E5"` -ge '1' ]]; then
-    git clone -b main https://github.com/${GIT_REPOSITORY}.git ${matrixtarget}
-    ARGET_PATH="${matrixtarget}/.github/workflows/compile.yml"
+    git clone -b main https://github.com/${GIT_REPOSITORY}.git ${FOLDER_NAME}
+    ARGET_PATH="${FOLDER_NAME}/.github/workflows/compile.yml"
     TARGET1="$(grep 'target: \[' "${ARGET_PATH}" |sed 's/^[ ]*//g' |grep -v '^#' |sed 's/\[/\\&/' |sed 's/\]/\\&/')"
-    TARGET2="target: \\[${matrixtarget}\\]"
+    TARGET2="target: \\[${FOLDER_NAME}\\]"
     PATHS1="$(egrep "\- '.*'" "${ARGET_PATH}" |sed 's/^[ ]*//g' |grep -v "^#" |awk 'NR==1')"
-    PATHS2="- 'build/${matrixtarget}/start-up/start'"
+    PATHS2="- 'build/${FOLDER_NAME}/start-up/start'"
     if [[ -n ${PATHS1} ]] && [[ -n ${TARGET1} ]]; then
       sed -i "s?${PATHS1}?${PATHS2}?g" "${ARGET_PATH}"
       sed -i "s?${TARGET1}?${TARGET2}?g" "${ARGET_PATH}"
@@ -1033,8 +1033,8 @@ case "${CPU_optimization}" in
       echo "获取变量失败,请勿胡乱修改compile.yml文件"
       exit 1
     fi
-    mkdir -p ${matrixtarget}/build/${matrixtarget}/start-up
-    echo "${SOURCE}$(date +%Y年%m月%d号%H时%M分%S秒)" > ${matrixtarget}/build/${matrixtarget}/start-up/start
+    mkdir -p ${FOLDER_NAME}/build/${FOLDER_NAME}/start-up
+    echo "${SOURCE}$(date +%Y年%m月%d号%H时%M分%S秒)" > ${FOLDER_NAME}/build/${FOLDER_NAME}/start-up/start
     export chonglaixx="E5-重新编译"
     export Continue_selecting="1"
   else
@@ -1043,12 +1043,12 @@ case "${CPU_optimization}" in
 ;;
 *)
   if [[ `echo "${cpu_model}" |grep -c "${CPU_optimization}"` -eq '0' ]]; then
-    git clone -b main https://github.com/${GIT_REPOSITORY}.git ${matrixtarget}
-    ARGET_PATH="${matrixtarget}/.github/workflows/compile.yml"
+    git clone -b main https://github.com/${GIT_REPOSITORY}.git ${FOLDER_NAME}
+    ARGET_PATH="${FOLDER_NAME}/.github/workflows/compile.yml"
     TARGET1="$(grep 'target: \[' "${ARGET_PATH}" |sed 's/^[ ]*//g' |grep -v '^#' |sed 's/\[/\\&/' |sed 's/\]/\\&/')"
-    TARGET2="target: \\[${matrixtarget}\\]"
+    TARGET2="target: \\[${FOLDER_NAME}\\]"
     PATHS1="$(egrep "\- '.*'" "${ARGET_PATH}" |sed 's/^[ ]*//g' |grep -v "^#" |awk 'NR==1')"
-    PATHS2="- 'build/${matrixtarget}/start-up/start'"
+    PATHS2="- 'build/${FOLDER_NAME}/start-up/start'"
     if [[ -n ${PATHS1} ]] && [[ -n ${TARGET1} ]]; then
       sed -i "s?${PATHS1}?${PATHS2}?g" "${ARGET_PATH}"
       sed -i "s?${TARGET1}?${TARGET2}?g" "${ARGET_PATH}"
@@ -1056,8 +1056,8 @@ case "${CPU_optimization}" in
       echo "获取变量失败,请勿胡乱修改compile.yml文件"
       exit 1
     fi
-    mkdir -p ${matrixtarget}/build/${matrixtarget}/start-up
-    echo "${SOURCE}$(date +%Y年%m月%d号%H时%M分%S秒)" > ${matrixtarget}/build/${matrixtarget}/start-up/start
+    mkdir -p ${FOLDER_NAME}/build/${FOLDER_NAME}/start-up
+    echo "${SOURCE}$(date +%Y年%m月%d号%H时%M分%S秒)" > ${FOLDER_NAME}/build/${FOLDER_NAME}/start-up/start
     export chonglaixx="非${CPU_optimization}-重新编译"
     export Continue_selecting="1"
   else
@@ -1065,6 +1065,14 @@ case "${CPU_optimization}" in
   fi
 ;;
 esac
+
+if [[ "${Continue_selecting}" == "1" ]]; then
+  cd ${FOLDER_NAME}
+  git add .
+  git commit -m "${chonglaixx}-${FOLDER_NAME}-${LUCI_EDITION}-${TARGET_PROFILE}"
+  git push --force "https://${REPO_TOKEN}@github.com/${GIT_REPOSITORY}" HEAD:main
+  exit 1
+fi
 }
 function Make_upgrade() {
 ## 本地编译加载机型用
