@@ -392,7 +392,7 @@ function Diy_Lede() {
 echo "正在执行：Lede专用自定义"
 cat >>"${KEEPD}" <<-EOF
 /mnt/network
-/mnt/Detectionnetwork
+#/mnt/Detectionnetwork
 /etc/config/AdGuardHome.yaml
 /www/luci-static/argon/background
 EOF
@@ -402,7 +402,7 @@ function Diy_Lienol() {
 echo "正在执行：Lienol专用自定义"
 cat >>"${KEEPD}" <<-EOF
 /mnt/network
-/mnt/Detectionnetwork
+#/mnt/Detectionnetwork
 /etc/config/AdGuardHome.yaml
 /www/luci-static/argon/background
 EOF
@@ -412,7 +412,7 @@ function Diy_Mortal() {
 echo "正在执行：Mortal专用自定义"
 cat >>"${KEEPD}" <<-EOF
 /mnt/network
-/mnt/Detectionnetwork
+#/mnt/Detectionnetwork
 /etc/config/AdGuardHome.yaml
 /www/luci-static/argon/background
 EOF
