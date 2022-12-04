@@ -265,71 +265,6 @@ elif [[ "${matrixtarget}" == "openwrt_amlogic" ]]; then
 fi
 }
 
-function Diy_Notice() {
-export Model_Name="$(cat /proc/cpuinfo |grep 'model name' |awk 'END {print}' |cut -f2 -d: |sed 's/^[ ]*//g')"
-export Cpu_Cores="$(cat /proc/cpuinfo | grep 'cpu cores' |awk 'END {print}' | cut -f2 -d: | sed 's/^[ ]*//g')"
-export RAM_total="$(free -h |awk 'NR==2' |awk '{print $(2)}' |sed 's/.$//')"
-export RAM_available="$(free -h |awk 'NR==2' |awk '{print $(7)}' |sed 's/.$//')"
-TIME y "第一次用我仓库的，请不要拉取任何插件，先SSH进入固件配置那里看过我脚本实在是没有你要的插件才再拉取"
-TIME y "拉取插件应该单独拉取某一个你需要的插件，别一下子就拉取别人一个插件包，这样容易增加编译失败概率"
-TIME r "修改IP、DNS、网关，请输入命令：openwrt"
-TIME r "在线更新命令：openwrt，工具箱输入命令：tools,安装青龙输入qinglong"
-TIME r ""
-TIME r ""
-TIME g "CPU性能：8370C > 8272CL > 8171M > E5系列"
-TIME g "您现在编译所用的服务器CPU型号为[ ${CPUNAME} ]"
-TIME g "在此服务器分配核心数为[ ${CPUCORES}} ],线程数为[ $(nproc) ]"
-TIME g "在此服务器分配内存为[ ${RAM_total} ],现剩余内存为[ ${RAM_available} ]"
-TIME r ""
-}
-
-function build_openwrt() {
-if [[ `echo "${cpu_youxuan}" |grep -Eoc 'E5'` -eq '1' ]]; then
-  export cpu_youxuan="qiyonge5"
-  export kaisbianyixx="弃用E5-编译"
-elif [[ `echo "${cpu_youxuan}" |grep -Eoc '8370'` -eq '1' ]]; then
-  export cpu_youxuan="8370"
-  export kaisbianyixx="选择8370-编译"
-elif [[ `echo "${cpu_youxuan}" |grep -Eoc '8272'` -eq '1' ]]; then
-  export cpu_youxuan="8272"
-  export kaisbianyixx="选择8272-编译"
-elif [[ `echo "${cpu_youxuan}" |grep -Eoc '8171'` -eq '1' ]]; then
-  export cpu_youxuan="8171"
-  export kaisbianyixx="选择8171-编译"
-else
-  export kaisbianyixx="编译"
-fi
-echo "${cpu_youxuan}"
-git clone -b main https://github.com/${GIT_REPOSITORY}.git ${FOLDER_NAME}
-export ARGET_PATH="${FOLDER_NAME}/.github/workflows/compile.yml"
-export TARGET1="$(grep 'target: \[' "${ARGET_PATH}" |sed 's/^[ ]*//g' |grep -v '^#' |sed 's/\[/\\&/' |sed 's/\]/\\&/')"
-export TARGET2="target: \\[${FOLDER_NAME}\\]"
-export PATHS1="$(grep -Eo "\- '.*'" "${ARGET_PATH}" |sed 's/^[ ]*//g' |grep -v "^#" |awk 'NR==1')"
-export PATHS2="- 'build/${FOLDER_NAME}/start-up/start'"
-export cpu1="$(grep "CPU_optimization=" "${ARGET_PATH}" |sed 's/^[ ]*//g' |grep -v '^#' |awk '{print $(2)}' |sed 's?=?\\&?g' |sed 's?"?\\&?g')"
-export cpu2="CPU_optimization\\=\\\"${cpu_youxuan}\\\""
-if [[ -n ${PATHS1} ]] && [[ -n ${TARGET1} ]]; then
-  sed -i "s?${PATHS1}?${PATHS2}?g" "${ARGET_PATH}"
-  sed -i "s?${TARGET1}?${TARGET2}?g" "${ARGET_PATH}"
-else
-  echo "获取变量失败,请勿胡乱修改compile.yml文件"
-  exit 1
-fi
-if [[ -n ${cpu1} ]] && [[ -n ${cpu2} ]]; then
-  sed -i "s?${cpu1}?${cpu2}?g" "${ARGET_PATH}"
-else
-  echo "获取变量失败,请勿胡乱修改定时启动编译时的数值设置"
-  exit 1
-fi
-cp -Rf ${HOME_PATH}/build_logo/config.txt ${FOLDER_NAME}/build/${FOLDER_NAME}/${CONFIG_FILE}
-mkdir -p ${FOLDER_NAME}/build/${FOLDER_NAME}/start-up
-echo "${SOURCE}$(date +%Y年%m月%d号%H时%M分%S秒)" > ${FOLDER_NAME}/build/${FOLDER_NAME}/start-up/start
-cd ${FOLDER_NAME}
-git add .
-git commit -m "${kaisbianyixx}-${FOLDER_NAME}-${LUCI_EDITION}-${TARGET_PROFILE}固件"
-git push --force "https://${REPO_TOKEN}@github.com/${GIT_REPOSITORY}" HEAD:main
-}
-
 function Diy_clean() {
 echo "正在执行：更新插件源,让源码更多插件存在"
 # 拉库和做标记
@@ -424,6 +359,50 @@ openwrt-21.02)
 
 ;;
 esac
+
+# 给feeds.conf.default增加插件源
+# 这里增加了源,要对应的删除/etc/opkg/distfeeds.conf插件源
+echo "
+src-git helloworld https://github.com/fw876/helloworld
+src-git passwall1 https://github.com/xiaorouji/openwrt-passwall;luci
+src-git passwall2 https://github.com/xiaorouji/openwrt-passwall2;main
+src-git shidahuilang https://github.com/shidahuilang/openwrt-package.git;${REPO_BRANCH}
+#src-git nas https://github.com/linkease/nas-packages.git;master
+#src-git nas_luci https://github.com/linkease/nas-packages-luci.git;main
+" >> ${HOME_PATH}/feeds.conf.default
+sed -i '/^#/d' "${HOME_PATH}/feeds.conf.default"
+sed -i '/^$/d' "${HOME_PATH}/feeds.conf.default"
+}
+
+function sbin_openwrt() {
+echo "正在执行：给固件增加[openwrt和tools和qinglong]命令"
+[[ -f $BUILD_PATH/openwrt.sh ]] && cp -Rf $BUILD_PATH/openwrt.sh $BASE_PATH/sbin/openwrt
+[[ -f $BUILD_PATH/tools.sh ]] && cp -Rf $BUILD_PATH/tools.sh $BASE_PATH/sbin/tools
+[[ -f $BUILD_PATH/qinglong.sh ]] && cp -Rf $BUILD_PATH/qinglong.sh $BASE_PATH/sbin/qinglong
+chmod 777 $BASE_PATH/sbin/tools
+chmod 777 $BASE_PATH/sbin/qinglong
+chmod 777 $BASE_PATH/sbin/openwrt
+}
+
+function Diy_Lede() {
+echo "正在执行：Lede专用自定义"
+cat >>"${KEEPD}" <<-EOF
+/mnt/network
+/mnt/Detectionnetwork
+/etc/config/AdGuardHome.yaml
+/www/luci-static/argon/background
+EOF
+}
+
+function Diy_Lienol() {
+echo "正在执行：Lienol专用自定义"
+cat >>"${KEEPD}" <<-EOF
+/mnt/network
+/mnt/Detectionnetwork
+/etc/config/AdGuardHome.yaml
+/www/luci-static/argon/background
+EOF
+}
 
 function Diy_Mortal() {
 echo "正在执行：Mortal专用自定义"
@@ -537,62 +516,38 @@ if [[ "${matrixtarget}" == "openwrt_amlogic" ]]; then
   sed -i 's/TARGET_rockchip/TARGET_rockchip\|\|TARGET_armvirt/g' ${HOME_PATH}/package/lean/autocore/Makefile
 fi
 }
-# 给feeds.conf.default增加插件源
-# 这里增加了源,要对应的删除/etc/opkg/distfeeds.conf插件源
-echo "
-src-git helloworld https://github.com/fw876/helloworld
-src-git passwall1 https://github.com/xiaorouji/openwrt-passwall;luci
-src-git passwall2 https://github.com/xiaorouji/openwrt-passwall2;main
-src-git shidahuilang https://github.com/shidahuilang/openwrt-package.git;${REPO_BRANCH}
-#src-git nas https://github.com/linkease/nas-packages.git;master
-#src-git nas_luci https://github.com/linkease/nas-packages-luci.git;main
-" >> ${HOME_PATH}/feeds.conf.default
-sed -i '/^#/d' "${HOME_PATH}/feeds.conf.default"
-sed -i '/^$/d' "${HOME_PATH}/feeds.conf.default"
-}
 
-function Diy_files() {
-echo "正在执行：files大法，设置固件无烦恼"
-if [[ -d "${GITHUB_WORKSPACE}/OP_DIY" ]]; then
-  cp -Rf $HOME_PATH/build/common/${SOURCE}/* $BUILD_PATH
-  cp -Rf ${GITHUB_WORKSPACE}/OP_DIY/${matrixtarget}/* $BUILD_PATH
-elif [[ ${matrixtarget} == "r2s" ]]; then
-  cp -Rf $HOME_PATH/build/common/r2s/* $BUILD_PATH
-elif [[ ${matrixtarget} == "r4s" ]]; then
-  cp -Rf $HOME_PATH/build/common/r4s/* $BUILD_PATH
-elif [[ ${matrixtarget} == "r2c" ]]; then
-  cp -Rf $HOME_PATH/build/common/r2c/* $BUILD_PATH
-elif [[ ${matrixtarget} == "r5s" ]]; then
-  cp -Rf $HOME_PATH/build/common/r5s/* $BUILD_PATH  
-  else
-  cp -Rf $HOME_PATH/build/common/${SOURCE}/* $BUILD_PATH
+function Package_amlogic() {
+echo "正在执行：打包N1和景晨系列固件"
+# 下载上游仓库
+cd ${GITHUB_WORKSPACE}
+git clone --depth 1 https://github.com/ophub/amlogic-s9xxx-openwrt.git ${GITHUB_WORKSPACE}/amlogic
+[ ! -d ${GITHUB_WORKSPACE}/amlogic/openwrt-armvirt ] && mkdir -p ${GITHUB_WORKSPACE}/amlogic/openwrt-armvirt
+if [[ `ls -1 "${FIRMWARE}" |grep -c ".*default-rootfs.tar.gz"` == '1' ]]; then
+  cp -Rf ${FIRMWARE}/*default-rootfs.tar.gz ${GITHUB_WORKSPACE}/amlogic/openwrt-armvirt/openwrt-armvirt-64-default-rootfs.tar.gz && sync
+else
+  armvirtargz="$(ls -1 "${FIRMWARE}" |grep ".*tar.gz" |awk 'END {print}')"
+  cp -Rf ${FIRMWARE}/${armvirtargz} ${GITHUB_WORKSPACE}/amlogic/openwrt-armvirt/openwrt-armvirt-64-default-rootfs.tar.gz && sync
 fi
-
-if [ -n "$(ls -A "$BUILD_PATH/diy" 2>/dev/null)" ]; then
-  cp -Rf $BUILD_PATH/diy/* $HOME_PATH
+# 自定义机型,内核,分区
+if [[ -f "${AMLOGIC_SH_PATH}" ]]; then
+  export amlogic_model="$(grep "amlogic_model=" "${AMLOGIC_SH_PATH}" 2>&1 | cut -d "=" -f2 |sed 's/\"//g' |sed "s/'//g")"
+  [[ -z "${amlogic_model}" ]] && export amlogic_model="all"
+  export amlogic_kernel="$(grep "amlogic_kernel=" "${AMLOGIC_SH_PATH}" 2>&1 | cut -d "=" -f2 |sed 's/\"//g' |sed "s/'//g")"
+  [[ -z "${amlogic_kernel}" ]] && export amlogic_kernel="5.15.25 -a true"
+  export rootfs_size="$(grep "rootfs_size=" "${AMLOGIC_SH_PATH}" 2>&1 | cut -d "=" -f2 |sed 's/\"//g' |sed "s/'//g")"
+  [[ -z "${rootfs_size}" ]] && export rootfs_size="960"
+else
+  export amlogic_model="all"
+  export amlogic_kernel="5.15.25 -a true"
+  export rootfs_size="960"
 fi
-if [ -n "$(ls -A "$BUILD_PATH/files" 2>/dev/null)" ]; then
-  cp -Rf $BUILD_PATH/files $HOME_PATH
-fi
-chmod -R 775 $HOME_PATH/files
-rm -rf $HOME_PATH/files/{LICENSE,README,REA*.md}
-}
-function Diy_webweb() {
-curl -fsSL https://raw.githubusercontent.com/shidahuilang/common/main/Custom/FinishIng.sh > ${BASE_PATH}/etc/FinishIng.sh
-if [[ $? -ne 0 ]]; then
-  wget -P ${BASE_PATH}/etc https://raw.githubusercontent.com/shidahuilang/common/main/Custom/FinishIng.sh -O ${BASE_PATH}/etc/FinishIng.sh
-fi
-chmod 775 ${BASE_PATH}/etc/FinishIng.sh
-curl -fsSL https://raw.githubusercontent.com/shidahuilang/common/main/Custom/FinishIng > ${BASE_PATH}/etc/init.d/FinishIng
-if [[ $? -ne 0 ]]; then
-  wget -P ${BASE_PATH}/etc/init.d https://raw.githubusercontent.com/shidahuilang/common/main/Custom/FinishIng -O ${BASE_PATH}/etc/init.d/FinishIng
-fi
-chmod 775 ${BASE_PATH}/etc/init.d/FinishIng
-curl -fsSL https://raw.githubusercontent.com/shidahuilang/common/main/Custom/webweb.sh > ${BASE_PATH}/etc/webweb.sh
-if [[ $? -ne 0 ]]; then
-  wget -P ${BASE_PATH}/etc https://raw.githubusercontent.com/shidahuilang/common/main/Custom/webweb.sh -O ${BASE_PATH}/etc/webweb.sh
-fi
-chmod 775 ${BASE_PATH}/etc/webweb.sh
+# 开始打包
+cd ${GITHUB_WORKSPACE}/amlogic
+sudo chmod +x make
+sudo ./make -d -b ${amlogic_model} -k ${amlogic_kernel} -s ${rootfs_size}
+sudo mv -f ${GITHUB_WORKSPACE}/amlogic/out/* ${FIRMWARE}/ && sync
+sudo rm -rf ${GITHUB_WORKSPACE}/amlogic
 }
 
 function Diy_indexhtm() {
@@ -803,6 +758,82 @@ if [[ `grep -c "CONFIG_PACKAGE_luci-app-unblockneteasemusic=y" ${HOME_PATH}/.con
   fi
 fi
 
+if [[ `grep -c "CONFIG_PACKAGE_ntfs-3g=y" ${HOME_PATH}/.config` -eq '1' ]]; then
+  mkdir -p ${HOME_PATH}/files/etc/hotplug.d/block && curl -fsSL  https://raw.githubusercontent.com/shidahuilang/openwrt-package/usb/block/10-mount > ${HOME_PATH}/files/etc/hotplug.d/block/10-mount
+  if [[ $? -ne 0 ]]; then
+    echo "拉取文件错误,请检测网络"
+    exit 1
+  fi
+fi
+
+if [[ `grep -c "CONFIG_TARGET_x86=y" ${HOME_PATH}/.config` -eq '1' ]] || [[ `grep -c "CONFIG_TARGET_rockchip=y" ${HOME_PATH}/.config` -eq '1' ]] || [[ `grep -c "CONFIG_TARGET_bcm27xx=y" ${HOME_PATH}/.config` -eq '1' ]]; then
+  sed -i '/IMAGES_GZIP/d' "${HOME_PATH}/.config"
+  echo -e "\nCONFIG_TARGET_IMAGES_GZIP=y" >> "${HOME_PATH}/.config"
+  sed -i '/CONFIG_PACKAGE_openssh-sftp-server/d' "${HOME_PATH}/.config"
+  echo -e "\nCONFIG_PACKAGE_openssh-sftp-server=y" >> "${HOME_PATH}/.config"
+  sed -i '/CONFIG_GRUB_IMAGES/d' "${HOME_PATH}/.config"
+  echo -e "\nCONFIG_GRUB_IMAGES=y" >> "${HOME_PATH}/.config"
+fi
+if [[ `grep -c "CONFIG_TARGET_mxs=y" ${HOME_PATH}/.config` -eq '1' ]] || [[ `grep -c "CONFIG_TARGET_sunxi=y" ${HOME_PATH}/.config` -eq '1' ]] || [[ `grep -c "CONFIG_TARGET_zynq=y" ${HOME_PATH}/.config` -eq '1' ]]; then
+  sed -i '/IMAGES_GZIP/d' "${HOME_PATH}/.config"
+  echo -e "\nCONFIG_TARGET_IMAGES_GZIP=y" >> "${HOME_PATH}/.config"
+  sed -i '/CONFIG_PACKAGE_openssh-sftp-server/d' "${HOME_PATH}/.config"
+  echo -e "\nCONFIG_PACKAGE_openssh-sftp-server=y" >> "${HOME_PATH}/.config"
+  sed -i '/CONFIG_GRUB_IMAGES/d' "${HOME_PATH}/.config"
+  echo -e "\nCONFIG_GRUB_IMAGES=y" >> "${HOME_PATH}/.config"
+fi
+
+if [[ `grep -c "CONFIG_TARGET_armvirt=y" ${HOME_PATH}/.config` -eq '1' ]]; then
+  sed -i 's/CONFIG_PACKAGE_luci-app-autoupdate=y/# CONFIG_PACKAGE_luci-app-autoupdate is not set/g' ${HOME_PATH}/.config
+  export REGULAR_UPDATE="false"
+  echo "REGULAR_UPDATE=false" >> ${GITHUB_ENV}
+  sed -i '/CONFIG_PACKAGE_openssh-sftp-server/d' "${HOME_PATH}/.config"
+  echo -e "\nCONFIG_PACKAGE_openssh-sftp-server=y" >> "${HOME_PATH}/.config"
+fi
+
+if [[ `grep -c "CONFIG_PACKAGE_odhcp6c=y" ${HOME_PATH}/.config` -eq '1' ]]; then
+  sed -i '/CONFIG_PACKAGE_odhcpd=y/d' "${HOME_PATH}/.config"
+  sed -i '/CONFIG_PACKAGE_odhcpd_full_ext_cer_id=0/d' "${HOME_PATH}/.config"
+fi
+
+if [[ ! "${REGULAR_UPDATE}" == "true" ]] || [[ -z "${REPO_TOKEN}" ]]; then
+  sed -i 's/CONFIG_PACKAGE_luci-app-autoupdate=y/# CONFIG_PACKAGE_luci-app-autoupdate is not set/g' ${HOME_PATH}/.config
+fi
+
+if [[ `grep -c "CONFIG_TARGET_ROOTFS_EXT4FS=y" ${HOME_PATH}/.config` -eq '1' ]]; then
+  PARTSIZE="$(egrep -o "CONFIG_TARGET_ROOTFS_PARTSIZE=[0-9]+" ${HOME_PATH}/.config |cut -f2 -d=)"
+  if [[ "${PARTSIZE}" -lt "950" ]];then
+    sed -i '/CONFIG_TARGET_ROOTFS_PARTSIZE/d' ${HOME_PATH}/.config
+    echo -e "\nCONFIG_TARGET_ROOTFS_PARTSIZE=950" >> ${HOME_PATH}/.config
+    echo "TIME g \" \"" > ${HOME_PATH}/EXT4
+    echo "TIME r \"EXT4提示：请注意，您选择了ext4安装的固件格式,而检测到您的分配的固件系统分区过小\"" >> ${HOME_PATH}/EXT4
+    echo "TIME y \"为避免编译出错,建议修改成950或者以上比较好,已自动帮您修改成950M\"" >> ${HOME_PATH}/EXT4
+    echo "TIME g \" \"" >> ${HOME_PATH}/EXT4
+  fi
+fi
+
+
+if [ -n "$(ls -A "${HOME_PATH}/Chajianlibiao" 2>/dev/null)" ]; then
+  echo "TIME y \"  插件冲突会导致编译失败，以上操作如非您所需，请关闭此次编译，重新开始编译，避开冲突重新选择插件\"" >>CHONGTU
+  echo "TIME z \"\"" >>CHONGTU
+else
+  rm -rf CHONGTU
+fi
+make defconfig > /dev/null 2>&1
+echo
+echo
+if [ -n "$(ls -A "${HOME_PATH}/EXT4" 2>/dev/null)" ]; then
+  chmod -R +x ${HOME_PATH}/EXT4
+  source ${HOME_PATH}/EXT4
+  echo
+fi
+if [ -n "$(ls -A "${HOME_PATH}/Chajianlibiao" 2>/dev/null)" ]; then
+  chmod -R +x ${HOME_PATH}/CHONGTU
+  source ${HOME_PATH}/CHONGTU
+  echo
+fi
+}
+
 function Diy_adguardhome() {
 if [[ `grep -c "CONFIG_ARCH=\"x86_64\"" ${HOME_PATH}/.config` -eq '1' ]]; then
   Arch="linux_amd64"
@@ -895,6 +926,53 @@ if [[ `grep -c "CONFIG_PACKAGE_luci-app-adguardhome=y" ${HOME_PATH}/.config` -eq
     rm -rf ${HOME_PATH}/{AdGuardHome_${Arch}.tar.gz,AdGuardHome}
 fi
 }
+
+
+function Diy_files() {
+echo "正在执行：files大法，设置固件无烦恼"
+if [[ -d "${GITHUB_WORKSPACE}/OP_DIY" ]]; then
+  cp -Rf $HOME_PATH/build/common/${SOURCE}/* $BUILD_PATH
+  cp -Rf ${GITHUB_WORKSPACE}/OP_DIY/${matrixtarget}/* $BUILD_PATH
+elif [[ ${matrixtarget} == "r2s" ]]; then
+  cp -Rf $HOME_PATH/build/common/r2s/* $BUILD_PATH
+elif [[ ${matrixtarget} == "r4s" ]]; then
+  cp -Rf $HOME_PATH/build/common/r4s/* $BUILD_PATH
+elif [[ ${matrixtarget} == "r2c" ]]; then
+  cp -Rf $HOME_PATH/build/common/r2c/* $BUILD_PATH
+elif [[ ${matrixtarget} == "r5s" ]]; then
+  cp -Rf $HOME_PATH/build/common/r5s/* $BUILD_PATH  
+  else
+  cp -Rf $HOME_PATH/build/common/${SOURCE}/* $BUILD_PATH
+fi
+
+if [ -n "$(ls -A "$BUILD_PATH/diy" 2>/dev/null)" ]; then
+  cp -Rf $BUILD_PATH/diy/* $HOME_PATH
+fi
+if [ -n "$(ls -A "$BUILD_PATH/files" 2>/dev/null)" ]; then
+  cp -Rf $BUILD_PATH/files $HOME_PATH
+fi
+chmod -R 775 $HOME_PATH/files
+rm -rf $HOME_PATH/files/{LICENSE,README,REA*.md}
+}
+
+function Diy_webweb() {
+curl -fsSL https://raw.githubusercontent.com/shidahuilang/common/main/Custom/FinishIng.sh > ${BASE_PATH}/etc/FinishIng.sh
+if [[ $? -ne 0 ]]; then
+  wget -P ${BASE_PATH}/etc https://raw.githubusercontent.com/shidahuilang/common/main/Custom/FinishIng.sh -O ${BASE_PATH}/etc/FinishIng.sh
+fi
+chmod 775 ${BASE_PATH}/etc/FinishIng.sh
+curl -fsSL https://raw.githubusercontent.com/shidahuilang/common/main/Custom/FinishIng > ${BASE_PATH}/etc/init.d/FinishIng
+if [[ $? -ne 0 ]]; then
+  wget -P ${BASE_PATH}/etc/init.d https://raw.githubusercontent.com/shidahuilang/common/main/Custom/FinishIng -O ${BASE_PATH}/etc/init.d/FinishIng
+fi
+chmod 775 ${BASE_PATH}/etc/init.d/FinishIng
+curl -fsSL https://raw.githubusercontent.com/shidahuilang/common/main/Custom/webweb.sh > ${BASE_PATH}/etc/webweb.sh
+if [[ $? -ne 0 ]]; then
+  wget -P ${BASE_PATH}/etc https://raw.githubusercontent.com/shidahuilang/common/main/Custom/webweb.sh -O ${BASE_PATH}/etc/webweb.sh
+fi
+chmod 775 ${BASE_PATH}/etc/webweb.sh
+}
+
 function Diy_zzz() {
 echo "正在执行：在zzz-default-settings文件加条执行命令"
 sed -i '/webweb.sh/d' "${ZZZ_PATH}"
@@ -904,84 +982,6 @@ sed -i '/FinishIng/d' "${ZZZ_PATH}"
 sed -i "/exit 0/i\/etc/init.d/FinishIng enable" "${ZZZ_PATH}"
 }
 
-if [[ `grep -c "CONFIG_PACKAGE_ntfs-3g=y" ${HOME_PATH}/.config` -eq '1' ]]; then
-  mkdir -p ${HOME_PATH}/files/etc/hotplug.d/block && curl -fsSL  https://raw.githubusercontent.com/shidahuilang/openwrt-package/usb/block/10-mount > ${HOME_PATH}/files/etc/hotplug.d/block/10-mount
-  if [[ $? -ne 0 ]]; then
-    echo "拉取文件错误,请检测网络"
-    exit 1
-  fi
-fi
-
-if [[ `grep -c "CONFIG_TARGET_x86=y" ${HOME_PATH}/.config` -eq '1' ]] || [[ `grep -c "CONFIG_TARGET_rockchip=y" ${HOME_PATH}/.config` -eq '1' ]] || [[ `grep -c "CONFIG_TARGET_bcm27xx=y" ${HOME_PATH}/.config` -eq '1' ]]; then
-  sed -i '/IMAGES_GZIP/d' "${HOME_PATH}/.config"
-  echo -e "\nCONFIG_TARGET_IMAGES_GZIP=y" >> "${HOME_PATH}/.config"
-  sed -i '/CONFIG_PACKAGE_openssh-sftp-server/d' "${HOME_PATH}/.config"
-  echo -e "\nCONFIG_PACKAGE_openssh-sftp-server=y" >> "${HOME_PATH}/.config"
-  sed -i '/CONFIG_GRUB_IMAGES/d' "${HOME_PATH}/.config"
-  echo -e "\nCONFIG_GRUB_IMAGES=y" >> "${HOME_PATH}/.config"
-fi
-if [[ `grep -c "CONFIG_TARGET_mxs=y" ${HOME_PATH}/.config` -eq '1' ]] || [[ `grep -c "CONFIG_TARGET_sunxi=y" ${HOME_PATH}/.config` -eq '1' ]] || [[ `grep -c "CONFIG_TARGET_zynq=y" ${HOME_PATH}/.config` -eq '1' ]]; then
-  sed -i '/IMAGES_GZIP/d' "${HOME_PATH}/.config"
-  echo -e "\nCONFIG_TARGET_IMAGES_GZIP=y" >> "${HOME_PATH}/.config"
-  sed -i '/CONFIG_PACKAGE_openssh-sftp-server/d' "${HOME_PATH}/.config"
-  echo -e "\nCONFIG_PACKAGE_openssh-sftp-server=y" >> "${HOME_PATH}/.config"
-  sed -i '/CONFIG_GRUB_IMAGES/d' "${HOME_PATH}/.config"
-  echo -e "\nCONFIG_GRUB_IMAGES=y" >> "${HOME_PATH}/.config"
-fi
-
-if [[ `grep -c "CONFIG_TARGET_armvirt=y" ${HOME_PATH}/.config` -eq '1' ]]; then
-  sed -i 's/CONFIG_PACKAGE_luci-app-autoupdate=y/# CONFIG_PACKAGE_luci-app-autoupdate is not set/g' ${HOME_PATH}/.config
-  export REGULAR_UPDATE="false"
-  echo "REGULAR_UPDATE=false" >> ${GITHUB_ENV}
-  sed -i '/CONFIG_PACKAGE_openssh-sftp-server/d' "${HOME_PATH}/.config"
-  echo -e "\nCONFIG_PACKAGE_openssh-sftp-server=y" >> "${HOME_PATH}/.config"
-fi
-
-if [[ `grep -c "CONFIG_PACKAGE_odhcp6c=y" ${HOME_PATH}/.config` -eq '1' ]]; then
-  sed -i '/CONFIG_PACKAGE_odhcpd=y/d' "${HOME_PATH}/.config"
-  sed -i '/CONFIG_PACKAGE_odhcpd_full_ext_cer_id=0/d' "${HOME_PATH}/.config"
-fi
-
-if [[ ! "${REGULAR_UPDATE}" == "true" ]] || [[ -z "${REPO_TOKEN}" ]]; then
-  sed -i 's/CONFIG_PACKAGE_luci-app-autoupdate=y/# CONFIG_PACKAGE_luci-app-autoupdate is not set/g' ${HOME_PATH}/.config
-fi
-
-if [[ `grep -c "CONFIG_TARGET_ROOTFS_EXT4FS=y" ${HOME_PATH}/.config` -eq '1' ]]; then
-  PARTSIZE="$(egrep -o "CONFIG_TARGET_ROOTFS_PARTSIZE=[0-9]+" ${HOME_PATH}/.config |cut -f2 -d=)"
-  if [[ "${PARTSIZE}" -lt "950" ]];then
-    sed -i '/CONFIG_TARGET_ROOTFS_PARTSIZE/d' ${HOME_PATH}/.config
-    echo -e "\nCONFIG_TARGET_ROOTFS_PARTSIZE=950" >> ${HOME_PATH}/.config
-    echo "TIME g \" \"" > ${HOME_PATH}/EXT4
-    echo "TIME r \"EXT4提示：请注意，您选择了ext4安装的固件格式,而检测到您的分配的固件系统分区过小\"" >> ${HOME_PATH}/EXT4
-    echo "TIME y \"为避免编译出错,建议修改成950或者以上比较好,已自动帮您修改成950M\"" >> ${HOME_PATH}/EXT4
-    echo "TIME g \" \"" >> ${HOME_PATH}/EXT4
-  fi
-fi
-cd ${HOME_PATH}
-[[ ! -d "${HOME_PATH}/build_logo" ]] && mkdir -p ${HOME_PATH}/build_logo
-./scripts/diffconfig.sh > ${HOME_PATH}/build_logo/config.txt
-}
-
-if [ -n "$(ls -A "${HOME_PATH}/Chajianlibiao" 2>/dev/null)" ]; then
-  echo "TIME y \"  插件冲突会导致编译失败，以上操作如非您所需，请关闭此次编译，重新开始编译，避开冲突重新选择插件\"" >>CHONGTU
-  echo "TIME z \"\"" >>CHONGTU
-else
-  rm -rf CHONGTU
-fi
-make defconfig > /dev/null 2>&1
-echo
-echo
-if [ -n "$(ls -A "${HOME_PATH}/EXT4" 2>/dev/null)" ]; then
-  chmod -R +x ${HOME_PATH}/EXT4
-  source ${HOME_PATH}/EXT4
-  echo
-fi
-if [ -n "$(ls -A "${HOME_PATH}/Chajianlibiao" 2>/dev/null)" ]; then
-  chmod -R +x ${HOME_PATH}/CHONGTU
-  source ${HOME_PATH}/CHONGTU
-  echo
-fi
-}
 function Make_defconfig() {
 echo "正在执行：识别源码编译为何机型"
 export TAR_BOARD1="$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' ${HOME_PATH}/.config)"
@@ -1001,6 +1001,79 @@ fi
 echo "FIRMWARE=$HOME_PATH/bin/targets/$TAR_BOARD1/$TAR_SUBTARGET1" >> ${GITHUB_ENV}
 }
 
+function CPU_Priority() {
+export TARGET_BOARD="$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' build/${FOLDER_NAME}/${CONFIG_FILE})"
+export TARGET_SUBTARGET="$(awk -F '[="]+' '/TARGET_SUBTARGET/{print $2}' build/${FOLDER_NAME}/${CONFIG_FILE})"
+if [[ `grep -Eoc 'CONFIG_TARGET_x86_64=y' build/${FOLDER_NAME}/${CONFIG_FILE}` -eq '1' ]]; then
+  export TARGET_PROFILE="x86-64"
+elif [[ `grep -Eoc 'CONFIG_TARGET_x86=y' build/${FOLDER_NAME}/${CONFIG_FILE}` -eq '1' ]]; then
+  export TARGET_PROFILE="x86-32"
+elif [[ `grep -Eoc 'CONFIG_TARGET_armvirt_64_Default=y' build/${FOLDER_NAME}/${CONFIG_FILE}` -eq '1' ]]; then
+  export TARGET_PROFILE="Armvirt_64"
+else
+  export TARGET_PROFILE="$(grep -Eo "CONFIG_TARGET.*DEVICE.*=y" build/${FOLDER_NAME}/${CONFIG_FILE} | sed -r 's/.*DEVICE_(.*)=y/\1/')"
+fi
+
+cpu_model=`cat /proc/cpuinfo  |grep 'model name' |gawk -F : '{print $2}' | uniq -c  | sed 's/^ \+[0-9]\+ //g'`
+echo "${cpu_model}"
+
+case "${CPU_optimization}" in
+'qiyonge5')
+  if [[ `echo "${cpu_model}" |grep -c "E5"` -ge '1' ]]; then
+    git clone -b main https://github.com/${GIT_REPOSITORY}.git ${FOLDER_NAME}
+    ARGET_PATH="${FOLDER_NAME}/.github/workflows/compile.yml"
+    TARGET1="$(grep 'target: \[' "${ARGET_PATH}" |sed 's/^[ ]*//g' |grep -v '^#' |sed 's/\[/\\&/' |sed 's/\]/\\&/')"
+    TARGET2="target: \\[${FOLDER_NAME}\\]"
+    PATHS1="$(egrep "\- '.*'" "${ARGET_PATH}" |sed 's/^[ ]*//g' |grep -v "^#" |awk 'NR==1')"
+    PATHS2="- 'build/${FOLDER_NAME}/start-up/start'"
+    if [[ -n ${PATHS1} ]] && [[ -n ${TARGET1} ]]; then
+      sed -i "s?${PATHS1}?${PATHS2}?g" "${ARGET_PATH}"
+      sed -i "s?${TARGET1}?${TARGET2}?g" "${ARGET_PATH}"
+    else
+      echo "获取变量失败,请勿胡乱修改compile.yml文件"
+      exit 1
+    fi
+    mkdir -p ${FOLDER_NAME}/build/${FOLDER_NAME}/start-up
+    echo "${SOURCE}$(date +%Y年%m月%d号%H时%M分%S秒)" > ${FOLDER_NAME}/build/${FOLDER_NAME}/start-up/start
+    export chonglaixx="E5-重新编译"
+    export Continue_selecting="1"
+  else
+    echo "非E5系列CPU"
+  fi
+;;
+*)
+  if [[ `echo "${cpu_model}" |grep -c "${CPU_optimization}"` -eq '0' ]]; then
+    git clone -b main https://github.com/${GIT_REPOSITORY}.git ${FOLDER_NAME}
+    ARGET_PATH="${FOLDER_NAME}/.github/workflows/compile.yml"
+    TARGET1="$(grep 'target: \[' "${ARGET_PATH}" |sed 's/^[ ]*//g' |grep -v '^#' |sed 's/\[/\\&/' |sed 's/\]/\\&/')"
+    TARGET2="target: \\[${FOLDER_NAME}\\]"
+    PATHS1="$(egrep "\- '.*'" "${ARGET_PATH}" |sed 's/^[ ]*//g' |grep -v "^#" |awk 'NR==1')"
+    PATHS2="- 'build/${FOLDER_NAME}/start-up/start'"
+    if [[ -n ${PATHS1} ]] && [[ -n ${TARGET1} ]]; then
+      sed -i "s?${PATHS1}?${PATHS2}?g" "${ARGET_PATH}"
+      sed -i "s?${TARGET1}?${TARGET2}?g" "${ARGET_PATH}"
+    else
+      echo "获取变量失败,请勿胡乱修改compile.yml文件"
+      exit 1
+    fi
+    mkdir -p ${FOLDER_NAME}/build/${FOLDER_NAME}/start-up
+    echo "${SOURCE}$(date +%Y年%m月%d号%H时%M分%S秒)" > ${FOLDER_NAME}/build/${FOLDER_NAME}/start-up/start
+    export chonglaixx="非${CPU_optimization}-重新编译"
+    export Continue_selecting="1"
+  else
+    echo "正是您选择的${CPU_optimization}CPU"
+  fi
+;;
+esac
+
+if [[ "${Continue_selecting}" == "1" ]]; then
+  cd ${FOLDER_NAME}
+  git add .
+  git commit -m "${chonglaixx}-${FOLDER_NAME}-${LUCI_EDITION}-${TARGET_PROFILE}"
+  git push --force "https://${REPO_TOKEN}@github.com/${GIT_REPOSITORY}" HEAD:main
+  exit 1
+fi
+}
 function Make_upgrade() {
 ## 本地编译加载机型用
 export TARGET_BOARD1="$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' ${HOME_PATH}/.config)"
@@ -1098,38 +1171,24 @@ cd ${HOME_PATH}
 make defconfig > /dev/null 2>&1
 }
 
-function Package_amlogic() {
-echo "正在执行：打包N1和景晨系列固件"
-# 下载上游仓库
-cd ${GITHUB_WORKSPACE}
-git clone --depth 1 https://github.com/ophub/amlogic-s9xxx-openwrt.git ${GITHUB_WORKSPACE}/amlogic
-[ ! -d ${GITHUB_WORKSPACE}/amlogic/openwrt-armvirt ] && mkdir -p ${GITHUB_WORKSPACE}/amlogic/openwrt-armvirt
-if [[ `ls -1 "${FIRMWARE}" |grep -c ".*default-rootfs.tar.gz"` == '1' ]]; then
-  cp -Rf ${FIRMWARE}/*default-rootfs.tar.gz ${GITHUB_WORKSPACE}/amlogic/openwrt-armvirt/openwrt-armvirt-64-default-rootfs.tar.gz && sync
-else
-  armvirtargz="$(ls -1 "${FIRMWARE}" |grep ".*tar.gz" |awk 'END {print}')"
-  cp -Rf ${FIRMWARE}/${armvirtargz} ${GITHUB_WORKSPACE}/amlogic/openwrt-armvirt/openwrt-armvirt-64-default-rootfs.tar.gz && sync
-fi
-# 自定义机型,内核,分区
-if [[ -f "${AMLOGIC_SH_PATH}" ]]; then
-  export amlogic_model="$(grep "amlogic_model=" "${AMLOGIC_SH_PATH}" 2>&1 | cut -d "=" -f2 |sed 's/\"//g' |sed "s/'//g")"
-  [[ -z "${amlogic_model}" ]] && export amlogic_model="all"
-  export amlogic_kernel="$(grep "amlogic_kernel=" "${AMLOGIC_SH_PATH}" 2>&1 | cut -d "=" -f2 |sed 's/\"//g' |sed "s/'//g")"
-  [[ -z "${amlogic_kernel}" ]] && export amlogic_kernel="5.15.25 -a true"
-  export rootfs_size="$(grep "rootfs_size=" "${AMLOGIC_SH_PATH}" 2>&1 | cut -d "=" -f2 |sed 's/\"//g' |sed "s/'//g")"
-  [[ -z "${rootfs_size}" ]] && export rootfs_size="960"
-else
-  export amlogic_model="all"
-  export amlogic_kernel="5.15.25 -a true"
-  export rootfs_size="960"
-fi
-# 开始打包
-cd ${GITHUB_WORKSPACE}/amlogic
-sudo chmod +x make
-sudo ./make -d -b ${amlogic_model} -k ${amlogic_kernel} -s ${rootfs_size}
-sudo mv -f ${GITHUB_WORKSPACE}/amlogic/out/* ${FIRMWARE}/ && sync
-sudo rm -rf ${GITHUB_WORKSPACE}/amlogic
+function Diy_Notice() {
+export Model_Name="$(cat /proc/cpuinfo |grep 'model name' |awk 'END {print}' |cut -f2 -d: |sed 's/^[ ]*//g')"
+export Cpu_Cores="$(cat /proc/cpuinfo | grep 'cpu cores' |awk 'END {print}' | cut -f2 -d: | sed 's/^[ ]*//g')"
+export RAM_total="$(free -h |awk 'NR==2' |awk '{print $(2)}' |sed 's/.$//')"
+export RAM_available="$(free -h |awk 'NR==2' |awk '{print $(7)}' |sed 's/.$//')"
+TIME y "第一次用我仓库的，请不要拉取任何插件，先SSH进入固件配置那里看过我脚本实在是没有你要的插件才再拉取"
+TIME y "拉取插件应该单独拉取某一个你需要的插件，别一下子就拉取别人一个插件包，这样容易增加编译失败概率"
+TIME r "修改IP、DNS、网关，请输入命令：openwrt"
+TIME r "在线更新命令：openwrt，工具箱输入命令：tools,安装青龙输入qinglong"
+TIME r ""
+TIME r ""
+TIME g "CPU性能：8370C > 8272CL > 8171M > E5系列"
+TIME g "您现在编译所用的服务器CPU型号为[ ${CPUNAME} ]"
+TIME g "在此服务器分配核心数为[ ${CPUCORES}} ],线程数为[ $(nproc) ]"
+TIME g "在此服务器分配内存为[ ${RAM_total} ],现剩余内存为[ ${RAM_available} ]"
+TIME r ""
 }
+
 
 function Diy_xinxi() {
 Plug_in="$(grep -i 'CONFIG_PACKAGE_luci-app' ${HOME_PATH}/.config && grep -i 'CONFIG_PACKAGE_luci-theme' ${HOME_PATH}/.config)"
