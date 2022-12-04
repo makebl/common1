@@ -984,10 +984,7 @@ sed -i "/exit 0/i\source /etc/webweb.sh" "${ZZZ_PATH}"
 sed -i '/FinishIng/d' "${ZZZ_PATH}"
 sed -i "/exit 0/i\/etc/init.d/FinishIng enable" "${ZZZ_PATH}"
 }
-cd ${HOME_PATH}
-[[ ! -d "${HOME_PATH}/build_logo" ]] && mkdir -p ${HOME_PATH}/build_logo
-./scripts/diffconfig.sh > ${HOME_PATH}/build_logo/config.txt
-}
+
 function Make_defconfig() {
 echo "正在执行：识别源码编译为何机型"
 export TAR_BOARD1="$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' ${HOME_PATH}/.config)"
@@ -1118,52 +1115,6 @@ TIME g "在此服务器分配内存为[ ${RAM_total} ],现剩余内存为[ ${RAM
 TIME r ""
 }
 
-function build_openwrt() {
-if [[ `echo "${cpu_youxuan}" |grep -Eoc 'E5'` -eq '1' ]]; then
-  export cpu_youxuan="qiyonge5"
-  export kaisbianyixx="弃用E5-编译"
-elif [[ `echo "${cpu_youxuan}" |grep -Eoc '8370'` -eq '1' ]]; then
-  export cpu_youxuan="8370"
-  export kaisbianyixx="选择8370-编译"
-elif [[ `echo "${cpu_youxuan}" |grep -Eoc '8272'` -eq '1' ]]; then
-  export cpu_youxuan="8272"
-  export kaisbianyixx="选择8272-编译"
-elif [[ `echo "${cpu_youxuan}" |grep -Eoc '8171'` -eq '1' ]]; then
-  export cpu_youxuan="8171"
-  export kaisbianyixx="选择8171-编译"
-else
-  export kaisbianyixx="编译"
-fi
-echo "${cpu_youxuan}"
-git clone -b main https://github.com/${GIT_REPOSITORY}.git ${FOLDER_NAME}
-export ARGET_PATH="${FOLDER_NAME}/.github/workflows/compile.yml"
-export TARGET1="$(grep 'target: \[' "${ARGET_PATH}" |sed 's/^[ ]*//g' |grep -v '^#' |sed 's/\[/\\&/' |sed 's/\]/\\&/')"
-export TARGET2="target: \\[${FOLDER_NAME}\\]"
-export PATHS1="$(grep -Eo "\- '.*'" "${ARGET_PATH}" |sed 's/^[ ]*//g' |grep -v "^#" |awk 'NR==1')"
-export PATHS2="- 'build/${FOLDER_NAME}/start-up/start'"
-export cpu1="$(grep "CPU_optimization=" "${ARGET_PATH}" |sed 's/^[ ]*//g' |grep -v '^#' |awk '{print $(2)}' |sed 's?=?\\&?g' |sed 's?"?\\&?g')"
-export cpu2="CPU_optimization\\=\\\"${cpu_youxuan}\\\""
-if [[ -n ${PATHS1} ]] && [[ -n ${TARGET1} ]]; then
-  sed -i "s?${PATHS1}?${PATHS2}?g" "${ARGET_PATH}"
-  sed -i "s?${TARGET1}?${TARGET2}?g" "${ARGET_PATH}"
-else
-  echo "获取变量失败,请勿胡乱修改compile.yml文件"
-  exit 1
-fi
-if [[ -n ${cpu1} ]] && [[ -n ${cpu2} ]]; then
-  sed -i "s?${cpu1}?${cpu2}?g" "${ARGET_PATH}"
-else
-  echo "获取变量失败,请勿胡乱修改定时启动编译时的数值设置"
-  exit 1
-fi
-cp -Rf ${HOME_PATH}/build_logo/config.txt ${FOLDER_NAME}/build/${FOLDER_NAME}/${CONFIG_FILE}
-mkdir -p ${FOLDER_NAME}/build/${FOLDER_NAME}/start-up
-  echo "#### $(date +"%Y年%m月%d号-%H点%M分")" > ${GITHUB_WORKSPACE}/update_log.txt
-cd ${FOLDER_NAME}
-git add .
-git commit -m "${kaisbianyixx}-${FOLDER_NAME}-${LUCI_EDITION}-${TARGET_PROFILE}固件"
-git push --force "https://${REPO_TOKEN}@github.com/${GIT_REPOSITORY}" HEAD:main
-}
 
 function Diy_xinxi() {
 Plug_in="$(grep -i 'CONFIG_PACKAGE_luci-app' ${HOME_PATH}/.config && grep -i 'CONFIG_PACKAGE_luci-theme' ${HOME_PATH}/.config)"
