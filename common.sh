@@ -369,7 +369,8 @@ src-git helloworld https://github.com/fw876/helloworld
 src-git passwall https://github.com/xiaorouji/openwrt-passwall;packages
 src-git passwall1 https://github.com/xiaorouji/openwrt-passwall;luci
 src-git passwall2 https://github.com/xiaorouji/openwrt-passwall2;main
-src-git shidahuilang https://github.com/shidahuilang/openwrt-package.git;${REPO_BRANCH}
+#src-git shidahuilang https://github.com/shidahuilang/openwrt-package.git;${REPO_BRANCH}#
+src-git shidahuilang https://github.com/shidahuilang/packages;main
 #src-git nas https://github.com/linkease/nas-packages.git;master
 #src-git nas_luci https://github.com/linkease/nas-packages-luci.git;main
 " >> ${HOME_PATH}/feeds.conf.default
@@ -959,16 +960,16 @@ rm -rf $HOME_PATH/files/{LICENSE,README,REA*.md}
 }
 
 function Diy_webweb() {
-curl -fsSL https://raw.githubusercontent.com/shidahuilang/common/main/Custom/FinishIng.sh > ${BASE_PATH}/etc/FinishIng.sh
-if [[ $? -ne 0 ]]; then
-  wget -P ${BASE_PATH}/etc https://raw.githubusercontent.com/shidahuilang/common/main/Custom/FinishIng.sh -O ${BASE_PATH}/etc/FinishIng.sh
-fi
-chmod 775 ${BASE_PATH}/etc/FinishIng.sh
-curl -fsSL https://raw.githubusercontent.com/shidahuilang/common/main/Custom/FinishIng > ${BASE_PATH}/etc/init.d/FinishIng
-if [[ $? -ne 0 ]]; then
-  wget -P ${BASE_PATH}/etc/init.d https://raw.githubusercontent.com/shidahuilang/common/main/Custom/FinishIng -O ${BASE_PATH}/etc/init.d/FinishIng
-fi
-chmod 775 ${BASE_PATH}/etc/init.d/FinishIng
+#curl -fsSL https://raw.githubusercontent.com/shidahuilang/common/main/Custom/FinishIng.sh > ${BASE_PATH}/etc/FinishIng.sh
+#if [[ $? -ne 0 ]]; then
+#  wget -P ${BASE_PATH}/etc https://raw.githubusercontent.com/shidahuilang/common/main/Custom/FinishIng.sh -O ${BASE_PATH}/etc/FinishIng.sh
+#fi
+#chmod 775 ${BASE_PATH}/etc/FinishIng.sh
+#curl -fsSL https://raw.githubusercontent.com/shidahuilang/common/main/Custom/FinishIng > ${BASE_PATH}/etc/init.d/FinishIng
+#if [[ $? -ne 0 ]]; then
+#  wget -P ${BASE_PATH}/etc/init.d https://raw.githubusercontent.com/shidahuilang/common/main/Custom/FinishIng -O ${BASE_PATH}/etc/init.d/FinishIng
+#fi
+#chmod 775 ${BASE_PATH}/etc/init.d/FinishIng
 curl -fsSL https://raw.githubusercontent.com/shidahuilang/common/main/Custom/webweb.sh > ${BASE_PATH}/etc/webweb.sh
 if [[ $? -ne 0 ]]; then
   wget -P ${BASE_PATH}/etc https://raw.githubusercontent.com/shidahuilang/common/main/Custom/webweb.sh -O ${BASE_PATH}/etc/webweb.sh
@@ -981,8 +982,8 @@ echo "正在执行：在zzz-default-settings文件加条执行命令"
 sed -i '/webweb.sh/d' "${ZZZ_PATH}"
 sed -i "/exit 0/i\source /etc/webweb.sh" "${ZZZ_PATH}"
 
-sed -i '/FinishIng/d' "${ZZZ_PATH}"
-sed -i "/exit 0/i\/etc/init.d/FinishIng enable" "${ZZZ_PATH}"
+#sed -i '/FinishIng/d' "${ZZZ_PATH}"
+#sed -i "/exit 0/i\/etc/init.d/FinishIng enable" "${ZZZ_PATH}"
 }
 
 function Make_defconfig() {
