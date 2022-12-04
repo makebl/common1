@@ -66,8 +66,6 @@ if [[ ! ${bendi_script} == "1" ]]; then
   echo "BY_INFORMATION=${BY_INFORMATION}" >> ${GITHUB_ENV}
   echo "Library=${Warehouse##*/}" >> ${GITHUB_ENV}
   echo "matrixtarget=${matrixtarget}" >> ${GITHUB_ENV}
-
-
 fi
 }
 
@@ -120,8 +118,7 @@ fi
 function Diy_variable() {
 cp -Rf `find ./ -maxdepth 1 -type d ! -path './openwrt' ! -path './'` openwrt
 echo "HOME_PATH=${GITHUB_WORKSPACE}/openwrt" >> ${GITHUB_ENV}
-echo "BUILD_PATH=${GITHUB_WORKSPACE}/openwrt/build/${FOLDER_NAME}" >> ${GITHUB_ENV}
-echo "WAREHOUSE_MAN=${GIT_REPOSITORY##*/}" >> ${GITHUB_ENV}
+echo "BUILD_PATH=${GITHUB_WORKSPACE}/openwrt/build/${matrixtarget}" >> ${GITHUB_ENV}
 echo "BASE_PATH=${GITHUB_WORKSPACE}/openwrt/package/base-files/files" >> ${GITHUB_ENV}
 echo "NETIP=${GITHUB_WORKSPACE}/openwrt/package/base-files/files/etc/networkip" >> ${GITHUB_ENV}
 echo "DELETE=${GITHUB_WORKSPACE}/openwrt/package/base-files/files/etc/deletefile" >> ${GITHUB_ENV}
@@ -135,7 +132,12 @@ echo "Compte_Date=$(date +%Y年%m月%d号%H时%M分)" >> ${GITHUB_ENV}
 echo "Tongzhi_Date=$(date +%Y年%m月%d日)" >> ${GITHUB_ENV}
 echo "Gujian_Date=$(date +%m.%d)" >> ${GITHUB_ENV}
 
-
+export CPUNAME="$(cat /proc/cpuinfo |grep 'model name' |awk 'END {print}' |cut -f2 -d: |sed 's/^[ ]*//g')"
+export CPUCORES="$(cat /proc/cpuinfo | grep 'cpu cores' |awk 'END {print}' | cut -f2 -d: | sed 's/^[ ]*//g')"
+#export Model_Name="$(cat /proc/cpuinfo |grep 'model name' |awk 'END {print}' |cut -f2 -d: |sed 's/^[ ]*//g')"
+#export Cpu_Cores="$(cat /proc/cpuinfo | grep 'cpu cores' |awk 'END {print}' | cut -f2 -d: | sed 's/^[ ]*//g')"
+export RAM_total="$(free -h |awk 'NR==2' |awk '{print $(2)}' |sed 's/.$//')"
+export RAM_available="$(free -h |awk 'NR==2' |awk '{print $(7)}' |sed 's/.$//')"
 
 # github用的变量，如果有修改，下面Bendi_variable也要同步修改
 
@@ -364,6 +366,7 @@ esac
 # 这里增加了源,要对应的删除/etc/opkg/distfeeds.conf插件源
 echo "
 src-git helloworld https://github.com/fw876/helloworld
+src-git passwall https://github.com/xiaorouji/openwrt-passwall;packages
 src-git passwall1 https://github.com/xiaorouji/openwrt-passwall;luci
 src-git passwall2 https://github.com/xiaorouji/openwrt-passwall2;main
 src-git shidahuilang https://github.com/shidahuilang/openwrt-package.git;${REPO_BRANCH}
@@ -488,6 +491,7 @@ sed -i '/DISTRIB_REVISION/d' /etc/openwrt_release
 echo "DISTRIB_REVISION='immortalwrt-18.06'" >> /etc/openwrt_release
 sed -i '/DISTRIB_DESCRIPTION/d' /etc/openwrt_release
 echo "DISTRIB_DESCRIPTION='OpenWrt '" >> /etc/openwrt_release
+
 exit 0
 EOF
 }
@@ -812,7 +816,6 @@ if [[ `grep -c "CONFIG_TARGET_ROOTFS_EXT4FS=y" ${HOME_PATH}/.config` -eq '1' ]];
   fi
 fi
 
-
 if [ -n "$(ls -A "${HOME_PATH}/Chajianlibiao" 2>/dev/null)" ]; then
   echo "TIME y \"  插件冲突会导致编译失败，以上操作如非您所需，请关闭此次编译，重新开始编译，避开冲突重新选择插件\"" >>CHONGTU
   echo "TIME z \"\"" >>CHONGTU
@@ -1001,79 +1004,6 @@ fi
 echo "FIRMWARE=$HOME_PATH/bin/targets/$TAR_BOARD1/$TAR_SUBTARGET1" >> ${GITHUB_ENV}
 }
 
-function CPU_Priority() {
-export TARGET_BOARD="$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' build/${FOLDER_NAME}/${CONFIG_FILE})"
-export TARGET_SUBTARGET="$(awk -F '[="]+' '/TARGET_SUBTARGET/{print $2}' build/${FOLDER_NAME}/${CONFIG_FILE})"
-if [[ `grep -Eoc 'CONFIG_TARGET_x86_64=y' build/${FOLDER_NAME}/${CONFIG_FILE}` -eq '1' ]]; then
-  export TARGET_PROFILE="x86-64"
-elif [[ `grep -Eoc 'CONFIG_TARGET_x86=y' build/${FOLDER_NAME}/${CONFIG_FILE}` -eq '1' ]]; then
-  export TARGET_PROFILE="x86-32"
-elif [[ `grep -Eoc 'CONFIG_TARGET_armvirt_64_Default=y' build/${FOLDER_NAME}/${CONFIG_FILE}` -eq '1' ]]; then
-  export TARGET_PROFILE="Armvirt_64"
-else
-  export TARGET_PROFILE="$(grep -Eo "CONFIG_TARGET.*DEVICE.*=y" build/${FOLDER_NAME}/${CONFIG_FILE} | sed -r 's/.*DEVICE_(.*)=y/\1/')"
-fi
-
-cpu_model=`cat /proc/cpuinfo  |grep 'model name' |gawk -F : '{print $2}' | uniq -c  | sed 's/^ \+[0-9]\+ //g'`
-echo "${cpu_model}"
-
-case "${CPU_optimization}" in
-'qiyonge5')
-  if [[ `echo "${cpu_model}" |grep -c "E5"` -ge '1' ]]; then
-    git clone -b main https://github.com/${GIT_REPOSITORY}.git ${FOLDER_NAME}
-    ARGET_PATH="${FOLDER_NAME}/.github/workflows/compile.yml"
-    TARGET1="$(grep 'target: \[' "${ARGET_PATH}" |sed 's/^[ ]*//g' |grep -v '^#' |sed 's/\[/\\&/' |sed 's/\]/\\&/')"
-    TARGET2="target: \\[${FOLDER_NAME}\\]"
-    PATHS1="$(egrep "\- '.*'" "${ARGET_PATH}" |sed 's/^[ ]*//g' |grep -v "^#" |awk 'NR==1')"
-    PATHS2="- 'build/${FOLDER_NAME}/start-up/start'"
-    if [[ -n ${PATHS1} ]] && [[ -n ${TARGET1} ]]; then
-      sed -i "s?${PATHS1}?${PATHS2}?g" "${ARGET_PATH}"
-      sed -i "s?${TARGET1}?${TARGET2}?g" "${ARGET_PATH}"
-    else
-      echo "获取变量失败,请勿胡乱修改compile.yml文件"
-      exit 1
-    fi
-    mkdir -p ${FOLDER_NAME}/build/${FOLDER_NAME}/start-up
-    echo "${SOURCE}$(date +%Y年%m月%d号%H时%M分%S秒)" > ${FOLDER_NAME}/build/${FOLDER_NAME}/start-up/start
-    export chonglaixx="E5-重新编译"
-    export Continue_selecting="1"
-  else
-    echo "非E5系列CPU"
-  fi
-;;
-*)
-  if [[ `echo "${cpu_model}" |grep -c "${CPU_optimization}"` -eq '0' ]]; then
-    git clone -b main https://github.com/${GIT_REPOSITORY}.git ${FOLDER_NAME}
-    ARGET_PATH="${FOLDER_NAME}/.github/workflows/compile.yml"
-    TARGET1="$(grep 'target: \[' "${ARGET_PATH}" |sed 's/^[ ]*//g' |grep -v '^#' |sed 's/\[/\\&/' |sed 's/\]/\\&/')"
-    TARGET2="target: \\[${FOLDER_NAME}\\]"
-    PATHS1="$(egrep "\- '.*'" "${ARGET_PATH}" |sed 's/^[ ]*//g' |grep -v "^#" |awk 'NR==1')"
-    PATHS2="- 'build/${FOLDER_NAME}/start-up/start'"
-    if [[ -n ${PATHS1} ]] && [[ -n ${TARGET1} ]]; then
-      sed -i "s?${PATHS1}?${PATHS2}?g" "${ARGET_PATH}"
-      sed -i "s?${TARGET1}?${TARGET2}?g" "${ARGET_PATH}"
-    else
-      echo "获取变量失败,请勿胡乱修改compile.yml文件"
-      exit 1
-    fi
-    mkdir -p ${FOLDER_NAME}/build/${FOLDER_NAME}/start-up
-    echo "${SOURCE}$(date +%Y年%m月%d号%H时%M分%S秒)" > ${FOLDER_NAME}/build/${FOLDER_NAME}/start-up/start
-    export chonglaixx="非${CPU_optimization}-重新编译"
-    export Continue_selecting="1"
-  else
-    echo "正是您选择的${CPU_optimization}CPU"
-  fi
-;;
-esac
-
-if [[ "${Continue_selecting}" == "1" ]]; then
-  cd ${FOLDER_NAME}
-  git add .
-  git commit -m "${chonglaixx}-${FOLDER_NAME}-${LUCI_EDITION}-${TARGET_PROFILE}"
-  git push --force "https://${REPO_TOKEN}@github.com/${GIT_REPOSITORY}" HEAD:main
-  exit 1
-fi
-}
 function Make_upgrade() {
 ## 本地编译加载机型用
 export TARGET_BOARD1="$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' ${HOME_PATH}/.config)"
@@ -1172,10 +1102,6 @@ make defconfig > /dev/null 2>&1
 }
 
 function Diy_Notice() {
-export Model_Name="$(cat /proc/cpuinfo |grep 'model name' |awk 'END {print}' |cut -f2 -d: |sed 's/^[ ]*//g')"
-export Cpu_Cores="$(cat /proc/cpuinfo | grep 'cpu cores' |awk 'END {print}' | cut -f2 -d: | sed 's/^[ ]*//g')"
-export RAM_total="$(free -h |awk 'NR==2' |awk '{print $(2)}' |sed 's/.$//')"
-export RAM_available="$(free -h |awk 'NR==2' |awk '{print $(7)}' |sed 's/.$//')"
 TIME y "第一次用我仓库的，请不要拉取任何插件，先SSH进入固件配置那里看过我脚本实在是没有你要的插件才再拉取"
 TIME y "拉取插件应该单独拉取某一个你需要的插件，别一下子就拉取别人一个插件包，这样容易增加编译失败概率"
 TIME r "修改IP、DNS、网关，请输入命令：openwrt"
@@ -1189,6 +1115,52 @@ TIME g "在此服务器分配内存为[ ${RAM_total} ],现剩余内存为[ ${RAM
 TIME r ""
 }
 
+function build_openwrt() {
+if [[ `echo "${cpu_youxuan}" |grep -Eoc 'E5'` -eq '1' ]]; then
+  export cpu_youxuan="qiyonge5"
+  export kaisbianyixx="弃用E5-编译"
+elif [[ `echo "${cpu_youxuan}" |grep -Eoc '8370'` -eq '1' ]]; then
+  export cpu_youxuan="8370"
+  export kaisbianyixx="选择8370-编译"
+elif [[ `echo "${cpu_youxuan}" |grep -Eoc '8272'` -eq '1' ]]; then
+  export cpu_youxuan="8272"
+  export kaisbianyixx="选择8272-编译"
+elif [[ `echo "${cpu_youxuan}" |grep -Eoc '8171'` -eq '1' ]]; then
+  export cpu_youxuan="8171"
+  export kaisbianyixx="选择8171-编译"
+else
+  export kaisbianyixx="编译"
+fi
+echo "${cpu_youxuan}"
+git clone -b main https://github.com/${GIT_REPOSITORY}.git ${FOLDER_NAME}
+export ARGET_PATH="${FOLDER_NAME}/.github/workflows/compile.yml"
+export TARGET1="$(grep 'target: \[' "${ARGET_PATH}" |sed 's/^[ ]*//g' |grep -v '^#' |sed 's/\[/\\&/' |sed 's/\]/\\&/')"
+export TARGET2="target: \\[${FOLDER_NAME}\\]"
+export PATHS1="$(grep -Eo "\- '.*'" "${ARGET_PATH}" |sed 's/^[ ]*//g' |grep -v "^#" |awk 'NR==1')"
+export PATHS2="- 'build/${FOLDER_NAME}/start-up/start'"
+export cpu1="$(grep "CPU_optimization=" "${ARGET_PATH}" |sed 's/^[ ]*//g' |grep -v '^#' |awk '{print $(2)}' |sed 's?=?\\&?g' |sed 's?"?\\&?g')"
+export cpu2="CPU_optimization\\=\\\"${cpu_youxuan}\\\""
+if [[ -n ${PATHS1} ]] && [[ -n ${TARGET1} ]]; then
+  sed -i "s?${PATHS1}?${PATHS2}?g" "${ARGET_PATH}"
+  sed -i "s?${TARGET1}?${TARGET2}?g" "${ARGET_PATH}"
+else
+  echo "获取变量失败,请勿胡乱修改compile.yml文件"
+  exit 1
+fi
+if [[ -n ${cpu1} ]] && [[ -n ${cpu2} ]]; then
+  sed -i "s?${cpu1}?${cpu2}?g" "${ARGET_PATH}"
+else
+  echo "获取变量失败,请勿胡乱修改定时启动编译时的数值设置"
+  exit 1
+fi
+cp -Rf ${HOME_PATH}/build_logo/config.txt ${FOLDER_NAME}/build/${FOLDER_NAME}/${CONFIG_FILE}
+mkdir -p ${FOLDER_NAME}/build/${FOLDER_NAME}/start-up
+  echo "#### $(date +"%Y年%m月%d号-%H点%M分")" > ${GITHUB_WORKSPACE}/update_log.txt
+cd ${FOLDER_NAME}
+git add .
+git commit -m "${kaisbianyixx}-${FOLDER_NAME}-${LUCI_EDITION}-${TARGET_PROFILE}固件"
+git push --force "https://${REPO_TOKEN}@github.com/${GIT_REPOSITORY}" HEAD:main
+}
 
 function Diy_xinxi() {
 Plug_in="$(grep -i 'CONFIG_PACKAGE_luci-app' ${HOME_PATH}/.config && grep -i 'CONFIG_PACKAGE_luci-theme' ${HOME_PATH}/.config)"
