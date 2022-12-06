@@ -113,7 +113,7 @@ else
     SECONDS=$((t2-t1))
     HOUR=$(( $SECONDS/3600 ))
     MIN=$(( ($SECONDS-${HOUR}*3600)/60 ))
-    if [[ "${MIN}" -lt "3" ]]; then
+    if [[ "${MIN}" -lt "10" ]]; then
       source "${GITHUB_WORKSPACE}/build/${FOLDER_NAME}/relevance/${t1}.ini"
       echo "运行${t1}.ini"
     else
@@ -1475,7 +1475,7 @@ if [[ "${Continue_selecting}" == "1" ]]; then
     HOUR=$(( $SECONDS/3600 ))
     MIN=$(( ($SECONDS-${HOUR}*3600)/60 ))
     echo "${MIN}"
-    if [[ "${MIN}" -lt "40" ]]; then
+    if [[ "${MIN}" -lt "10" ]]; then
       START_TIME=`date +'%Y-%m-%d %H:%M:%S'`
       START_SECONDS=$(date --date="$START_TIME" +%s)
       mv "${FOLDER_NAME}/build/${FOLDER_NAME}/relevance/${t1}.ini" ${FOLDER_NAME}/build/${FOLDER_NAME}/relevance/${START_SECONDS}.ini
