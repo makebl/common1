@@ -1,0 +1,32 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2006 OpenWrt.org
+
+START=99
+
+run_zzz_default() {
+    
+	if [ -f "/etc/default-setting" ]; then
+		/etc/default-setting
+                rm -rf /etc/default-setting
+	fi
+	
+	if [[ `grep -c "/tmp/luci-\*cache\*" /etc/crontabs/root` -eq '0' ]]; then
+		echo "0 1 * * 1 rm -rf /tmp/luci-*cache* > /dev/null 2>&1" >> /etc/crontabs/root
+		/etc/init.d/cron restart
+	fi
+	
+	rm -rf /tmp/luci-*cache*
+        rm -rf /tmp/luci-modulecache/
+        rm -f /tmp/luci-indexcache
+	/etc/init.d/uhttpd restart
+	/etc/init.d/network restart
+        /etc/init.d/dnsmasq restart
+	/etc/init.d/system restart
+        if [[ -f '/etc/init.d/shadowsocksr' ]]; then
+          /etc/init.d/shadowsocksr restart
+        fi
+}
+
+start() {
+	run_zzz_default
+}

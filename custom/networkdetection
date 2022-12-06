@@ -1,0 +1,27 @@
+#!/bin/sh
+
+curl --connect-timeout 10 "baidu.com" > "/dev/null" 2>&1 || wangluo='1'
+if [[ "${wangluo}" == "1" ]]; then
+  curl --connect-timeout 10 "taobao.com" > "/dev/null" 2>&1 || wangluo='2'
+fi
+if [[ "${wangluo}" == "2" ]]; then
+  curl --connect-timeout 10 "google.com" > "/dev/null" 2>&1 || wangluo='3'
+fi
+if [[ "${wangluo}" == "1" ]] && [[ "${wangluo}" == "2" ]] && [[ "${wangluo}" == "3" ]]; then
+  echo "[没检测到网络，重启系统于$(date "+%Y年%m月%d日%H时%M分%S秒")]" >> /tmp/networkdetection.log
+  /etc/init.d/uhttpd restart
+  /etc/init.d/network restart
+  /etc/init.d/dnsmasq restart
+  /etc/init.d/system restart
+  sed -i '/networkdetection/d' /etc/crontabs/root >/dev/null 2>&1
+  /etc/init.d/cron restart
+  rm -rf /etc/networkdetection
+  reboot -f
+else
+  echo "[$(date "+%Y年%m月%d日%H时%M分%S秒")-网络正常]" >> /tmp/networkdetection.log
+  sed -i '/networkdetection/d' /etc/crontabs/root >/dev/null 2>&1
+  /etc/init.d/cron restart
+  rm -rf /etc/networkdetection
+fi
+
+exit 0
