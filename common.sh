@@ -364,6 +364,9 @@ elif [[ `echo "${CPU_SELECTION}" |grep -Eoc '8272'` -eq '1' ]]; then
 elif [[ `echo "${CPU_SELECTION}" |grep -Eoc '8171'` -eq '1' ]]; then
   export CPU_SELECTIO="8171"
   export kaisbianyixx="选择8171-编译"
+elif [[ `echo "${CONFIG_FILE}" |grep -Eoc 'p2w_r619ac-128m'` -eq '1' ]]; then
+  export CONFIG_FILE="竞斗云2.0"
+  export kaisbianyixx="竞斗云2.0"  
 else
   export kaisbianyixx="编译"
 fi
