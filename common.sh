@@ -344,7 +344,11 @@ if [[ "${UPDATE_FIRMWARE_ONLINE}" == "true" ]]; then
   TIME r "SSH连接固件输入命令'qinglong'可一键安装青龙和Maiark"
 fi
 TIME r ""
+TIME r ""
 TIME g "CPU性能：8370C > 8272CL > 8171M > E5系列"
+TIME g "您现在编译所用的服务器CPU型号为[ ${Model_Name} ]"
+TIME g "在此服务器分配核心数为[ ${Cpu_Cores} ],线程数为[ $(nproc) ]"
+TIME g "在此服务器分配内存为[ ${RAM_total} ],现剩余内存为[ ${RAM_available} ]"
 TIME r ""
 }
 
