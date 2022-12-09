@@ -7,7 +7,7 @@
 function Diy_Part1() {
 	find . -name 'luci-app-autoupdate' | xargs -i rm -rf {}
 	echo "正在执行：给源码增加定时更新固件插件和设置插件和ttyd成默认自选"
-	git clone https://github.com/makebl/luci-app-autoupdate $HOME_PATH/package/luci-app-autoupdate
+	git clone -b ceshi https://github.com/281677160/luci-app-autoupdate $HOME_PATH/package/luci-app-autoupdate
 	if [[ `grep -c "luci-app-autoupdate" ${HOME_PATH}/include/target.mk` -eq '0' ]]; then
 		sed -i 's?DEFAULT_PACKAGES:=?DEFAULT_PACKAGES:=luci-app-autoupdate luci-app-ttyd ?g' ${HOME_PATH}/include/target.mk
 	fi
@@ -21,6 +21,7 @@ function Diy_Part1() {
 
 function Diy_Part2() {
 	export In_Firmware_Info="$FILES_PATH/etc/openwrt_update"
+	export In_Firmware_Replace="$FILES_PATH/etc/openwrt_replace"
 	export Github_Release="${GITHUB_LINK}/releases/tag/${TARGET_BOARD}"
 	export Openwrt_Version="${SOURCE}-${TARGET_PROFILE}-${Upgrade_Date}"
 	export Github_API1="https://api.github.com/repos/${GIT_REPOSITORY}/releases/tags/${TARGET_BOARD}"
@@ -103,8 +104,28 @@ Github_API2="${Github_API2}"
 Github_Release="${Github_Release}"
 Release_download="${Release_download}"
 EOF
-	bash <(curl -fsSL https://raw.githubusercontent.com/makebl/common/main/autoupdate/replacebianliang.sh)
 	sudo chmod +x ${In_Firmware_Info}
+	
+	
+cat >"${In_Firmware_Replace}" <<-EOF
+GITHUB_LINK=${GITHUB_LINK}
+CURRENT_Version=${Openwrt_Version}
+SOURCE="${SOURCE}"
+LUCI_EDITION="${LUCI_EDITION}"
+DEFAULT_Device="${TARGET_PROFILE}"
+Firmware_SFX="${Firmware_SFX}"
+TARGET_BOARD="${TARGET_BOARD}"
+CLOUD_CHAZHAO="${CLOUD_CHAZHAO}"
+Download_Path="/tmp/Downloads"
+Version="${AutoUpdate_Version}"
+API_PATH="${API_PATH}"
+Github_API1="${Github_API1}"
+Github_API2="${Github_API2}"
+Github_Release="${Github_Release}"
+Release_download="${Release_download}"
+EOF
+	bash <(curl -fsSL https://raw.githubusercontent.com/shidahuilang/common/main/autoupdate/replacebianliang.sh)
+	sudo chmod +x ${In_Firmware_Replace}
 }
 
 function Diy_Part3() {

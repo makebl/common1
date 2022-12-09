@@ -9,7 +9,6 @@ else
   rm -rf shangyou && git clone -b main https://github.com/shidahuilang/openwrt shangyou
   if [[ ! -d "DIY-SETUP" ]]; then
     cp -Rf shangyou/build DIY-SETUP
-    BENDI_SHANCHUBAK="1"
   fi
 fi
 

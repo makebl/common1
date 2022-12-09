@@ -2,7 +2,7 @@
 
 #====================================================
 #	System Request:Ubuntu 18.04lts/20.04lts/22.04lts
-#	Author:	shidahuilang
+#	Author:	dahuilang
 #	Dscription: Compile openwrt firmware
 #	github: https://github.com/shidahuilang/openwrt
 #====================================================
@@ -115,7 +115,7 @@ if [[ `echo "${PATH}" |grep -c "Windows"` -ge '1' ]]; then
     read -t 30 -p " [输入[Y/y]回车结束编译,按说明解决路径问题,任意键使用临时解决方式](不作处理,30秒后继续编译)： " Bendi_Wsl
     case ${Bendi_Wsl} in
     [Yy])
-      ECHOYY "请到 https://github.com/shidahuilang/YJBY-openwrt 查看说明"
+      ECHOYY "请到 https://github.com/shidahuilang/openwrt 查看说明"
       exit 0
     ;;
     *)
@@ -127,8 +127,8 @@ fi
 }
 
 function BENDI_Diskcapacity() {
-if [[ -d "${GITHUB_WORKSPACE}/DIY-SETUP" ]]; then
-  source "DIY-SETUP/${FOLDER_NAME}/settings.ini"
+if [[ -d "${GITHUB_WORKSPACE}/operates" ]]; then
+  source "operates/${FOLDER_NAME}/settings.ini"
 fi
 
 Cipan_Size="$(df -hT $PWD|awk 'NR==2'|awk '{print $(3)}')"
@@ -184,44 +184,48 @@ fi
 
 function Bendi_DiySetup() {
 cd ${GITHUB_WORKSPACE}
-export BENDI_SHANCHUBAK="1"
-if [[ ! -f "DIY-SETUP/${FOLDER_NAME}/settings.ini" ]]; then
-  ECHOG "下载DIY-SETUP自定义配置文件"
+if [[ ! -f "operates/${FOLDER_NAME}/settings.ini" ]]; then
+  ECHOG "下载operates自定义配置文件"
   bash <(curl -fsSL https://raw.githubusercontent.com/shidahuilang/common/main/bendi/tongbu.sh)
-  judge "DIY-SETUP自定义配置文件下载"
-  source "DIY-SETUP/${FOLDER_NAME}/settings.ini"
+  judge "operates自定义配置文件下载"
+  source "operates/${FOLDER_NAME}/settings.ini"
 else
-  source "DIY-SETUP/${FOLDER_NAME}/settings.ini"
+  source "operates/${FOLDER_NAME}/settings.ini"
 fi
 }
 
 function Bendi_Tongbu() {
 cd ${GITHUB_WORKSPACE}
-echo "开始同步上游DIY-SETUP文件"
+echo
+echo "开始同步上游operates文件"
 bash <(curl -fsSL https://raw.githubusercontent.com/shidahuilang/common/main/bendi/tongbu.sh)
 if [[ $? -ne 0 ]]; then
   ECHOB "同步上游仓库失败，请检查网络"
 else
-  ECHOB "同步上游仓库完成，请至DIY-SETUP检查设置，设置好最新配置再进行编译"
+  ECHOB "同步上游仓库完成，请至operates检查设置，设置好最新配置再进行编译"
 fi
 }
 
 function Bendi_Version() {
   cd ${GITHUB_WORKSPACE}
-  if [[ -d "DIY-SETUP" ]]; then
-    A="$(grep "BENDI_VERSION=" "DIY-SETUP/${FOLDER_NAME}/version/bendi_version" |grep -Eo "[0-9]+\.[0-9]+")"
+  if [[ -d "operates" ]]; then
+    A="$(grep "BENDI_VERSION=" "operates/${FOLDER_NAME}/relevance/bendi_version" |grep -Eo "[0-9]+\.[0-9]+")"
     [[ -z ${A} ]] && A="0.9"
     B="${BENDI_VERSION}"
     if [[ `awk -v num1=${A} -v num2=${B} 'BEGIN{print(num1<num2)?"0":"1"}'` -eq '0' ]]; then
-      ECHOY "上游DIY-SETUP文件有更新，是否同步更新DIY-SETUP文件?"
+      clear
+      echo
+      echo
+      ECHOY "上游operates文件有更新，是否同步更新operates文件?"
       read -p " 按[Y/y]回车同步文件，任意键回车则跳过更新： " TB
       case ${TB} in
       [Yy]) 
-        ECHOG "正在同步DIY-SETUP文件，请稍后..."
+        ECHOG "正在同步operates文件，请稍后..."
+        export BENDI_SHANCHUBAK="2"
         Bendi_Tongbu
       ;;
       *)
-        ECHOR "您已跳过更新DIY-SETUP文件"
+        ECHOR "您已跳过更新operates文件"
     ;;
     esac
     fi
@@ -233,7 +237,7 @@ if [[ "${MODIFY_CONFIGURATION}" == "true" ]]; then
   clear
   echo
   echo
-  ECHOYY "请在 DIY-SETUP/${FOLDER_NAME} 里面设置好自定义文件"
+  ECHOYY "请在 operates/${FOLDER_NAME} 里面设置好自定义文件"
   ECHOY "设置完毕后，按[W/w]回车继续编译"
   ZDYSZ="请输入您的选择"
   while :; do
@@ -282,10 +286,10 @@ source ${GITHUB_ENV}
 function Bendi_MainProgram() {
 ECHOGG "下载扩展文件"
 cd ${GITHUB_WORKSPACE}
-source "DIY-SETUP/${FOLDER_NAME}/settings.ini"
+source "operates/${FOLDER_NAME}/settings.ini"
 echo "WSL_ROUTEPATH=${WSL_ROUTEPATH}" >> ${GITHUB_ENV}
 source ${GITHUB_ENV}
-sudo rm -rf build && cp -Rf DIY-SETUP build
+sudo rm -rf build && cp -Rf operates build
 git clone -b main --depth 1 https://github.com/shidahuilang/common build/common
 judge "扩展文件下载"
 cp -Rf build/common/common.sh build/${FOLDER_NAME}/common.sh
@@ -395,6 +399,7 @@ if [[ "${MAKE_CONFIGURATION}" == "true" ]]; then
   REPO_BRANCH2="${REPO_BRANCH}"
   LUCI_EDITION2="${LUCI_EDITION}"
   TARGET_PROFILE2="${TARGET_PROFILE}"
+  CONFIG_FILE="${CONFIG_FILE}"
   " > ${HOME_PATH}/key-buildzu
   sed -i 's/^[ ]*//g' ${HOME_PATH}/key-buildzu
   sudo chmod +x ${HOME_PATH}/key-buildzu
@@ -448,6 +453,7 @@ FOLDER_NAME2="${FOLDER_NAME}"
 REPO_BRANCH2="${REPO_BRANCH}"
 LUCI_EDITION2="${LUCI_EDITION}"
 TARGET_PROFILE2="${TARGET_PROFILE}"
+CONFIG_FILE="${CONFIG_FILE}"
 " > ${HOME_PATH}/key-buildzu
 sed -i 's/^[ ]*//g' ${HOME_PATH}/key-buildzu
 sudo chmod +x ${HOME_PATH}/key-buildzu
@@ -531,18 +537,20 @@ if [[ `ls -1 "${FIRMWARE_PATH}" |grep -c "${TARGET_BOARD}"` -eq '0' ]]; then
   REPO_BRANCH2="${REPO_BRANCH}"
   LUCI_EDITION2="${LUCI_EDITION}"
   TARGET_PROFILE2="${TARGET_PROFILE}"
+  CONFIG_FILE="${CONFIG_FILE}"
   " > ${HOME_PATH}/key-buildzu
   sed -i 's/^[ ]*//g' ${HOME_PATH}/key-buildzu
   sudo chmod +x ${HOME_PATH}/key-buildzu
   exit 1
 else
-  cp -Rf ${FIRMWARE_PATH}/config.buildinfo ${GITHUB_WORKSPACE}/DIY-SETUP/${FOLDER_NAME}/${CONFIG_FILE}
+  cp -Rf ${FIRMWARE_PATH}/config.buildinfo ${GITHUB_WORKSPACE}/operates/${FOLDER_NAME}/${CONFIG_FILE}
   echo "
   SUCCESS_FAILED="success"
   FOLDER_NAME2="${FOLDER_NAME}"
   REPO_BRANCH2="${REPO_BRANCH}"
   LUCI_EDITION2="${LUCI_EDITION}"
   TARGET_PROFILE2="${TARGET_PROFILE}"
+  CONFIG_FILE="${CONFIG_FILE}"
   " > ${HOME_PATH}/key-buildzu
   sed -i 's/^[ ]*//g' ${HOME_PATH}/key-buildzu
   sudo chmod +x ${HOME_PATH}/key-buildzu
@@ -570,7 +578,7 @@ if [[ "${SOURCE_CODE}" == "AMLOGIC" ]]; then
 else
   print_ok "[ ${FOLDER_NAME}-${LUCI_EDITION2}-${TARGET_PROFILE} ]顺利编译完成~~~"
 fi
-ECHOGG "已为您把配置文件替换到DIY-SETUP/${FOLDER_NAME}/${CONFIG_FILE}里"
+ECHOGG "已为您把配置文件替换到operates/${FOLDER_NAME}/${CONFIG_FILE}里"
 ECHOY "编译日期：$(date +'%Y年%m月%d号')"
 END_TIME=`date +'%Y-%m-%d %H:%M:%S'`
 START_SECONDS=$(date --date="$START_TIME" +%s)
@@ -591,13 +599,36 @@ echo
 function Bendi_Packaging() {
   cd ${GITHUB_WORKSPACE}
   export FIRMWARE_PATH="${HOME_PATH}/bin/targets/armvirt/64"
-  [[ -d "amlogic" ]] && sudo rm -rf amlogic
   if [[ -d "amlogic" ]]; then
-    ECHOR "已存在的amlogic文件夹无法删除，请重启系统再来尝试"
-    exit 1
+    t1="$(cat amlogic/start_time)"
+    END_TIME=`date +'%Y-%m-%d %H:%M:%S'`
+    t2=`date -d "$END_TIME" +%s`
+    SECONDS=$((t2-t1))
+    HOUR=$(( $SECONDS/3600 ))
+    if [[ "${HOUR}" -lt "12" ]]; then
+      sudo rm -rf amlogic/out/*
+      echo "amlogic"
+    else
+      sudo rm -rf amlogic
+      if [[ -d "amlogic" ]]; then
+        ECHOR "已存在的amlogic文件夹无法删除，请重启系统再来尝试"
+        exit 1
+      else
+        ECHOY "正在下载打包所需的程序,请耐心等候~~~"
+        git clone --depth 1 https://github.com/ophub/amlogic-s9xxx-openwrt.git ${GITHUB_WORKSPACE}/amlogic
+        judge "打包程序下载1"
+        wget -q --no-check-certificate https://api.github.com/repos/ophub/kernel/contents/pub/stable -O amlogic/stable.api
+        if [[ $? -ne 0 ]]; then
+          curl -fsSL https://api.github.com/repos/ophub/kernel/contents/pub/stable > amlogic/stable.api
+        fi
+        if [[ `grep -c "name" amlogic/stable.api` -eq '0' ]]; then
+          print_error "上游仓库amlogic内核版本API下载失败!"
+          exit 1
+        fi
+      fi
+    fi
   fi
-  
-  if [[ ! -d "${FIRMWARE_PATH}" ]] || [[ `ls -1 "${FIRMWARE_PATH}" | grep -c "tar.gz"` -eq '0' ]]; then
+  if [[ ! -d "${FIRMWARE_PATH}" ]] || [[ `ls -1 "${FIRMWARE_PATH}" |grep -Eoc "*armvirt-64-default-rootfs.tar.gz"` -eq '0' ]]; then
     mkdir -p "${FIRMWARE_PATH}"
     clear
     ECHOR "没发现 openwrt/bin/targets/armvirt/64 文件夹里存在.tar.gz固件，已为你创建了文件夹"
@@ -607,35 +638,44 @@ function Bendi_Packaging() {
     fi
     exit 1
   fi
-
-  ECHOY "正在下载打包所需的程序,请耐心等候~~~"
-  git clone --depth 1 https://github.com/ophub/amlogic-s9xxx-openwrt.git ${GITHUB_WORKSPACE}/amlogic
-  judge "打包程序下载"
+  sudo chmod +x common.sh
+  grep -Eo '"name": "[0-9]+\.[0-9]+\.[0-9]+"' "amlogic/stable.api" |grep -Eo "[0-9]+\.[0-9]+\.[0-9]+" >amlogic/kernelpub
+  START_TIME=`date +'%Y-%m-%d %H:%M:%S'`
+  t1=`date -d "$START_TIME" +%s`
+  echo "${t1}" >amlogic/start_time
+  amkernel="$(cat amlogic/kernelpub |awk 'END {print}' |sed s/[[:space:]]//g)"
   rm -rf ${GITHUB_WORKSPACE}/amlogic/{router-config,*README*,LICENSE}
   [ ! -d amlogic/openwrt-armvirt ] && mkdir -p amlogic/openwrt-armvirt
   
-  ECHOY "全部可打包机型：s922x s922x-n2 s922x-reva a311d s905x3 s905x2 s905x2-km3 s905l3a s912 s912-m8s s905d s905d-ki s905x s905w s905"
-  ECHOGG "设置要打包固件的机型[ 直接回车则默认(N1) ]"
+  ECHOY "可用芯片：a311d, s922x, s905x3, s905x2, s905l3a, s912, s905d, s905x, s905w, s905"
+  ECHOYY "对应支持有什么机型请看说明"
+  ECHOGG "设置要打包固件的机型[ 任意键回车则默认(N1) ]"
   read -p " 请输入您要设置的机型：" amlogic_model
   export amlogic_model=${amlogic_model:-"s905d"}
   ECHOYY "您设置的机型为：${amlogic_model}"
   echo
-  ECHOGG "设置打包的内核版本[直接回车则默认 5.15.xx 和 5.10.xx]"
-  ECHOY "内核说明：不给您设置定制版本内核的,自动检测您当前写的内核最高版本打包,"
-  ECHOYY "比如您要5.15内核的话,您不需要考虑啥,直接写5.15.01就行了,其他版本内核也一样"
+  ECHOGG "设置打包的内核版本[任意键回车则默认 ${amkernel}]"
   echo
-  read -p " 请输入您要设置的内核：" amlogic_kernel
-  export amlogic_kernel=${amlogic_kernel:-"5.15.01_5.10.02"}
-  if [[ "${amlogic_kernel}" == "5.15.01_5.10.02" ]]; then
-    ECHOYY "您设置的内核版本为：5.15.xx 和 5.10.xx "
-  else
-    ECHOYY "您设置的内核版本为：${amlogic_kernel}"
-  fi
+  cat amlogic/kernelpub|awk '{print "  " $0}'
   echo
-  read -p " 自动打包最新内核：" auto_kernel
-  export auto_kernel=${auto_kernel:-"false"}
+  read -p " 请输入您要设置打包的内核版本：" amlogic_kernel
+  export amlogic_kernel=${amlogic_kernel:-"${amkernel}"}
+  ECHOYY "您设置的内核版本为：${amlogic_kernel}"
+  echo
+  ECHOGG "请选择是否自动打包您输入的内核版本同类型的最新内核"
+  export YUMINGIP=" 输入[Y/y]则为是,任意键回车则为否"
+  read -p "${YUMINGIP}：" auto_kernel
+  case $auto_kernel in
+  [Yy])
+    auto_kernel="true"
+  ;;
+  *)
+    auto_kernel="false"
+  ;;
+  esac
+  export auto_kernel=${auto_kernel}
   if [[ "${auto_kernel}" == "false" ]]; then
-    ECHOYY "关闭自动打包最新内核"
+    ECHORR "关闭自动打包最新内核"
   else
     ECHOYY "开启自动打包最新内核"
   fi
@@ -644,8 +684,9 @@ function Bendi_Packaging() {
   read -p " 请输入ROOTFS分区大小：" rootfs_size
   export rootfs_size=${rootfs_size:-"960"}
   ECHOYY "您设置的ROOTFS分区大小为：${rootfs_size}"
+  ECHOG "设置完毕，开始进行打包操作"
   if [[ `ls -1 "${FIRMWARE_PATH}" |grep -c ".*default-rootfs.tar.gz"` == '1' ]]; then
-    cp -Rf ${FIRMWARE_PATH}/*default-rootfs.tar.gz ${GITHUB_WORKSPACE}/amlogic/openwrt-armvirt/openwrt-armvirt-64-default-rootfs.tar.gz
+    cp -Rf ${FIRMWARE_PATH}/*armvirt-64-default-rootfs.tar.gz ${GITHUB_WORKSPACE}/amlogic/openwrt-armvirt/openwrt-armvirt-64-default-rootfs.tar.gz
   else
     armvirtargz="$(ls -1 "${FIRMWARE_PATH}" |grep ".*tar.gz" |awk 'END {print}')"
     cp -Rf ${FIRMWARE_PATH}/${armvirtargz} ${GITHUB_WORKSPACE}/amlogic/openwrt-armvirt/openwrt-armvirt-64-default-rootfs.tar.gz
@@ -657,7 +698,7 @@ function Bendi_Packaging() {
   fi
   cd ${GITHUB_WORKSPACE}/amlogic
   sudo chmod +x make
-  sudo ./make -d -b ${amlogic_model} -k ${amlogic_kernel} -s ${rootfs_size}
+  sudo ./make -b ${amlogic_model} -k ${amlogic_kernel} -a ${auto_kernel} -s ${rootfs_size}
   if [[ $? -eq 0 ]];then
     echo
     print_ok "打包完成，固件存放在[amlogic/out]文件夹"
@@ -720,15 +761,17 @@ function Bendi_xuanzhe() {
   if [[ ! -f "/etc/oprelyon" ]]; then
     Bendi_Dependent
   fi
-  if [[ ! -d "DIY-SETUP" ]]; then
+  if [[ ! -d "operates" ]]; then
     ECHOG "没有主要编译程序存在,正在下载中,请稍后..."
     sleep 3
+    export BENDI_SHANCHUBAK='3'
     Bendi_DiySetup
   else
-    YY="$(ls -1 "DIY-SETUP" |awk 'NR==1')"
-    if [[ ! -f "DIY-SETUP/${YY}/settings.ini" ]]; then
+    YY="$(ls -1 "operates" |awk 'NR==1')"
+    if [[ ! -f "operates/${YY}/settings.ini" ]]; then
       ECHOG "没有主要编译程序存在,正在下载中,请稍后..."
       sleep 3
+      export BENDI_SHANCHUBAK='3'
       Bendi_DiySetup
     fi
   fi
@@ -736,17 +779,17 @@ function Bendi_xuanzhe() {
   echo 
   echo
   jixingliebiao="$(echo "0、刷新列表" |awk '{print "  " $0}')"
-  ls -1 "DIY-SETUP" |awk '$0=NR" "$0' > GITHUB_ENN
-  ls -1 "DIY-SETUP" > GITHUB_EVN
+  ls -1 "operates" |awk '$0=NR" "$0' > GITHUB_ENN
+  ls -1 "operates" > GITHUB_EVN
   XYZDSZ="$(cat GITHUB_ENN | awk 'END {print}' |awk '{print $(1)}')"
   rm -rf GITHUB_ENN
   echo "${jixingliebiao}"
-  ls -1 "DIY-SETUP" |awk '$0=NR"、"$0'|awk '{print "  " $0}'
+  ls -1 "operates" |awk '$0=NR"、"$0'|awk '{print "  " $0}'
   echo
   echo
   echo -e "${Blue}  请输入您要编译源码前面对应的数值(1~X),输入[N]则为退出程序${Font}"
   echo
-  echo -e "${Green}  您可以自行在DIY-SETUP内建立机型文件夹来进行编译使用(不懂的请查看云编译教程)${Font}"
+  echo -e "${Green}  您可以自行在operates内建立机型文件夹来进行编译使用(不懂的请查看云编译教程)${Font}"
   echo
   echo -e "${Red}  如果您在这个步骤自建了机型文件夹,请按[0]回车进行刷新机型列表${Font}"
   if [[ `echo "${PATH}" |grep -c "Windows"` -ge '1' ]]; then
@@ -775,6 +818,7 @@ function Bendi_xuanzhe() {
   Y)
     export FOLDER_NAME3=$(cat GITHUB_EVN |awk ''NR==${YMXZ}'')
     export FOLDER_NAME="${FOLDER_NAME3}"
+    echo "FOLDER_NAME=${FOLDER_NAME}" >> ${GITHUB_ENV}
     ECHOY " 您选择了使用 ${FOLDER_NAME} 编译固件,3秒后将进行启动编译"
     rm -rf GITHUB_EVN
     sleep 2
@@ -854,13 +898,15 @@ echo
 echo
 echo -e "  ${Green}请选择更新方式${Font}"
 echo
-echo -e "  ${Blue}1${Font}、${Yellow}单文件更新,只更新您所有机型文件夹的diy-part.sh和settings.ini${Font}"
+echo -e "  ${Blue}1${Font}、${Yellow}单文件更新,只更新您现有机型文件夹的diy-part.sh和settings.ini(带备份文件)${Font}"
 echo
-echo -e "  ${Blue}2${Font}、${Yellow}删除您现有的DIY-SETUP文件夹,从上游重新拉取DIY-SETUP文件夹${Font}"
+echo -e "  ${Blue}2${Font}、${Yellow}单文件更新,只更新您现有机型文件夹的diy-part.sh和settings.ini(不要备份文件)${Font}"
 echo
-echo -e "  ${Blue}3${Font}、${Yellow}返回上级菜单${Font}"
+echo -e "  ${Blue}3${Font}、${Yellow}删除您现有的operates文件夹,从上游重新拉取operates文件夹${Font}"
 echo
-echo -e "  ${Blue}4${Font}、${Yellow}退出退出程序${Font}"
+echo -e "  ${Blue}4${Font}、${Yellow}返回上级菜单${Font}"
+echo
+echo -e "  ${Blue}5${Font}、${Yellow}退出退出程序${Font}"
 echo
 echo
 IYSETUP="  请输入数字确定您的选择"
@@ -870,20 +916,27 @@ read -p "${IYSETUP}：" Bendi_upsetup
 case ${Bendi_upsetup} in
 1)
   [[ ! -f "/etc/oprelyon" ]] && Bendi_Dependent
+  export BENDI_SHANCHUBAK="2"
   Bendi_Tongbu
 break
 ;;
 2)
   [[ ! -f "/etc/oprelyon" ]] && Bendi_Dependent
-  [[ -d "DIY-SETUP" ]] && rm -rf DIY-SETUP
+  export BENDI_SHANCHUBAK="3"
   Bendi_Tongbu
 break
 ;;
 3)
-  ${BENDI_MEMU}
+  [[ ! -f "/etc/oprelyon" ]] && Bendi_Dependent
+  [[ -d "operates" ]] && rm -rf operates
+  Bendi_Tongbu
 break
 ;;
 4)
+  ${BENDI_MEMU}
+break
+;;
+5)
   exit 0
 break
 ;;
@@ -901,25 +954,25 @@ function menu2() {
   if [[ "${SUCCESS_FAILED}" == "success" ]]; then
     echo -e " ${Blue}当前使用源码${Font}：${Yellow}${FOLDER_NAME2}-${LUCI_EDITION2}${Font}"
     echo -e " ${Blue}上回成功编译机型${Font}：${Yellow}${TARGET_PROFILE2}${Font}"
-    echo -e " ${Blue}DIY-SETUP/${FOLDER_NAME2}配置文件机型${Font}：${Yellow}${TARGET_PROFILE3}${Font}"
+    echo -e " ${Blue}operates/${FOLDER_NAME2}配置文件机型${Font}：${Yellow}${TARGET_PROFILE3}${Font}"
     aaaa="保留缓存,再次编译?"
     bbbbb="编译"
   elif [[ "${SUCCESS_FAILED}" == "makeconfig" ]]; then  
     echo -e " ${Blue}当前使用源码${Font}：${Yellow}${FOLDER_NAME2}-${LUCI_EDITION2}${Font}"
     echo -e " ${Blue}上回制作了${Font}${Yellow}${TARGET_PROFILE2}机型的.config${Font}${Blue}配置文件${Font}"
-    echo -e " ${Blue}DIY-SETUP/${FOLDER_NAME2}配置文件机型${Font}：${Yellow}${TARGET_PROFILE3}${Font}"
+    echo -e " ${Blue}operates/${FOLDER_NAME2}配置文件机型${Font}：${Yellow}${TARGET_PROFILE3}${Font}"
     aaaa="继续制作.config配置文件"
     bbbbb="制作.config配置文件?"
   elif [[ "${SUCCESS_FAILED}" == "xzdl" ]]; then
     echo -e " ${Blue}当前使用源码${Font}：${Yellow}${FOLDER_NAME2}-${LUCI_EDITION2}${Font}"
     echo -e " ${Red}大兄弟啊,上回下载完DL就没搞成了,继续[${TARGET_PROFILE2}]搞下去?${Font}"
-    echo -e " ${Blue}DIY-SETUP/${FOLDER_NAME2}配置文件机型${Font}：${Yellow}${TARGET_PROFILE3}${Font}"
+    echo -e " ${Blue}operates/${FOLDER_NAME2}配置文件机型${Font}：${Yellow}${TARGET_PROFILE3}${Font}"
     aaaa="接着上次继续再搞下去?"
     bbbbb="编译"
   else
     echo -e " ${Blue}当前使用源码${Font}：${Yellow}${FOLDER_NAME2}-${LUCI_EDITION2}${Font}"
     echo -e " ${Red}大兄弟啊,上回编译${Yellow}[${TARGET_PROFILE2}]${Font}${Red}于失败告终了${Font}"
-    echo -e " ${Blue}DIY-SETUP/${FOLDER_NAME2}配置文件机型${Font}：${Yellow}${TARGET_PROFILE3}${Font}"
+    echo -e " ${Blue}operates/${FOLDER_NAME2}配置文件机型${Font}：${Yellow}${TARGET_PROFILE3}${Font}"
     aaaa="保留缓存,再特么的搞一搞?"
     bbbbb="编译"
   fi
@@ -929,7 +982,7 @@ function menu2() {
   echo
   echo -e " 2${Red}.${Font}${Green}重新选择源码${bbbbb}${Font}"
   echo
-  echo -e " 3${Red}.${Font}${Green}同步上游DIY-SETUP文件${Font}"
+  echo -e " 3${Red}.${Font}${Green}同步上游operates文件${Font}"
   echo
   echo -e " 4${Red}.${Font}${Green}打包N1或晶晨系列固件(您要有armvirt_64的.tar.gz固件)${Font}"
   echo
@@ -976,7 +1029,7 @@ clear
 echo
 echo
 ECHOY " 1. 进行选择编译或制作配置文件源码"
-ECHOY " 2. 同步上游DIY-SETUP文件"
+ECHOY " 2. 同步上游operates文件"
 ECHOY " 3. 打包N1或晶晨系列固件(您要有armvirt_64的.tar.gz固件)"
 ECHOY " 4. 退出编译程序"
 echo
@@ -986,7 +1039,7 @@ while :; do
 read -p " ${XUANZHEOP}： " CHOOSE
 case $CHOOSE in
 1)
-  Bendi_xuanzhe
+  echo "dizhi"
 break
 ;;
 2)
@@ -1039,30 +1092,32 @@ if [[ -f "${HOME_PATH}/key-buildzu" ]]; then
 else
   KAIDUAN_JIANCE="0"
 fi
-if [[ -f "DIY-SETUP/${FOLDER_NAME2}/settings.ini" ]]; then
+if [[ -f "operates/${FOLDER_NAME2}/settings.ini" ]]; then
   KAIDUAN_JIANCE="1"
-  source DIY-SETUP/${FOLDER_NAME2}/settings.ini
+  source operates/${FOLDER_NAME2}/settings.ini
 else
   KAIDUAN_JIANCE="0"
 fi
-if [[ "${KAIDUAN_JIANCE}" == "1" ]] && [[ -f "DIY-SETUP/${FOLDER_NAME2}/${CONFIG_FILE}" ]]; then
-  if [[ `grep -c "CONFIG_TARGET_x86_64=y" "DIY-SETUP/${FOLDER_NAME2}/${CONFIG_FILE}"` -eq '1' ]]; then
+if [[ "${KAIDUAN_JIANCE}" == "1" ]] && [[ -f "operates/${FOLDER_NAME2}/${CONFIG_FILE}" ]]; then
+  if [[ `grep -c "CONFIG_TARGET_x86_64=y" "operates/${FOLDER_NAME2}/${CONFIG_FILE}"` -eq '1' ]]; then
     TARGET_PROFILE3="x86-64"
-  elif [[ `grep -c "CONFIG_TARGET_x86=y" "DIY-SETUP/${FOLDER_NAME2}/${CONFIG_FILE}"` == '1' ]]; then
+  elif [[ `grep -c "CONFIG_TARGET_x86=y" "operates/${FOLDER_NAME2}/${CONFIG_FILE}"` == '1' ]]; then
     TARGET_PROFILE3="x86-32"
-  elif [[ `grep -c "CONFIG_TARGET_armvirt_64_Default=y" "DIY-SETUP/${FOLDER_NAME2}/${CONFIG_FILE}"` -eq '1' ]]; then
+  elif [[ `grep -c "CONFIG_TARGET_armvirt_64_Default=y" "operates/${FOLDER_NAME2}/${CONFIG_FILE}"` -eq '1' ]]; then
     TARGET_PROFILE3="Armvirt_64"
   else
-    TARGET_PROFILE3="$(grep -Eo "CONFIG_TARGET.*DEVICE.*=y" "DIY-SETUP/${FOLDER_NAME2}/${CONFIG_FILE}" | sed -r 's/.*DEVICE_(.*)=y/\1/')"
+    TARGET_PROFILE3="$(grep -Eo "CONFIG_TARGET.*DEVICE.*=y" "operates/${FOLDER_NAME2}/${CONFIG_FILE}" | sed -r 's/.*DEVICE_(.*)=y/\1/')"
   fi
   [[ -z "${TARGET_PROFILE3}" ]] && TARGET_PROFILE3="未知"
 fi
 if [[ "${KAIDUAN_JIANCE}" == "1" ]]; then
   FOLDER_NAME="${FOLDER_NAME2}"
+  echo "FOLDER_NAME=${FOLDER_NAME}" >> ${GITHUB_ENV}
   BENDI_MEMU="menu2"
   menu2
 else
   FOLDER_NAME=""
+  echo "FOLDER_NAME=${FOLDER_NAME}" >> ${GITHUB_ENV}
   BENDI_MEMU="menu"
   menu
 fi

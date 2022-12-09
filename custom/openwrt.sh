@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #====================================================
-#	MANUFACTURER:	shidahuilang
+#	MANUFACTURER:	dahuilang
 #	Dscription: openwrt onekey Management
 #	github: https://github.com/shidahuilang/openwrt
 #====================================================
