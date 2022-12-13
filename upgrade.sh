@@ -4,10 +4,11 @@
 # AutoBuild Functions
 
 
+
 function Diy_Part1() {
 	find . -name 'luci-app-autoupdate' | xargs -i rm -rf {}
 	echo "正在执行：给源码增加定时更新固件插件和设置插件和ttyd成默认自选"
-	git clone -b ceshi https://github.com/shidahuilang/luci-app-autoupdate $HOME_PATH/package/luci-app-autoupdate
+	git clone -b ceshi https://github.com/makebl/luci-app-autoupdate $HOME_PATH/package/luci-app-autoupdate
 	if [[ `grep -c "luci-app-autoupdate" ${HOME_PATH}/include/target.mk` -eq '0' ]]; then
 		sed -i 's?DEFAULT_PACKAGES:=?DEFAULT_PACKAGES:=luci-app-autoupdate luci-app-ttyd ?g' ${HOME_PATH}/include/target.mk
 	fi
@@ -27,7 +28,8 @@ function Diy_Part2() {
 	export Github_API1="https://api.github.com/repos/${GIT_REPOSITORY}/releases/tags/${TARGET_BOARD}"
 	export Github_API2="https://ghproxy.com/https://github.com/${GIT_REPOSITORY}/releases/download/${TARGET_BOARD}/zzz_api"
 	export API_PATH="/tmp/Downloads/zzz_api"
-	export Release_download="${GITHUB_LINK}/releases/download/${TARGET_BOARD}"
+	export Release_download1="${GITHUB_LINK}/releases/download/${TARGET_BOARD}"
+	export Release_download2="https://ghproxy.com/${GITHUB_LINK}/releases/download/${TARGET_BOARD}"
 	export LOCAL_FIRMW="${LUCI_EDITION}-${SOURCE}"
 	export CLOUD_CHAZHAO="${LUCI_EDITION}-${SOURCE}-${TARGET_PROFILE}"
 	
@@ -102,7 +104,8 @@ API_PATH="${API_PATH}"
 Github_API1="${Github_API1}"
 Github_API2="${Github_API2}"
 Github_Release="${Github_Release}"
-Release_download="${Release_download}"
+Release_download1="${Release_download1}"
+Release_download2="${Release_download2}"
 EOF
 	sudo chmod +x ${In_Firmware_Info}
 	
@@ -122,7 +125,8 @@ API_PATH="${API_PATH}"
 Github_API1="${Github_API1}"
 Github_API2="${Github_API2}"
 Github_Release="${Github_Release}"
-Release_download="${Release_download}"
+Release_download1="${Release_download1}"
+Release_download2="${Release_download2}"
 EOF
 	bash <(curl -fsSL https://raw.githubusercontent.com/makebl/common/main/autoupdate/replacebianliang.sh)
 	sudo chmod +x ${In_Firmware_Replace}
@@ -179,4 +183,3 @@ function Diy_Part3() {
 	;;
 	esac
 	cd ${HOME_PATH}
-}
