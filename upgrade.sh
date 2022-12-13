@@ -183,3 +183,4 @@ function Diy_Part3() {
 	;;
 	esac
 	cd ${HOME_PATH}
+}
