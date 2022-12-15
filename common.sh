@@ -762,7 +762,7 @@ sed -i '/helloworld/d' "${HOME_PATH}/feeds.conf.default"
 sed -i '/passwall/d' "${HOME_PATH}/feeds.conf.default"
 
 cat >>"${HOME_PATH}/feeds.conf.default" <<-EOF
-src-git dahuilang https://github.com/shidahuilang/openwrt-package.git;${PACKAGE_BRANCH}
+src-git dahuilang https://github.com/makebl/openwrt-package.git;${PACKAGE_BRANCH}
 EOF
 
 if [[ "$(. ${FILES_PATH}/etc/openwrt_release && echo "$DISTRIB_RECOGNIZE")" != "21" ]]; then
