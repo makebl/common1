@@ -16,15 +16,12 @@ run_zzz_default() {
 	fi
 	
 	rm -rf /tmp/luci-*cache*
-        rm -rf /tmp/luci-modulecache/
-        rm -f /tmp/luci-indexcache
+	rm -rf /tmp/luci-modulecache/
+	rm -f /tmp/luci-indexcache
 	/etc/init.d/uhttpd restart
 	/etc/init.d/network restart
-        /etc/init.d/dnsmasq restart
+	/etc/init.d/dnsmasq restart
 	/etc/init.d/system restart
-        if [[ -f '/etc/init.d/shadowsocksr' ]]; then
-          /etc/init.d/shadowsocksr restart
-        fi
 }
 
 start() {

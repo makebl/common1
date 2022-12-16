@@ -1,9 +1,9 @@
 #!/bin/sh
 
 #====================================================
-#	MANUFACTURER:	dahuilang
+#	MANUFACTURER:	281677160
 #	Dscription: openwrt onekey Management
-#	github: https://github.com/shidahuilang/openwrt
+#	github: https://github.com/281677160/build-actions
 #====================================================
 
 # 字体颜色配置
