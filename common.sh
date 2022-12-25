@@ -1924,7 +1924,7 @@ else
 fi
 echo
 echo
-if [[ ${INFORMATION_NOTICE} == "TG" ]] || [[ ${INFORMATION_NOTICE} == "PUSH" ]]; then
+if [[ ${INFORMATION_NOTICE} == "TG" ]] || [[ ${INFORMATION_NOTICE} == "PUSH" ]] || [[ ${INFORMATION_NOTICE} == "WX" ]]; then
   TIME y "pushplus/Telegram通知: 开启"
 else
   TIME r "pushplus/Telegram通知: 关闭"
