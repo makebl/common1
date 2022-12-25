@@ -40,6 +40,8 @@ if [[ -n "${INPUTS_REPO_BRANCH}" ]]; then
     INFORMATION_NOTICE2="INFORMATION_NOTICE\\=\\\"TG\\\""
   elif [[ "${INPUTS_INFORMATION_NOTICE}" == 'pushplus' ]]; then
     INFORMATION_NOTICE2="INFORMATION_NOTICE\\=\\\"PUSH\\\""
+  elif [[ "${INPUTS_INFORMATION_NOTICE}" == 'weixin' ]]; then
+    INFORMATION_NOTICE2="INFORMATION_NOTICE\\=\\\"WX\\\""
   fi
         
 
