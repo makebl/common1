@@ -1924,9 +1924,9 @@ fi
 echo
 echo
 if [[ ${INFORMATION_NOTICE} == "TG" ]] || [[ ${INFORMATION_NOTICE} == "PUSH" ]] || [[ ${INFORMATION_NOTICE} == "WX" ]]; then
-  TIME y "pushplus/Telegram通知: 开启"
+  TIME y "pushplus/Telegram/weixin通知: 开启"
 else
-  TIME r "pushplus/Telegram通知: 关闭"
+  TIME r "pushplus/Telegram/weixin通知: 关闭"
 fi
 if [[ ${UPLOAD_FIRMWARE} == "true" ]]; then
   TIME y "上传固件在github actions: 开启"
