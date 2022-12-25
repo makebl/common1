@@ -40,8 +40,6 @@ if [[ -n "${INPUTS_REPO_BRANCH}" ]]; then
     INFORMATION_NOTICE2="INFORMATION_NOTICE\\=\\\"TG\\\""
   elif [[ "${INPUTS_INFORMATION_NOTICE}" == 'pushplus' ]]; then
     INFORMATION_NOTICE2="INFORMATION_NOTICE\\=\\\"PUSH\\\""
-  elif [[ "${INPUTS_INFORMATION_NOTICE}" == 'weixin' ]]; then
-    INFORMATION_NOTICE2="INFORMATION_NOTICE\\=\\\"WX\\\""
   fi
         
 
@@ -1924,7 +1922,7 @@ else
 fi
 echo
 echo
-if [[ ${INFORMATION_NOTICE} == "TG" ]] || [[ ${INFORMATION_NOTICE} == "PUSH" ]] || [[ ${INFORMATION_NOTICE} == "WX" ]]; then
+if [[ ${INFORMATION_NOTICE} == "TG" ]] || [[ ${INFORMATION_NOTICE} == "PUSH" ]]; then
   TIME y "pushplus/Telegram通知: 开启"
 else
   TIME r "pushplus/Telegram通知: 关闭"
