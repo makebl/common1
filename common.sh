@@ -807,7 +807,16 @@ sed -i '/passwall/d' "${HOME_PATH}/feeds.conf.default"
 cat >>"${HOME_PATH}/feeds.conf.default" <<-EOF
 src-git makebl https://github.com/makebl/openwrt-package.git;${PACKAGE_BRANCH}
 EOF
-
+# openclash
+find . -type d -name '*luci-app-openclash*' -o -name '*OpenClash*' | xargs -i rm -rf {}
+sed -i '/OpenClash/d' "feeds.conf.default"
+if [[ "${OpenClash_branch}" == "1" ]]; then
+  echo "src-git OpenClash https://github.com/vernesong/OpenClash.git;dev" >> "feeds.conf.default"
+  echo "OpenClash_branch=dev" >> ${GITHUB_ENV}
+else
+  echo "src-git OpenClash https://github.com/vernesong/OpenClash.git;master" >> "feeds.conf.default"
+  echo "OpenClash_branch=master" >> ${GITHUB_ENV}
+fi
 if [[ "$(. ${FILES_PATH}/etc/openwrt_release && echo "$DISTRIB_RECOGNIZE")" != "21" ]]; then
 cat >>"${HOME_PATH}/feeds.conf.default" <<-EOF
 src-git helloworld https://github.com/fw876/helloworld
