@@ -877,129 +877,26 @@ if [[ "${SOURCE_CODE}" == "OFFICIAL" ]] && [[ "${REPO_BRANCH}" == "openwrt-19.07
 fi
 
 # AdGuardHome内核
-if [[ "${COLLECTED_PACKAGES}" == "true" ]] && [[ "${AdGuardHome_Core}" == "1" ]]; then
+if [[ "${AdGuardHome_Core}" == "1" ]]; then
   echo "AdGuardHome_Core=1" >> ${GITHUB_ENV}
-elif [[ "${COLLECTED_PACKAGES}" == "true" ]] && [[ "${AdGuardHome_Core}" == "0" ]]; then
-  [[ -f "${HOME_PATH}/files/usr/bin/AdGuardHome" ]] && rm -rf ${HOME_PATH}/files/usr/bin/AdGuardHome
-  echo "AdGuardHome_Core=0" >> ${GITHUB_ENV}
-elif [[ ! "${COLLECTED_PACKAGES}" == "true" ]]; then
-  [[ -f "${HOME_PATH}/files/usr/bin/AdGuardHome" ]] && rm -rf ${HOME_PATH}/files/usr/bin/AdGuardHome
-  echo "AdGuardHome_Core=0" >> ${GITHUB_ENV}
 else
   [[ -f "${HOME_PATH}/files/usr/bin/AdGuardHome" ]] && rm -rf ${HOME_PATH}/files/usr/bin/AdGuardHome
   echo "AdGuardHome_Core=0" >> ${GITHUB_ENV}
 fi
 
 # openclash内核
-if [[ "${COLLECTED_PACKAGES}" == "true" ]] && [[ "${OpenClash_Core}" == "1" ]]; then
+if [[ "${OpenClash_Core}" == "1" ]]; then
   echo "OpenClash_Core=1" >> ${GITHUB_ENV}
-elif [[ "${COLLECTED_PACKAGES}" == "true" ]] && [[ "${OpenClash_Core}" == "2" ]]; then
+elif [[ "${OpenClash_Core}" == "2" ]]; then
   echo "OpenClash_Core=2" >> ${GITHUB_ENV}
-elif [[ "${COLLECTED_PACKAGES}" == "true" ]] && [[ "${OpenClash_Core}" == "0" ]]; then
-  echo "OpenClash_Core=0" >> ${GITHUB_ENV}
-  [[ -d "${HOME_PATH}/files/etc/openclash" ]] && rm -rf ${HOME_PATH}/files/etc/openclash
-elif [[ ! "${COLLECTED_PACKAGES}" == "true" ]] && [[ "${OpenClash_Core}" == "1" ]]; then
-  [[ -d "${HOME_PATH}/files/etc/openclash" ]] && rm -rf ${HOME_PATH}/files/etc/openclash
-  echo "OpenClash_Core=0" >> ${GITHUB_ENV}
-  echo "TIME r \"因没开作者收集的插件包,没OpenClash插件,对openclash的分支选择无效\"" >> ${HOME_PATH}/CHONGTU
-elif [[ ! "${COLLECTED_PACKAGES}" == "true" ]] && [[ "${OpenClash_Core}" == "2" ]]; then
-  [[ -d "${HOME_PATH}/files/etc/openclash" ]] && rm -rf ${HOME_PATH}/files/etc/openclash
-  echo "OpenClash_Core=0" >> ${GITHUB_ENV}
-  echo "TIME r \"因没开作者收集的插件包,没OpenClash插件,对openclash的分支选择无效\"" >> ${HOME_PATH}/CHONGTU
 else
   echo "OpenClash_Core=0" >> ${GITHUB_ENV}
-  [[ -d "${HOME_PATH}/files/etc/openclash" ]] && rm -rf ${HOME_PATH}/files/etc/openclash
+  [[ -d "${HOME_PATH}/files/etc/openclash/core" ]] && rm -rf ${HOME_PATH}/files/etc/openclash/core
 fi
-
-if [[ "${COLLECTED_PACKAGES}" == "true" ]] && [[ "${OpenClash_branch}" == "0" ]]; then
-  OpenClash_branch="0"
-elif [[ "${COLLECTED_PACKAGES}" == "true" ]] && [[ -z "${OpenClash_branch}" ]]; then
-  OpenClash_branch="0"
-elif [[ ! "${COLLECTED_PACKAGES}" == "true" ]]; then
-  OpenClash_branch="0"
-elif [[ "${COLLECTED_PACKAGES}" == "true" ]] && [[ "${OpenClash_branch}" == "master" ]]; then
-  OpenClash_branch="master"
-  if [[ `grep -c 'luci-app-openclash' "${HOME_PATH}/include/target.mk"` -eq '0' ]]; then
-    sed -i "s?DEFAULT_PACKAGES:=?DEFAULT_PACKAGES:=luci-app-openclash ?g" "include/target.mk"
-  fi
-elif [[ "${COLLECTED_PACKAGES}" == "true" ]] && [[ "${OpenClash_branch}" == "dev" ]]; then
-  OpenClash_branch="dev"
-  if [[ `grep -c 'luci-app-openclash' "${HOME_PATH}/include/target.mk"` -eq '0' ]]; then
-    sed -i "s?DEFAULT_PACKAGES:=?DEFAULT_PACKAGES:=luci-app-openclash ?g" "include/target.mk"
-  fi
-fi
-
-uci_openclash="0"
-sj_clash=`date -d "$(date +'%Y-%m-%d %H:%M:%S')" +%s`
-if [[ -f "${HOME_PATH}/package/luci-app-openclash/sj_clash" ]]; then
-  t1="$(cat ${HOME_PATH}/package/luci-app-openclash/sj_clash)"
-else
-  t1="1679053605"
-fi
-
-t2=`date -d "$(date +'%Y-%m-%d %H:%M:%S')" +%s`
-SECONDS=$((t2-t1))
-HOUR=$(( $SECONDS/3600 ))
-if [[ "${HOUR}" -lt "12" ]] && [[ -f "${HOME_PATH}/files/etc/openclash/core/clash" ]]; then
-  echo "OpenClash_Core=0" >> ${GITHUB_ENV}
-  wuxuxiazai="1"
-else
-  echo "OpenClash_Core=${OpenClash_Core}" >> ${GITHUB_ENV}
-  wuxuxiazai="0"
-fi
-
-if [[ -f "${HOME_PATH}/package/luci-app-openclash/sj_branch" ]]; then
-  clash_branch="$(cat ${HOME_PATH}/package/luci-app-openclash/sj_branch)"
-else
-  clash_branch="${OpenClash_branch}"
-fi
-
-if [[ "${OpenClash_branch}" == "0" ]]; then
-  find . -type d -name 'luci-app-openclash' | xargs -i rm -rf {}
-  echo "OpenClash_Core=0" >> ${GITHUB_ENV}
-  if [[ -n "$(grep "luci-app-openclash" ${HOME_PATH}/include/target.mk)" ]]; then
-    sed -i 's/luci-app-openclash //' ${HOME_PATH}/include/target.mk
-  fi
-  echo "不需要OpenClash插件"
-elif [[ "${wuxuxiazai}" == "1" ]] && [[ -f "${HOME_PATH}/package/luci-app-openclash/sj_branch" ]]; then
-  if [[ -z "$(grep "luci-app-openclash" ${HOME_PATH}/include/target.mk)" ]]; then
-    sed -i 's?DEFAULT_PACKAGES:=?DEFAULT_PACKAGES:=luci-app-openclash ?g' "${HOME_PATH}/include/target.mk"
-  fi
-else
-  find . -type d -name 'luci-app-openclash' | xargs -i rm -rf {}
-  if [[ -z "$(grep "luci-app-openclash" ${HOME_PATH}/include/target.mk)" ]]; then
-    sed -i 's?DEFAULT_PACKAGES:=?DEFAULT_PACKAGES:=luci-app-openclash ?g' "${HOME_PATH}/include/target.mk"
-  fi
-  git clone -b "${OpenClash_branch}" --depth 1 https://github.com/vernesong/OpenClash ${HOME_PATH}/package/luci-app-openclash
-  if [[ $? -ne 0 ]]; then
-    echo
-    echo "luci-app-openclash下载失败"
-  else
-    echo "${OpenClash_branch}" > "${HOME_PATH}/package/luci-app-openclash/sj_branch"
-    echo "${sj_clash}" > "${HOME_PATH}/package/luci-app-openclash/sj_clash"
-    uci_openclash="1"
-    echo
-    echo "正在使用"${OpenClash_branch}"分支的openclash"
-  fi
-fi
-
-echo "OpenClash_branch=${OpenClash_branch}" >> ${GITHUB_ENV}
-
-if [[ "${uci_openclash}" == "1" ]]; then
-  uci_path="${HOME_PATH}/package/luci-app-openclash/luci-app-openclash/root/etc/uci-defaults/luci-openclash"
-  if [[ `grep -c "uci get openclash.config.enable" "${uci_path}"` -eq '0' ]]; then
-    sed -i '/exit 0/d' "${uci_path}"
-    sed -i '/uci -q set openclash.config.enable/d' "${uci_path}"
-    sed -i '/uci -q commit openclash/d' "${uci_path}"
-
-cat >>"${uci_path}" <<-EOF
-if [[ "\$(uci get openclash.config.enable)" == "0" ]] || [[ -z "\$(uci get openclash.config.enable)" ]]; then
-  uci -q set openclash.config.enable=0
-  uci -q commit openclash
-fi
-exit 0
-EOF
-  fi
+luci_path="$({ find "${HOME_PATH}/feeds" |grep 'luci-openclash' |grep 'root'; } 2>"/dev/null")"
+if [[ -f "${luci_path}" ]] && [[ `grep -c "uci get openclash.config.enable" "${luci_path}"` -eq '0' ]]; then
+  sed -i '/uci -q set openclash.config.enable=0/i\if [[ "\$(uci get openclash.config.enable)" == "0" ]] || [[ -z "\$(uci get openclash.config.enable)" ]]; then' "${luci_path}"
+  sed -i '/uci -q commit openclash/a\fi' "${luci_path}"
 fi
 
 
