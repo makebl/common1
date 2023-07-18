@@ -1,36 +1,26 @@
-#
-# 同步上游仓库或者清理发布都需要用REPO_TOKEN密匙
-#
-# 记住，同步上游是不会同步您任何自建文件夹的，所以同步后您要自己对比我现有的文件夹里面diy-part.sh和settings.ini文件有没有更新
-#
-# REPO_TOKEN密匙制作教程：https://git.io/jm.md
-#
 
-
-name: 同步上游仓库
+name: Upload
 on:
+  repository_dispatch:
   workflow_dispatch:
-    inputs:
-      again-fork:
-        description: '[fork-actions]改成[fork],再按[Run workflow]按钮启动,开启同步上游仓库'
-        required: false
-        default: 'fork'
+  
+  schedule:
+   - cron: 40 3 */7 * *
 
 env:
-  BILDYML: synchronization.yml
   REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
   TZ: Asia/Shanghai
 
 jobs:
-  del_runs:
-    runs-on: Ubuntu-20.04
-    name: 同步上游仓库
+  build:
+    runs-on: Ubuntu-22.04
+    name: Upload
     
     steps:
-    - name: 准备结束
+    - name: Checkout
       uses: actions/checkout@v3
       
-    - name: 部署环境
+    - name: Initialization environment
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
@@ -40,19 +30,63 @@ jobs:
         git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
         git config --global user.name "github-actions[bot]"
           
-    - name: 整理数据
-      if: env.REPO_TOKEN && (github.event.inputs.again-fork == 'fork')
+    - name: Organize data
+      if: env.REPO_TOKEN
       run: |
         cd $GITHUB_WORKSPACE
-        git clone -b main https://github.com/shidahuilang/common shangyou
+        git clone https://github.com/${{github.repository}}.git $GITHUB_WORKSPACE/repogx
         
-    - name: 同步上游仓库
-      if: env.REPO_TOKEN && (github.event.inputs.again-fork == 'fork')
+        rm -rf $GITHUB_WORKSPACE/repogx/Share/packr
+        svn co https://github.com/openwrt/packages/branches/openwrt-21.02/devel/packr $GITHUB_WORKSPACE/repogx/Share/packr
+        if [[ $? -ne 0 ]]; then
+          git clone --depth 1 https://github.com/openwrt/packages -b openwrt-21.02 $GITHUB_WORKSPACE/golang-version
+          if [[ -d "golang-version" ]]; then
+            rm -rf $GITHUB_WORKSPACE/repogx/Share/packr
+            cp -Rf $GITHUB_WORKSPACE/golang-version/devel/packr $GITHUB_WORKSPACE/repogx/Share/packr
+          fi
+        fi
+        
+        svn co https://github.com/openwrt/packages/trunk/lang/golang $GITHUB_WORKSPACE/golang
+        if [[ $? -eq 0 ]]; then
+          rm -rf $GITHUB_WORKSPACE/repogx/Share/golang && cp -Rf $GITHUB_WORKSPACE/golang $GITHUB_WORKSPACE/repogx/Share/golang
+        else
+          git clone --depth 1 https://github.com/openwrt/packages -b openwrt-22.03 $GITHUB_WORKSPACE/golang-version
+          if [[ -d "golang-version" ]]; then
+            rm -rf $GITHUB_WORKSPACE/repogx/Share/golang
+            cp -Rf $GITHUB_WORKSPACE/golang-version/lang/golang $GITHUB_WORKSPACE/repogx/Share/golang
+          fi
+        fi
+
+        git clone https://github.com/coolsnowwolf/lede $GITHUB_WORKSPACE/Lede
+        git clone https://github.com/coolsnowwolf/openwrt-gl-ax1800 $GITHUB_WORKSPACE/ax1800
+        git clone https://github.com/Lienol/openwrt $GITHUB_WORKSPACE/Lienol
+        git clone https://github.com/immortalwrt/immortalwrt $GITHUB_WORKSPACE/Immortalwrt
+        git clone https://github.com/openwrt/openwrt $GITHUB_WORKSPACE/Official
+        git clone https://github.com/x-wrt/x-wrt $GITHUB_WORKSPACE/Xwrt
+        echo "" >$GITHUB_WORKSPACE/123
+        
+        cd $GITHUB_WORKSPACE/Lede
+        git branch -r |sed '/HEAD/d' |sed 's/openwrt-//g' |sed 's/master/18.06/g' |sed 's/$/-Lede\"/' |sed 's/origin\//=\"/g' >>$GITHUB_WORKSPACE/123
+        cd $GITHUB_WORKSPACE/ax1800
+        git branch -r |sed '/HEAD/d' |sed 's/openwrt-//g' |sed 's/master/gl-ax1800/g' |sed 's/$/-Lede\"/' |sed 's/origin\//=\"/g' >>$GITHUB_WORKSPACE/123
+        cd $GITHUB_WORKSPACE/Lienol
+        git branch -r |sed '/HEAD/d' |sed 's/openwrt-//g' |sed 's/$/-Lienol\"/' |sed 's/origin\//=\"/g' >>$GITHUB_WORKSPACE/123
+        cd $GITHUB_WORKSPACE/Immortalwrt
+        git branch -r |sed '/HEAD/d' |sed 's/openwrt-//g' |sed 's/$/-Immortalwrt\"/' |sed 's/origin\//=\"/g' >>$GITHUB_WORKSPACE/123
+        cd $GITHUB_WORKSPACE/Official
+        git branch -r |sed '/HEAD/d' |sed 's/openwrt-//g' |sed 's/$/-Official\"/' |sed 's/origin\//=\"/g' >>$GITHUB_WORKSPACE/123
+        cd $GITHUB_WORKSPACE/Xwrt
+        git branch -r |sed '/HEAD/d' |sed 's/openwrt-//g' |sed 's/$/-Xwrt\"/' |sed 's/origin\//=\"/g' >>$GITHUB_WORKSPACE/123
+        cd $GITHUB_WORKSPACE
+        cat $GITHUB_WORKSPACE/123 |sed '/^$/d' |awk '$0=NR$0' |sed 's/^/R/' |sed s/[[:space:]]//g >$GITHUB_WORKSPACE/repogx/autoupdate/replace
+        
+    - name: Upload
+      continue-on-error: true
+      if: env.REPO_TOKEN
       run: |
         cd $GITHUB_WORKSPACE
-        sed -i 's/start-up/relevance/g' $GITHUB_WORKSPACE/shangyou/common.sh
-        chmod -R 775 $GITHUB_WORKSPACE/shangyou
-        cd shangyou
+        chmod -R 775 repogx
+        cd repogx
         git add .
-        git commit -m "Update $(date +%Y-%m%d-%H%M%S)"
+        git commit -m "up"
         git push --quiet "https://${{ secrets.REPO_TOKEN }}@github.com/${{github.repository}}" HEAD:main
