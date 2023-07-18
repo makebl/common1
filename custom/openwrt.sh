@@ -1,9 +1,9 @@
 #!/bin/sh
 
 #====================================================
-#	MANUFACTURER:	shidahuilang
+#	MANUFACTURER:	281677160
 #	Dscription: openwrt onekey Management
-#	github: https://github.com/shidahuilang/openwrt
+#	github: https://github.com/281677160/build-actions
 #====================================================
 
 # 字体颜色配置
@@ -16,6 +16,7 @@ GreenBG="\033[42;37m"
 RedBG="\033[41;37m"
 OK="${Green}[OK]${Font}"
 ERROR="${Red}[ERROR]${Font}"
+Input_Optio=$1
 
 function ECHOY() {
   echo
@@ -74,8 +75,8 @@ function xiugai_ip() {
     uci commit network
     ECHOG "您的IP为：${domain}"
     ECHOY "正在为您清空密码"
-    if [[ "$USER" == "admin" ]]; then
-      sed -i 's/admin:.*/admin::0:0:99999:7:::/g' /etc/shadow
+    if [[ `grep -c "admin" /etc/shadow` -eq '1' ]]; then
+      passwd -d admin
       passwd -d root
       judge
     else
@@ -96,8 +97,8 @@ while :; do
 read -p "否清空密码(shi fou qing kong mi ma)[Y/n]：" YN
 case ${YN} in
 [Yy]) 
-    if [[ "$USER" == "admin" ]]; then
-      sed -i 's/admin:.*/admin::0:0:99999:7:::/g' /etc/shadow
+    if [[ `grep -c "admin" /etc/shadow` -eq '1' ]]; then
+      passwd -d admin
       passwd -d root
     else
       passwd -d root
@@ -123,7 +124,7 @@ while :; do
 read -p "是否重启系统(shi fou chong qi xi tong)[Y/n]：" YN
 case ${YN} in
 [Yy]) 
-    ECHOG "系统重启中，售后自行登录openwrt后台"
+    ECHOG "系统重启中，稍后自行登录openwrt后台"
     uci set argon.@global[0].bing_background=0
     uci commit argon
     reboot -f
@@ -150,6 +151,31 @@ function first_boot() {
   judge
 }
 
+function rm_init() {
+rm -rf /tmp/luci-modulecache/
+rm -rf /tmp/luci-indexcache
+/etc/init.d/uhttpd restart
+/etc/init.d/network restart
+/etc/init.d/dnsmasq restart
+/etc/init.d/system restart
+if [[ `grep -c "/tmp/luci-\*cache\*" /etc/crontabs/root` -eq '0' ]]; then
+  echo "0 1 * * 1 rm -rf /tmp/luci-*cache* > /dev/null 2>&1" >> /etc/crontabs/root
+  /etc/init.d/cron restart
+fi
+}
+
+function ks_reboot() {
+if [ -f "/etc/default-setting" ]; then
+  rm -rf /etc/default-setting
+fi
+sed -i '/openwrt -r/d' "/etc/init.d/Postapplication"
+sleep 2
+if [[ `grep -c "openwrt -r" /etc/init.d/Postapplication` -ge '1' ]]; then
+  sed -i "s?openwrt -r??g" "/etc/init.d/Postapplication"
+fi
+reboot
+}
+
 menu2() {
   clear
   echo  
@@ -158,7 +184,7 @@ menu2() {
   ECHOY " 2. 清空密码(qing kong mi ma)"
   ECHOYY " 3. 重启系统(chong qi xi tong)"
   ECHOY " 4. 恢复出厂设置(hui fu chu chang she zhi)"
-  ECHOYY " 5. 退出菜单(tui chu)"
+  ECHOYY " 5. 退出(tui chu)"
   echo
   XUANZHEOP="请输入数字"
   while :; do
@@ -186,7 +212,7 @@ menu2() {
     break
     ;;
     *)
-      XUANZHEOP="请输入正确的数字编号!"
+      XUANZHEOP="请输入正确的数字编号"
     ;;
     esac
     done
@@ -201,7 +227,7 @@ menu() {
   ECHOY " 3. 清空密码(qing kong mi ma)"
   ECHOYY " 4. 重启系统(chong qi xi tong)"
   ECHOY " 5. 恢复出厂设置(hui fu chu chang she zhi)"
-  ECHOYY " 6. 退出菜单(tui chu)"
+  ECHOYY " 6. 退出(tui chu)"
   echo
   XUANZHEOP="请输入数字"
   while :; do
@@ -233,14 +259,25 @@ menu() {
     break
     ;;
     *)
-      XUANZHEOP="请输入正确的数字编号!"
+      XUANZHEOP="请输入正确的数字编号"
     ;;
     esac
     done
 }
 
-if [[ -f '/usr/bin/replace' ]]; then
-  menu "$@"
+if [[ -z "${Input_Optio}" ]]; then
+  if [[ -f '/usr/bin/replace' ]]; then
+    menu "$@"
+  else
+    menu2 "$@"
+  fi
 else
-  menu2 "$@"
+  case ${Input_Optio} in
+  -r)
+    ks_reboot
+  ;;
+  -e)
+    rm_init
+  ;;
+  esac
 fi

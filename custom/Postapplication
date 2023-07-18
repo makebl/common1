@@ -10,18 +10,11 @@ run_zzz_default() {
                 rm -rf /etc/default-setting
 	fi
 	
-	if [[ `grep -c "/tmp/luci-\*cache\*" /etc/crontabs/root` -eq '0' ]]; then
-		echo "0 1 * * 1 rm -rf /tmp/luci-*cache* > /dev/null 2>&1" >> /etc/crontabs/root
-		/etc/init.d/cron restart
-	fi
+	openwrt -r
 	
-	rm -rf /tmp/luci-*cache*
-	rm -rf /tmp/luci-modulecache/
-	rm -f /tmp/luci-indexcache
-	/etc/init.d/uhttpd restart
-	/etc/init.d/network restart
-	/etc/init.d/dnsmasq restart
-	/etc/init.d/system restart
+	if [ -f "/usr/bin/openwrt" ]; then
+		openwrt -e
+	fi
 }
 
 start() {
