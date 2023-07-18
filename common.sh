@@ -1973,7 +1973,7 @@ if [ -n "$(ls -A "${HOME_PATH}/Plug-in" 2>/dev/null)" ]; then
 fi
 }
 
-function Diy_menu5() {
+function Diy_menu6() {
 Diy_prevent
 Make_defconfig
 Diy_Publicarea2
@@ -1981,21 +1981,20 @@ Diy_adguardhome
 Diy_upgrade2
 }
 
-function Diy_menu4() {
-Diy_files
-Diy_part_sh
-Diy_Language
+function Diy_menu5() {
 Diy_feeds
 Diy_IPv6helper
 }
 
+function Diy_menu4() {
+Diy_zdypartsh
+Diy_Publicarea
+}
+
 function Diy_menu3() {
-Diy_wenjian
-Diy_clean
+Diy_checkout
+Diy_Wenjian
 Diy_${SOURCE_CODE}
-Diy_distrib
-Diy_chajianyuan
-Diy_upgrade1
 }
 
 function Diy_menu2() {
@@ -2004,5 +2003,4 @@ Diy_Notice
 
 function Diy_menu1() {
 Diy_variable
-Diy_settings
 }
