@@ -268,7 +268,6 @@ EOF
 
 
 
-done
 
 case "${SOURCE_CODE}" in
 COOLSNOWWOLF)
