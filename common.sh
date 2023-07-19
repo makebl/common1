@@ -259,19 +259,19 @@ if [[ -n "${LUCI_CHECKUT}" ]]; then
 fi
 git pull
 
-sed -i '/makebl/d; /helloworld/d; /passwall/d; /OpenClash/d' "feeds.conf.default"
-cat feeds.conf.default|awk '!/^#/'|awk '!/^$/'|awk '!a[$1" "$2]++{print}' >uniq.conf
-mv -f uniq.conf feeds.conf.default
+#sed -i '/makebl/d; /helloworld/d; /passwall/d; /OpenClash/d' "feeds.conf.default"
+#cat feeds.conf.default|awk '!/^#/'|awk '!/^$/'|awk '!a[$1" "$2]++{print}' >uniq.conf
+#mv -f uniq.conf feeds.conf.default
 
 # 这里增加了源,要对应的删除/etc/opkg/distfeeds.conf插件源
 cat >>"feeds.conf.default" <<-EOF
-src-git makebl https://github.com/281677160/openwrt-package.git;${SOURCE}
+src-git makebl https://github.com/shidahuilang/openwrt-package.git;${SOURCE}
 EOF
 ./scripts/feeds update -a
-cat >>"feeds.conf.default" <<-EOF
-src-git helloworld https://github.com/fw876/helloworld.git
-src-git passwall3 https://github.com/xiaorouji/openwrt-passwall.git;packages
-EOF
+#cat >>"feeds.conf.default" <<-EOF
+#src-git helloworld https://github.com/fw876/helloworld.git
+#src-git passwall3 https://github.com/xiaorouji/openwrt-passwall.git;packages
+#EOF
 
 
 z="*luci-theme-argon*,*luci-app-argon-config*,*luci-theme-Butterfly*,*luci-theme-netgear*,*luci-theme-atmaterial*, \
