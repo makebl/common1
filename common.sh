@@ -267,11 +267,11 @@ fi
 cat >>"feeds.conf.default" <<-EOF
 src-git shidahuilang https://github.com/shidahuilang/openwrt-package.git;${SOURCE}
 EOF
-./scripts/feeds update -a
-cat >>"feeds.conf.default" <<-EOF
+#./scripts/feeds update -a
+#cat >>"feeds.conf.default" <<-EOF
 #src-git helloworld https://github.com/fw876/helloworld.git
 #src-git passwall3 https://github.com/xiaorouji/openwrt-passwall.git;packages
-EOF
+#EOF
 
 
 z="*luci-theme-argon*,*luci-app-argon-config*,*luci-theme-Butterfly*,*luci-theme-netgear*,*luci-theme-atmaterial*, \
