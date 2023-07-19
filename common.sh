@@ -259,30 +259,15 @@ if [[ -n "${LUCI_CHECKUT}" ]]; then
 fi
 git pull
 
-#sed -i '/makebl/d; /helloworld/d; /passwall/d; /OpenClash/d' "feeds.conf.default"
-#cat feeds.conf.default|awk '!/^#/'|awk '!/^$/'|awk '!a[$1" "$2]++{print}' >uniq.conf
-#mv -f uniq.conf feeds.conf.default
 
 # 这里增加了源,要对应的删除/etc/opkg/distfeeds.conf插件源
 cat >>"feeds.conf.default" <<-EOF
 src-git makebl https://github.com/shidahuilang/openwrt-package.git;${SOURCE}
 EOF
-./scripts/feeds update -a
-#cat >>"feeds.conf.default" <<-EOF
-#src-git helloworld https://github.com/fw876/helloworld.git
-#src-git passwall3 https://github.com/xiaorouji/openwrt-passwall.git;packages
-#EOF
 
 
-z="*luci-theme-argon*,*luci-app-argon-config*,*luci-theme-Butterfly*,*luci-theme-netgear*,*luci-theme-atmaterial*, \
-luci-theme-rosy,luci-theme-darkmatter,luci-theme-infinityfreedom,luci-theme-design,luci-app-design-config, \
-luci-theme-bootstrap-mod,luci-theme-freifunk-generic,luci-theme-opentomato,luci-theme-kucat, \
-luci-app-eqos,adguardhome,luci-app-adguardhome,mosdns,luci-app-mosdns,luci-app-wol,luci-app-openclash, \
-luci-app-gost,gost,luci-app-smartdns,smartdns,luci-app-wizard,luci-app-msd_lite,msd_lite, \
-luci-app-ssr-plus,*luci-app-passwall*,luci-app-vssr,lua-maxminddb"
-t=(${z//,/ })
-for x in ${t[@]}; do \
-  find . -type d -name "${x}" |grep -v 'danshui\|freifunk' |xargs -i rm -rf {}; \
+
+
 done
 
 case "${SOURCE_CODE}" in
