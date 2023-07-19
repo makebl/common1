@@ -267,7 +267,7 @@ fi
 cat >>"feeds.conf.default" <<-EOF
 src-git shidahuilang https://github.com/shidahuilang/openwrt-package.git;${SOURCE}
 EOF
-#./scripts/feeds update -a
+./scripts/feeds update -a
 #cat >>"feeds.conf.default" <<-EOF
 #src-git helloworld https://github.com/fw876/helloworld.git
 #src-git passwall3 https://github.com/xiaorouji/openwrt-passwall.git;packages
