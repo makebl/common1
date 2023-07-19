@@ -265,7 +265,7 @@ mv -f uniq.conf feeds.conf.default
 
 # 这里增加了源,要对应的删除/etc/opkg/distfeeds.conf插件源
 cat >>"feeds.conf.default" <<-EOF
-src-git shidahuilang https://github.com/281677160/openwrt-package.git;${SOURCE}
+src-git shidahuilang https://github.com/shidahuilang/openwrt-package.git;${SOURCE}
 EOF
 ./scripts/feeds update -a
 cat >>"feeds.conf.default" <<-EOF
@@ -592,16 +592,7 @@ cd ${HOME_PATH}
 source $BUILD_PATH/$DIY_PART_SH
 cd ${HOME_PATH}
 
-# passwall
-find . -type d -name '*luci-app-passwall*' -o -name 'passwall1' -o -name 'passwall2' | xargs -i rm -rf {}
-sed -i '/passwall.git\;luci/d; /passwall2/d' "feeds.conf.default"
-if [[ "${PassWall_luci_branch}" == "1" ]]; then
-  echo "src-git passwall1 https://github.com/xiaorouji/openwrt-passwall.git;luci-smartdns-new-version" >> "feeds.conf.default"
-  echo "src-git passwall2 https://github.com/xiaorouji/openwrt-passwall2.git;main" >> "feeds.conf.default"
-else
-  echo "src-git passwall1 https://github.com/xiaorouji/openwrt-passwall.git;luci" >> "feeds.conf.default"
-  echo "src-git passwall2 https://github.com/xiaorouji/openwrt-passwall2.git;main" >> "feeds.conf.default"
-fi
+
 
 # openclash
 find . -type d -name '*luci-app-openclash*' -o -name '*OpenClash*' | xargs -i rm -rf {}
