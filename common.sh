@@ -334,7 +334,7 @@ XWRT)
 ;;
 esac
 
-./scripts/feeds update passwall3 helloworld
+
 
 
 
