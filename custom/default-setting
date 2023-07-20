@@ -15,8 +15,8 @@ if [[ -f "/usr/lib/lua/luci/controller/ttyd.lua" ]]; then
 	sed -i 's?services?system?g' "/usr/lib/lua/luci/controller/ttyd.lua"
 fi
 
-if [[ `grep -c "shidahuilang" /etc/opkg/distfeeds.conf` -ge '1' ]]; then
-	sed -i '/shidahuilang/d' /etc/opkg/distfeeds.conf
+if [[ `grep -c "makebl" /etc/opkg/distfeeds.conf` -ge '1' ]]; then
+	sed -i '/makebl/d' /etc/opkg/distfeeds.conf
 fi
 
 fi
@@ -54,4 +54,3 @@ done
 if [[ -n "$(grep "downloads.openwrt.org" /etc/opkg/distfeeds.conf)" ]]; then
 	sed -i 's?downloads.openwrt.org?mirrors.cloud.tencent.com/openwrt?g' /etc/opkg/distfeeds.conf
 fi
-
