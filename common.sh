@@ -273,7 +273,6 @@ EOF
 cat >>"feeds.conf.default" <<-EOF
 src-git helloworld https://github.com/fw876/helloworld.git
 src-git passwall3 https://github.com/xiaorouji/openwrt-passwall.git;packages
-src-git bypass https://github.com/kenzok8/small/luci-app-bypass
 EOF
 
 
