@@ -261,7 +261,7 @@ if [[ -n "${LUCI_CHECKUT}" ]]; then
 fi
 git pull
 
-sed -i '/shidahuilang/d; /helloworld/d' "feeds.conf.default"
+sed -i '/shidahuilang/d; /helloworld/d; /passwall/d; /OpenClash/d; /bypass/d' "feeds.conf.default"
 cat feeds.conf.default|awk '!/^#/'|awk '!/^$/'|awk '!a[$1" "$2]++{print}' >uniq.conf
 mv -f uniq.conf feeds.conf.default
 
@@ -272,7 +272,8 @@ EOF
 ./scripts/feeds update -a
 cat >>"feeds.conf.default" <<-EOF
 src-git helloworld https://github.com/fw876/helloworld.git
-# src-git passwall3 https://github.com/xiaorouji/openwrt-passwall.git;packages
+#src-git passwall3 https://github.com/xiaorouji/openwrt-passwall.git;packages
+src-git passwall https://github.com/makebl/openwrt-package.git;Lede/luci-app-passwall
 EOF
 
 
@@ -282,7 +283,7 @@ luci-theme-rosy,luci-theme-darkmatter,luci-theme-infinityfreedom,luci-theme-desi
 luci-theme-bootstrap-mod,luci-theme-freifunk-generic,luci-theme-opentomato,luci-theme-kucat, \
 luci-app-eqos,adguardhome,luci-app-adguardhome,mosdns,luci-app-mosdns,luci-app-wol,luci-app-openclash, \
 luci-app-gost,gost,luci-app-smartdns,smartdns,luci-app-wizard,luci-app-msd_lite,msd_lite, \
-# luci-app-ssr-plus,*luci-app-passwall*,luci-app-vssr,lua-maxminddb"
+luci-app-ssr-plus,*luci-app-passwall*,luci-app-vssr,lua-maxminddb"
 t=(${z//,/ })
 for x in ${t[@]}; do \
   find . -type d -name "${x}" |grep -v 'makebl\|freifunk' |xargs -i rm -rf {}; \
@@ -353,7 +354,7 @@ XWRT)
 ;;
 esac
 
-# ./scripts/feeds update passwall3 helloworld
+./scripts/feeds update passwall3 helloworld
 
 # 更换golang版本
 if [[ -d "${HOME_PATH}/build/common/Share/golang" ]]; then
@@ -604,15 +605,15 @@ source $BUILD_PATH/$DIY_PART_SH
 cd ${HOME_PATH}
 
 # passwall
-# find . -type d -name '*luci-app-passwall*' -o -name 'passwall1' -o -name 'passwall2' | xargs -i rm -rf {}
-# sed -i '/passwall.git\;luci/d; /passwall2/d' "feeds.conf.default"
-# if [[ "${PassWall_luci_branch}" == "1" ]]; then
-#  echo "src-git passwall1 https://github.com/xiaorouji/openwrt-passwall.git;luci-smartdns-new-version" >> "feeds.conf.default"
-#  echo "src-git passwall2 https://github.com/xiaorouji/openwrt-passwall2.git;main" >> "feeds.conf.default"
-# else
-#  echo "src-git passwall1 https://github.com/xiaorouji/openwrt-passwall.git;luci" >> "feeds.conf.default"
-#  echo "src-git passwall2 https://github.com/xiaorouji/openwrt-passwall2.git;main" >> "feeds.conf.default"
-#fi
+find . -type d -name '*luci-app-passwall*' -o -name 'passwall1' -o -name 'passwall2' | xargs -i rm -rf {}
+sed -i '/passwall.git\;luci/d; /passwall2/d' "feeds.conf.default"
+if [[ "${PassWall_luci_branch}" == "1" ]]; then
+  echo "src-git passwall1 https://github.com/xiaorouji/openwrt-passwall.git;luci-smartdns-new-version" >> "feeds.conf.default"
+  echo "src-git passwall2 https://github.com/xiaorouji/openwrt-passwall2.git;main" >> "feeds.conf.default"
+else
+  echo "src-git passwall1 https://github.com/xiaorouji/openwrt-passwall.git;luci" >> "feeds.conf.default"
+  echo "src-git passwall2 https://github.com/xiaorouji/openwrt-passwall2.git;main" >> "feeds.conf.default"
+fi
 
 # openclash
 find . -type d -name '*luci-app-openclash*' -o -name '*OpenClash*' | xargs -i rm -rf {}
