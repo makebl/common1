@@ -261,7 +261,7 @@ if [[ -n "${LUCI_CHECKUT}" ]]; then
 fi
 git pull
 
-# sed -i '/shidahuilang/d; /helloworld/d; /passwall/d; /OpenClash/d; /bypass/d' "feeds.conf.default"
+sed -i '/shidahuilang/d; /helloworld/d' "feeds.conf.default"
 cat feeds.conf.default|awk '!/^#/'|awk '!/^$/'|awk '!a[$1" "$2]++{print}' >uniq.conf
 mv -f uniq.conf feeds.conf.default
 
