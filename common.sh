@@ -272,8 +272,8 @@ EOF
 ./scripts/feeds update -a
 cat >>"feeds.conf.default" <<-EOF
 src-git helloworld https://github.com/fw876/helloworld.git
-#src-git passwall3 https://github.com/xiaorouji/openwrt-passwall.git;packages
-src-git passwall https://github.com/makebl/openwrt-package.git^2b7557b4c1e^Lede/luci-app-passwall
+src-git passwall3 https://github.com/xiaorouji/openwrt-passwall.git;packages
+
 EOF
 
 
