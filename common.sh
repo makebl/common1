@@ -273,12 +273,6 @@ src-git helloworld https://github.com/fw876/helloworld.git
 src-git passwall3 https://github.com/xiaorouji/openwrt-passwall.git;packages
 EOF
 
-App_path="$(find . -type d -name "applications" |grep 'luci' |sed "s?.?${HOME_PATH}?" |awk 'END {print}')"
-if [[ `find "${App_path}" -type d -name "zh_Hans" |grep -c "zh_Hans"` -gt '20' ]]; then
-  echo "src-git makebl2 https://github.com/makebl/openwrt-package.git;Theme2" >> "feeds.conf.default"
-else
-  echo "src-git makebl2 https://github.com/makebl/openwrt-package.git;Theme1" >> "feeds.conf.default"
-fi
 
 z="*luci-theme-argon*,*luci-app-argon-config*,*luci-theme-Butterfly*,*luci-theme-netgear*,*luci-theme-atmaterial*, \
 luci-theme-rosy,luci-theme-darkmatter,luci-theme-infinityfreedom,luci-theme-design,luci-app-design-config, \
