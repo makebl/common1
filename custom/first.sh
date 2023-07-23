@@ -1,5 +1,5 @@
 #!/bin/bash
-# https://github.com/makebl/op
+# https://github.com/makebl/openwrt
 # common Module by 28677160
 # matrix.target=${FOLDER_NAME}
 cd ${GITHUB_WORKSPACE}

@@ -1,7 +1,6 @@
 #!/bin/sh
 
 chmod -R 0775 /etc/init.d /usr/share
-chmod -R 0775 /usr/bin/replace
 touch /etc/crontabs/root
 
 source /etc/openwrt_release
