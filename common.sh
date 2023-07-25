@@ -259,7 +259,7 @@ if [[ -n "${LUCI_CHECKUT}" ]]; then
 fi
 git pull
 
-sed -i '/makebl/d; /helloworld/d' "feeds.conf.default"
+sed -i '/makebl/d; /helloworld/d; /passwall/d; /OpenClash/d' "feeds.conf.default"
 cat feeds.conf.default|awk '!/^#/'|awk '!/^$/'|awk '!a[$1" "$2]++{print}' >uniq.conf
 mv -f uniq.conf feeds.conf.default
 
@@ -269,7 +269,7 @@ src-git makebl1 https://github.com/makebl/openwrt-package.git;${SOURCE}
 EOF
 ./scripts/feeds update -a
 cat >>"feeds.conf.default" <<-EOF
-src-git helloworld https://github.com/fw876/helloworld.git
+# src-git helloworld https://github.com/fw876/helloworld.git
 # src-git passwall3 https://github.com/xiaorouji/openwrt-passwall.git;packages
 EOF
 
@@ -594,15 +594,15 @@ source $BUILD_PATH/$DIY_PART_SH
 cd ${HOME_PATH}
 
 # passwall
-# find . -type d -name '*luci-app-passwall*' -o -name 'passwall1' -o -name 'passwall2' | xargs -i rm -rf {}
-# sed -i '/passwall.git\;luci/d; /passwall2/d' "feeds.conf.default"
-# if [[ "${PassWall_luci_branch}" == "1" ]]; then
-#   echo "src-git passwall1 https://github.com/xiaorouji/openwrt-passwall.git;luci-smartdns-new-version" >> "feeds.conf.default"
-#  echo "src-git passwall2 https://github.com/xiaorouji/openwrt-passwall2.git;main" >> "feeds.conf.default"
-# else
-#   echo "src-git passwall1 https://github.com/xiaorouji/openwrt-passwall.git;luci" >> "feeds.conf.default"
-#   echo "src-git passwall2 https://github.com/xiaorouji/openwrt-passwall2.git;main" >> "feeds.conf.default"
-# fi
+find . -type d -name '*luci-app-passwall*' -o -name 'passwall1' -o -name 'passwall2' | xargs -i rm -rf {}
+sed -i '/passwall.git\;luci/d; /passwall2/d' "feeds.conf.default"
+if [[ "${PassWall_luci_branch}" == "1" ]]; then
+  echo "src-git passwall1 https://github.com/xiaorouji/openwrt-passwall.git;luci-smartdns-new-version" >> "feeds.conf.default"
+  echo "src-git passwall2 https://github.com/xiaorouji/openwrt-passwall2.git;main" >> "feeds.conf.default"
+else
+  echo "src-git passwall1 https://github.com/xiaorouji/openwrt-passwall.git;luci" >> "feeds.conf.default"
+  echo "src-git passwall2 https://github.com/xiaorouji/openwrt-passwall2.git;main" >> "feeds.conf.default"
+fi
 
 # openclash
 find . -type d -name '*luci-app-openclash*' -o -name '*OpenClash*' | xargs -i rm -rf {}
@@ -611,8 +611,8 @@ if [[ "${OpenClash_branch}" == "1" ]]; then
   echo "src-git OpenClash https://github.com/vernesong/OpenClash.git;dev" >> "feeds.conf.default"
   echo "OpenClash_branch=dev" >> ${GITHUB_ENV}
 else
-  echo "src-git OpenClash https://github.com/makebl/openwrt-package/luci-app-openclash.git;Lede" >> "feeds.conf.default"
-  echo "OpenClash_branch=Lede" >> ${GITHUB_ENV}
+  echo "src-git OpenClash https://github.com/vernesong/OpenClash.git;master" >> "feeds.conf.default"
+  echo "OpenClash_branch=master" >> ${GITHUB_ENV}
 fi
 
 cat feeds.conf.default|awk '!/^#/'|awk '!/^$/'|awk '!a[$1" "$2]++{print}' >uniq.conf
@@ -1441,18 +1441,18 @@ else
   weizhicpu="1"
 fi
 
-if [[ ! "${weizhicpu}" == "1" ]] && [[ -n "${OpenClash_Core}" ]] && [[ "master" =~ (master|Lede|dev) ]]; then
+if [[ ! "${weizhicpu}" == "1" ]] && [[ -n "${OpenClash_Core}" ]] && [[ "${OpenClash_branch}" =~ (master|dev) ]]; then
   echo "正在执行：给openclash下载核心"
   rm -rf ${HOME_PATH}/files/etc/openclash/core
   rm -rf ${HOME_PATH}/clash-neihe && mkdir -p ${HOME_PATH}/clash-neihe
   mkdir -p ${HOME_PATH}/files/etc/openclash/core
   cd ${HOME_PATH}/clash-neihe
   if [[ "${OpenClash_Core}" == "2" ]]; then
-    wget -q https://raw.githubusercontent.com/vernesong/OpenClash/core/master/meta/clash-${Archclash}.tar.gz -O meta.tar.gz
-    wget -q https://raw.githubusercontent.com/vernesong/OpenClash/core/master/dev/clash-${Archclash}.tar.gz -O clash.tar.gz
-    wget -q https://raw.githubusercontent.com/vernesong/OpenClash/core/master/core_version -O core_version
+    wget -q https://raw.githubusercontent.com/vernesong/OpenClash/core/${OpenClash_branch}/meta/clash-${Archclash}.tar.gz -O meta.tar.gz
+    wget -q https://raw.githubusercontent.com/vernesong/OpenClash/core/${OpenClash_branch}/dev/clash-${Archclash}.tar.gz -O clash.tar.gz
+    wget -q https://raw.githubusercontent.com/vernesong/OpenClash/core/${OpenClash_branch}/core_version -O core_version
     TUN="$(cat core_version |grep -v "^v\|^V\|^a" |grep -E "[0-9]+.[0-9]+.[0-9]+")"
-    wget -q https://raw.githubusercontent.com/vernesong/OpenClash/core/master/premium/clash-${Archclash}-${TUN}.gz -O clash_tun.gz
+    wget -q https://raw.githubusercontent.com/vernesong/OpenClash/core/${OpenClash_branch}/premium/clash-${Archclash}-${TUN}.gz -O clash_tun.gz
     
     tar -zxvf clash.tar.gz -O > clash
     if [[ $? -eq 0 ]];then
