@@ -1441,7 +1441,7 @@ else
   weizhicpu="1"
 fi
 
-if [[ ! "${weizhicpu}" == "1" ]] && [[ -n "${OpenClash_Core}" ]] && [[ "${OpenClash_branch}" =~ (master|dev) ]]; then
+if [[ ! "${weizhicpu}" == "1" ]] && [[ -n "${OpenClash_Core}" ]] && [[ "${OpenClash_branch}" =~ (Lede|dev) ]]; then
   echo "正在执行：给openclash下载核心"
   rm -rf ${HOME_PATH}/files/etc/openclash/core
   rm -rf ${HOME_PATH}/clash-neihe && mkdir -p ${HOME_PATH}/clash-neihe
