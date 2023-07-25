@@ -614,8 +614,6 @@ if [[ "${OpenClash_branch}" == "1" ]]; then
 else
   echo "src-git OpenClash https://github.com/vernesong/OpenClash.git;master" >> "feeds.conf.default"
   echo "OpenClash_branch=master" >> ${GITHUB_ENV}
-  mkdir -p luci-app-openclash/root/etc/openclash/custom/openclash_custom_rules.list
-curl -fsSL  https://raw.githubusercontent.com/makebl/openwrt-package/usb/argon/openclash_custom_rules.list > luci-app-openclash/root/etc/openclash/custom/openclash_custom_rules.list
 fi
 
 cat feeds.conf.default|awk '!/^#/'|awk '!/^$/'|awk '!a[$1" "$2]++{print}' >uniq.conf
