@@ -269,8 +269,8 @@ src-git makebl1 https://github.com/makebl/openwrt-package.git;${SOURCE}
 EOF
 ./scripts/feeds update -a
 cat >>"feeds.conf.default" <<-EOF
-src-git helloworld https://github.com/fw876/helloworld.git
-src-git passwall3 https://github.com/xiaorouji/openwrt-passwall.git;packages
+# src-git helloworld https://github.com/fw876/helloworld.git
+# src-git passwall3 https://github.com/xiaorouji/openwrt-passwall.git;packages
 EOF
 
 
