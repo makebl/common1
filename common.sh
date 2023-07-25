@@ -269,8 +269,8 @@ src-git makebl1 https://github.com/makebl/openwrt-package.git;${SOURCE}
 EOF
 ./scripts/feeds update -a
 cat >>"feeds.conf.default" <<-EOF
-# src-git helloworld https://github.com/fw876/helloworld.git
-# src-git passwall3 https://github.com/xiaorouji/openwrt-passwall.git;packages
+src-git helloworld https://github.com/fw876/helloworld.git
+src-git passwall3 https://github.com/xiaorouji/openwrt-passwall.git;packages
 EOF
 
 
@@ -607,12 +607,15 @@ fi
 # openclash
 find . -type d -name '*luci-app-openclash*' -o -name '*OpenClash*' | xargs -i rm -rf {}
 sed -i '/OpenClash/d' "feeds.conf.default"
+
 if [[ "${OpenClash_branch}" == "1" ]]; then
   echo "src-git OpenClash https://github.com/vernesong/OpenClash.git;dev" >> "feeds.conf.default"
   echo "OpenClash_branch=dev" >> ${GITHUB_ENV}
 else
   echo "src-git OpenClash https://github.com/vernesong/OpenClash.git;master" >> "feeds.conf.default"
   echo "OpenClash_branch=master" >> ${GITHUB_ENV}
+  mkdir -p luci-app-openclash/root/etc/openclash/custom/openclash_custom_rules.list
+curl -fsSL  https://raw.githubusercontent.com/makebl/openwrt-package/usb/argon/openclash_custom_rules.list > luci-app-openclash/root/etc/openclash/custom/openclash_custom_rules.list
 fi
 
 cat feeds.conf.default|awk '!/^#/'|awk '!/^$/'|awk '!a[$1" "$2]++{print}' >uniq.conf
@@ -675,6 +678,7 @@ luci_path="$({ find "${HOME_PATH}/feeds" |grep 'luci-openclash' |grep 'root'; } 
 if [[ -f "${luci_path}" ]] && [[ `grep -c "uci get openclash.config.enable" "${luci_path}"` -eq '0' ]]; then
   sed -i '/uci -q set openclash.config.enable=0/i\if [[ "\$(uci get openclash.config.enable)" == "0" ]] || [[ -z "\$(uci get openclash.config.enable)" ]]; then' "${luci_path}"
   sed -i '/uci -q commit openclash/a\fi' "${luci_path}"
+  sed -i '/openclash.config.enable/{N;d;}' luci-app-openclash/root/etc/uci-defaults/luci-openclash #OpenClash恢复更新系统开机自启动
 fi
 
 if [[ "${Enable_IPV6_function}" == "1" ]]; then
