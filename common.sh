@@ -678,20 +678,24 @@ else
   [[ -d "${HOME_PATH}/files/etc/openclash/core" ]] && rm -rf ${HOME_PATH}/files/etc/openclash/core
   #sed -i '/openclash.config.enable/{N;d;}' luci-app-openclash/root/etc/uci-defaults/luci-openclash #OpenClash恢复更新系统开机自启动
 fi
-if [[ "${uci_openclash}" == "1" ]]; then
 
+if [[ "${uci_openclash}" == "1" ]]; then
   uci_path="${HOME_PATH}/package/luci-app-openclash/luci-app-openclash/root/etc/uci-defaults/luci-openclash"
   if [[ `grep -c "uci get openclash.config.enable" "${uci_path}"` -eq '0' ]]; then
     sed -i '/exit 0/d' "${uci_path}"
     sed -i '/uci -q set openclash.config.enable/d' "${uci_path}"
     sed -i '/uci -q commit openclash/d' "${uci_path}"
-
+  fi
+fi
 cat >>"${uci_path}" <<-EOF
 if [[ "\$(uci get openclash.config.enable)" == "0" ]] || [[ -z "\$(uci get openclash.config.enable)" ]]; then
   uci -q set openclash.config.enable=0
   uci -q commit openclash
 fi
+exit 0
 EOF
+  fi
+fi
 if [[ "${Enable_IPV6_function}" == "1" ]]; then
   echo "固件加入IPV6功能"
   export Create_Ipv6_Lan="0"
