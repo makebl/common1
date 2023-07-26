@@ -3,7 +3,7 @@
 #====================================================
 #	MANUFACTURER:	makebl
 #	Dscription: openwrt onekey Management
-#	github: https://github.com/makebl/op
+#	github: https://github.com/makebl
 #====================================================
 
 # 字体颜色配置
