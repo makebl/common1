@@ -676,7 +676,7 @@ elif [[ "${OpenClash_Core}" == "2" ]]; then
 else
   echo "OpenClash_Core=0" >> ${GITHUB_ENV}
   [[ -d "${HOME_PATH}/files/etc/openclash/core" ]] && rm -rf ${HOME_PATH}/files/etc/openclash/core
-  sed -i '/openclash.config.enable/{N;d;}' luci-app-openclash/root/etc/uci-defaults/luci-openclash #OpenClash恢复更新系统开机自启动
+  #sed -i '/openclash.config.enable/{N;d;}' luci-app-openclash/root/etc/uci-defaults/luci-openclash #OpenClash恢复更新系统开机自启动
 fi
 if [[ "${uci_openclash}" == "1" ]]; then
 
@@ -691,7 +691,7 @@ if [[ "\$(uci get openclash.config.enable)" == "0" ]] || [[ -z "\$(uci get openc
   uci -q set openclash.config.enable=0
   uci -q commit openclash
 fi
-
+EOF
 if [[ "${Enable_IPV6_function}" == "1" ]]; then
   echo "固件加入IPV6功能"
   export Create_Ipv6_Lan="0"
