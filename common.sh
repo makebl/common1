@@ -685,7 +685,7 @@ if [[ "${uci_openclash}" == "1" ]]; then
     sed -i '/exit 0/d' "${uci_path}"
     sed -i '/uci -q set openclash.config.enable/d' "${uci_path}"
     sed -i '/uci -q commit openclash/d' "${uci_path}"
-  fi
+
 
 cat >>"${uci_path}" <<-EOF
 if [[ "\$(uci get openclash.config.enable)" == "0" ]] || [[ -z "\$(uci get openclash.config.enable)" ]]; then
