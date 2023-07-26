@@ -1,5 +1,5 @@
 #!/bin/bash
-# https://github.com/makebl/op
+# https://github.com/makebl/openwrt
 # common Module by makebl
 # matrix.target=${FOLDER_NAME}
 
@@ -259,7 +259,7 @@ if [[ -n "${LUCI_CHECKUT}" ]]; then
 fi
 git pull
 
-sed -i '/makebl/d; /helloworld/d; /passwall/d; /OpenClash/d' "feeds.conf.default"
+sed -i '/makebl1/d; /helloworld/d; /passwall/d; /OpenClash/d' "feeds.conf.default"
 cat feeds.conf.default|awk '!/^#/'|awk '!/^$/'|awk '!a[$1" "$2]++{print}' >uniq.conf
 mv -f uniq.conf feeds.conf.default
 
@@ -271,9 +271,15 @@ EOF
 cat >>"feeds.conf.default" <<-EOF
 src-git helloworld https://github.com/fw876/helloworld.git
 src-git passwall3 https://github.com/xiaorouji/openwrt-passwall.git;packages
+# src-git  netdata https://github.com/sirpdboy/luci-app-netdata.git
 EOF
 
-
+App_path="$(find . -type d -name "applications" |grep 'luci' |sed "s?.?${HOME_PATH}?" |awk 'END {print}')"
+if [[ `find "${App_path}" -type d -name "zh_Hans" |grep -c "zh_Hans"` -gt '20' ]]; then
+  echo "src-git makebl2 https://github.com/makebl/openwrt-package.git;Theme2" >> "feeds.conf.default"
+else
+  echo "src-git makebl2 https://github.com/makebl/openwrt-package.git;Theme1" >> "feeds.conf.default"
+fi
 z="*luci-theme-argon*,*luci-app-argon-config*,*luci-theme-Butterfly*,*luci-theme-netgear*,*luci-theme-atmaterial*, \
 luci-theme-rosy,luci-theme-darkmatter,luci-theme-infinityfreedom,luci-theme-design,luci-app-design-config, \
 luci-theme-bootstrap-mod,luci-theme-freifunk-generic,luci-theme-opentomato,luci-theme-kucat, \
@@ -445,6 +451,14 @@ sudo chmod +x "${FILES_PATH}/etc/networkdetection"
 cp -Rf ${HOME_PATH}/build/common/custom/openwrt.sh "${FILES_PATH}/usr/bin/openwrt"
 sudo chmod +x "${FILES_PATH}/usr/bin/openwrt"
 
+[[ ! -d "${FILES_PATH}/usr/bin" ]] && mkdir -p ${FILES_PATH}/usr/bin
+cp -Rf ${HOME_PATH}/build/common/custom/tools.sh "${FILES_PATH}/usr/bin/tools"
+sudo chmod +x "${FILES_PATH}/usr/bin/tools"
+
+[[ ! -d "${FILES_PATH}/usr/bin" ]] && mkdir -p ${FILES_PATH}/usr/bin
+cp -Rf ${HOME_PATH}/build/common/custom/qinglong.sh "${FILES_PATH}/usr/bin/qinglong"
+sudo chmod +x "${FILES_PATH}/usr/bin/qinglong"
+
 echo '#!/bin/bash' > "${DELETE}"
 sudo chmod +x "${DELETE}"
 
@@ -551,8 +565,9 @@ TIME y "第一次用我仓库的，请不要拉取任何插件，先SSH进入固
 TIME y "拉取插件应该单独拉取某一个你需要的插件，别一下子就拉取别人一个插件包，这样容易增加编译失败概率"
 if [[ "${UPDATE_FIRMWARE_ONLINE}" == "true" ]]; then
   TIME r "SSH连接固件输入命令'openwrt'可进行修改后台IP、清空密码、还原出厂设置和在线更新固件操作"
-else
-  TIME r "SSH连接固件输入命令'openwrt'可进行修改后台IP，清空密码和还原出厂设置操作"
+else  
+  TIME r "SSH连接固件输入命令'tools'可固件工具箱"
+  TIME r "SSH连接固件输入命令'qinglong'可一键安装青龙和Maiark"
 fi
 TIME r ""
 TIME g "CPU性能：8370C > 8272CL > 8171M > E5系列"
@@ -607,7 +622,6 @@ fi
 # openclash
 find . -type d -name '*luci-app-openclash*' -o -name '*OpenClash*' | xargs -i rm -rf {}
 sed -i '/OpenClash/d' "feeds.conf.default"
-
 if [[ "${OpenClash_branch}" == "1" ]]; then
   echo "src-git OpenClash https://github.com/vernesong/OpenClash.git;dev" >> "feeds.conf.default"
   echo "OpenClash_branch=dev" >> ${GITHUB_ENV}
