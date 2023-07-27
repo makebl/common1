@@ -679,12 +679,12 @@ else
   #sed -i '/openclash.config.enable/{N;d;}' luci-app-openclash/root/etc/uci-defaults/luci-openclash #OpenClash恢复更新系统开机自启动
 fi
 
-if [[ "${uci_openclash}" == "1" ]]; then
-  uci_path="${HOME_PATH}/package/luci-app-openclash/luci-app-openclash/root/etc/uci-defaults/luci-openclash"
-  if [[ `grep -c "uci get openclash.config.enable" "${uci_path}"` -eq '0' ]]; then
-    sed -i '/exit 0/d' "${uci_path}"
-    sed -i '/uci -q set openclash.config.enable/d' "${uci_path}"
-    sed -i '/uci -q commit openclash/d' "${uci_path}"
+#if [[ "${uci_openclash}" == "1" ]]; then
+#  uci_path="${HOME_PATH}/package/luci-app-openclash/luci-app-openclash/root/etc/uci-defaults/luci-openclash"
+#  if [[ `grep -c "uci get openclash.config.enable" "${uci_path}"` -eq '0' ]]; then
+#    sed -i '/exit 0/d' "${uci_path}"
+#    sed -i '/uci -q set openclash.config.enable/d' "${uci_path}"
+#    sed -i '/uci -q commit openclash/d' "${uci_path}"
 
 
 cat >>"${uci_path}" <<-EOF
