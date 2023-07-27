@@ -687,15 +687,15 @@ fi
 #    sed -i '/uci -q commit openclash/d' "${uci_path}"
 
 
-cat >>"${uci_path}" <<-EOF
-if [[ "\$(uci get openclash.config.enable)" == "0" ]] || [[ -z "\$(uci get openclash.config.enable)" ]]; then
-  uci -q set openclash.config.enable=0
-  uci -q commit openclash
-fi
-exit 0
-EOF
-  fi
-fi
+#cat >>"${uci_path}" <<-EOF
+#if [[ "\$(uci get openclash.config.enable)" == "0" ]] || [[ -z "\$(uci get openclash.config.enable)" ]]; then
+#  uci -q set openclash.config.enable=0
+#  uci -q commit openclash
+#fi
+#exit 0
+#EOF
+#  fi
+#fi
 
 if [[ "${Enable_IPV6_function}" == "1" ]]; then
   echo "固件加入IPV6功能"
