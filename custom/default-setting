@@ -16,7 +16,7 @@ if [[ -f "/usr/lib/lua/luci/controller/ttyd.lua" ]]; then
 fi
 
 if [[ `grep -c "dahuilang" /etc/opkg/distfeeds.conf` -ge '1' ]]; then
-	sed -i '/danshui/d' /etc/opkg/distfeeds.conf
+	sed -i '/dahuilang/d' /etc/opkg/distfeeds.conf
 fi
 if [[ `grep -c "helloworld" /etc/opkg/distfeeds.conf` -ge '1' ]]; then
 	sed -i '/helloworld/d' /etc/opkg/distfeeds.conf
