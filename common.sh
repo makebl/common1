@@ -451,6 +451,14 @@ sudo chmod +x "${FILES_PATH}/etc/networkdetection"
 cp -Rf ${HOME_PATH}/build/common/custom/openwrt.sh "${FILES_PATH}/usr/bin/openwrt"
 sudo chmod +x "${FILES_PATH}/usr/bin/openwrt"
 
+[[ ! -d "${FILES_PATH}/usr/bin" ]] && mkdir -p ${FILES_PATH}/usr/bin
+cp -Rf ${HOME_PATH}/build/common/custom/tools.sh "${FILES_PATH}/usr/bin/tools"
+sudo chmod +x "${FILES_PATH}/usr/bin/tools"
+
+[[ ! -d "${FILES_PATH}/usr/bin" ]] && mkdir -p ${FILES_PATH}/usr/bin
+cp -Rf ${HOME_PATH}/build/common/custom/qinglong.sh "${FILES_PATH}/usr/bin/qinglong"
+sudo chmod +x "${FILES_PATH}/usr/bin/qinglong"
+
 echo '#!/bin/bash' > "${DELETE}"
 sudo chmod +x "${DELETE}"
 
