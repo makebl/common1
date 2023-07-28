@@ -6,7 +6,7 @@
 
 function Diy_Part1() {
 	find . -type d -name 'luci-app-autoupdate' | xargs -i rm -rf {}
-	git clone -b master https://github.com/makebl/luci-app-autoupdate $HOME_PATH/package/luci-app-autoupdate 2>/dev/null
+	git clone https://github.com/makebl/luci-app-autoupdate $HOME_PATH/package/luci-app-autoupdate
 	if [[ `grep -c "luci-app-autoupdate" ${HOME_PATH}/include/target.mk` -eq '0' ]]; then
 		sed -i 's?DEFAULT_PACKAGES:=?DEFAULT_PACKAGES:=luci-app-autoupdate luci-app-ttyd ?g' ${HOME_PATH}/include/target.mk
 	fi
