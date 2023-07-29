@@ -2006,13 +2006,15 @@ else
 fi
 echo
 TIME z " 系统空间      类型   总数  已用  可用 使用率"
-df -hT $PWD
-echo "======================="
-echo "Space usage:"
-echo "======================="
-du -h --max-depth=1 openwrt/ --exclude=build_dir --exclude=bin
-du -h --max-depth=1 openwrt/build_dir
-du -h --max-depth=1 openwrt/bin
+#df -hT $PWD
+        echo "======================="
+        echo "Space usage:"
+        echo "======================="
+        df -hT
+        echo "======================="
+        du -h --max-depth=1 openwrt/ --exclude=build_dir --exclude=bin
+        du -h --max-depth=1 openwrt/build_dir
+        du -h --max-depth=1 openwrt/bin
 echo
 echo
 
