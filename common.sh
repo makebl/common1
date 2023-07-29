@@ -2011,7 +2011,7 @@ echo "======================="
 df -hT
 echo "======================="
 #du -h --max-depth=1 openwrt/ --exclude=build_dir --exclude=bin
-du -h --max-depth=1 openwrt/build_dir
+#du -h --max-depth=1 openwrt/build_dir
 du -h --max-depth=1 openwrt/bin
 echo
 echo
