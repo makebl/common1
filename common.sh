@@ -445,12 +445,9 @@ fi
 cp -Rf ${HOME_PATH}/build/common/custom/Postapplication "${FILES_PATH}/etc/init.d/Postapplication"
 sudo chmod +x "${FILES_PATH}/etc/init.d/Postapplication"
 
-#cp -Rf ${HOME_PATH}/build/common/custom/index.htm "${FILES_PATH}/usr/lib/lua/luci/view/admin_status/index.htm"
-#sudo chmod +x "${FILES_PATH}/usr/lib/lua/luci/view/admin_status/index.htm"
-
-[[ ! -d "${FILES_PATH}/usr/lib/lua/luci/view/admin_status" ]] && mkdir -p ${FILES_PATH}/usr/lib/lua/luci/view/admin_status
 cp -Rf ${HOME_PATH}/build/common/custom/index.htm "${FILES_PATH}/usr/lib/lua/luci/view/admin_status/index.htm"
 sudo chmod +x "${FILES_PATH}/usr/lib/lua/luci/view/admin_status/index.htm"
+
 
 cp -Rf ${HOME_PATH}/build/common/custom/networkdetection "${FILES_PATH}/etc/networkdetection"
 sudo chmod +x "${FILES_PATH}/etc/networkdetection"
