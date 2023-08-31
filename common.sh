@@ -358,11 +358,13 @@ esac
 
 ./scripts/feeds update passwall3 helloworld
 
+rm -rf ${HOME_PATH}/feeds/helloworld/{v2ray-core,v2ray-geodata,v2ray-plugin,xray-core,xray-plugin}
+
 # 更换golang版本
-if [[ -d "${HOME_PATH}/build/common/Share/golang" ]]; then
-  rm -rf ${HOME_PATH}/feeds/packages/lang/golang
-  cp -Rf ${HOME_PATH}/build/common/Share/golang ${HOME_PATH}/feeds/packages/lang/golang
-fi
+#if [[ -d "${HOME_PATH}/build/common/Share/golang" ]]; then
+#  rm -rf ${HOME_PATH}/feeds/packages/lang/golang
+#  cp -Rf ${HOME_PATH}/build/common/Share/golang ${HOME_PATH}/feeds/packages/lang/golang
+#fi
 
 if [[ -d "${HOME_PATH}/feeds/dahuilang1/relevance/shadowsocks-libev" ]]; then
   rm -rf ${HOME_PATH}/feeds/packages/net/shadowsocks-libev
