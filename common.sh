@@ -70,6 +70,8 @@ fi
 
 if [[ -n "$(echo "${CPU_SELECTION}" |grep -i 'E5\|默认\|false')" ]]; then
   CPU_SELECTION="false"
+elif [[ -n "$(echo "${CPU_SELECTION}" |grep '7763')" ]]; then
+  CPU_SELECTION="7763"   
 elif [[ -n "$(echo "${CPU_SELECTION}" |grep '8370')" ]]; then
   CPU_SELECTION="8370"
 elif [[ -n "$(echo "${CPU_SELECTION}" |grep '8272')" ]]; then
@@ -573,7 +575,7 @@ else
   TIME r "SSH连接固件输入命令'openwrt'可进行修改后台IP，清空密码和还原出厂设置操作"
 fi
 TIME r ""
-TIME g "CPU性能：8370C > 8272CL > 8171M > E5系列"
+TIME g "CPU性能：7763 > 8370C > 8272CL > 8171M > E5系列"
 TIME r ""
 }
 
@@ -1827,7 +1829,7 @@ false)
     export Continue_selecting="0"
   fi
 ;;
-8370|8272|8171)
+7763|8370|8272|8171)
   if [[ `echo "${cpu_model}" |grep -ic "${CPU_SELECTION}"` -eq '0' ]]; then
     export chonglaixx="非${CPU_SELECTION}-重新编译"
     export chonglaiss="并非是您选择的${CPU_SELECTION}CPU"
