@@ -46,7 +46,9 @@ function Diy_Part2() {
 	ramips | reltek | ath* | ipq* | bcm47xx | bmips | kirkwood | mediatek)
 		export Firmware_SFX=".bin"
 		export AutoBuild_Firmware="${LUCI_EDITION}-${SOURCE}-${TARGET_PROFILE_ER}-${Upgrade_Date}-sysupgrade"
-                export AutoBuild_Firmware="${LUCI_EDITION}-${SOURCE}-${TARGET_PROFILE_ER}-${Upgrade_Date}-kernel"
+                export AutoBuild_Firmware="${LUCI_EDITION}-${SOURCE}-${TARGET_PROFILE_ER}-${Upgrade_Date}-initramfs-kernel"
+		export AutoBuild_Firmware="${LUCI_EDITION}-${SOURCE}-${TARGET_PROFILE_ER}-${Upgrade_Date}-squashfs-kernel1"
+                export AutoBuild_Firmware="${LUCI_EDITION}-${SOURCE}-${TARGET_PROFILE_ER}-${Upgrade_Date}-squashfs-rootfs0"
 	;;
 	x86)
 		export Firmware_SFX=".img.gz"
@@ -76,7 +78,9 @@ function Diy_Part2() {
 	*)
 		export Firmware_SFX=".bin"
 		export AutoBuild_Firmware="${LUCI_EDITION}-${SOURCE}-${TARGET_PROFILE_ER}-${Upgrade_Date}-sysupgrade"
-                export AutoBuild_Firmware="${LUCI_EDITION}-${SOURCE}-${TARGET_PROFILE_ER}-${Upgrade_Date}-kernel"
+                export AutoBuild_Firmware="${LUCI_EDITION}-${SOURCE}-${TARGET_PROFILE_ER}-${Upgrade_Date}-initramfs-kernel"
+		export AutoBuild_Firmware="${LUCI_EDITION}-${SOURCE}-${TARGET_PROFILE_ER}-${Upgrade_Date}-squashfs-kernel1"
+                export AutoBuild_Firmware="${LUCI_EDITION}-${SOURCE}-${TARGET_PROFILE_ER}-${Upgrade_Date}-squashfs-rootfs0"
 	;;
 	esac
 	
