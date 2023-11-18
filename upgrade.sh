@@ -43,7 +43,7 @@ function Diy_Part2() {
 	fi
 	
 	case "${TARGET_BOARD}" in
-	reltek | ath* | ipq* | bcm47xx | bmips | kirkwood | mediatek)
+	ramips | reltek | ath* | ipq* | bcm47xx | bmips | kirkwood | mediatek)
 		export Firmware_SFX=".bin"
 		export AutoBuild_Firmware="${LUCI_EDITION}-${SOURCE}-${TARGET_PROFILE_ER}-${Upgrade_Date}-sysupgrade"
                 
