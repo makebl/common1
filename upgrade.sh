@@ -42,12 +42,12 @@ function Diy_Part2() {
 		export TARGET_PROFILE_ER="${TARGET_PROFILE}"
 	fi
 	
-	case "${TARGET_BOARD}" in
-	ramips | reltek | ath* | ipq* | bcm47xx | bmips | kirkwood | mediatek)
-		export Firmware_SFX=".bin"
-		export AutoBuild_Firmware="${LUCI_EDITION}-${SOURCE}-${TARGET_PROFILE_ER}-${Upgrade_Date}-sysupgrade"
+	#case "${TARGET_BOARD}" in
+	#ramips | reltek | ath* | ipq* | bcm47xx | bmips | kirkwood | mediatek)
+		#export Firmware_SFX=".bin"
+		#export AutoBuild_Firmware="${LUCI_EDITION}-${SOURCE}-${TARGET_PROFILE_ER}-${Upgrade_Date}-sysupgrade"
 
-	;;
+	#;;
 	x86)
 		export Firmware_SFX=".img.gz"
 		export AutoBuild_Uefi="${LUCI_EDITION}-${SOURCE}-${TARGET_PROFILE_ER}-${Upgrade_Date}-uefi"
@@ -64,20 +64,20 @@ function Diy_Part2() {
 			export AutoBuild_Firmware="${LUCI_EDITION}-${SOURCE}-${TARGET_PROFILE_ER}-${Upgrade_Date}-sysupgrade"
 		;;
 		esac
-	;;
-	bcm53xx)
-		export Firmware_SFX=".trx"
-		export AutoBuild_Firmware="${LUCI_EDITION}-${SOURCE}-${TARGET_PROFILE_ER}-${Upgrade_Date}-sysupgrade"
-	;;
-	octeon | oxnas | pistachio)
-		export Firmware_SFX=".tar"
-		export AutoBuild_Firmware="${LUCI_EDITION}-${SOURCE}-${TARGET_PROFILE_ER}-${Upgrade_Date}-sysupgrade"
-	;;
-	*)
-		export Firmware_SFX=".bin"
-		export AutoBuild_Firmware="${LUCI_EDITION}-${SOURCE}-${TARGET_PROFILE_ER}-${Upgrade_Date}-sysupgrade"
+	#;;
+	#bcm53xx)
+		#export Firmware_SFX=".trx"
+		#export AutoBuild_Firmware="${LUCI_EDITION}-${SOURCE}-${TARGET_PROFILE_ER}-${Upgrade_Date}-sysupgrade"
+	#;;
+	#octeon | oxnas | pistachio)
+		#export Firmware_SFX=".tar"
+		#export AutoBuild_Firmware="${LUCI_EDITION}-${SOURCE}-${TARGET_PROFILE_ER}-${Upgrade_Date}-sysupgrade"
+	#;;
+	#*)
+		#export Firmware_SFX=".bin"
+		#export AutoBuild_Firmware="${LUCI_EDITION}-${SOURCE}-${TARGET_PROFILE_ER}-${Upgrade_Date}-sysupgrade"
 
-	;;
+	#;;
 	esac
 	
 	if [[ -f "${HOME_PATH}/package/luci-app-autoupdate/root/usr/bin/AutoUpdate" ]]; then
