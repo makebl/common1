@@ -46,6 +46,7 @@ function Diy_Part2() {
 	ramips | reltek | ath* | ipq* | bcm47xx | bmips | kirkwood | mediatek)
 		export Firmware_SFX=".bin"
 		export AutoBuild_Firmware="${LUCI_EDITION}-${SOURCE}-${TARGET_PROFILE_ER}-${Upgrade_Date}-sysupgrade"
+                export AutoBuild_Firmware="${LUCI_EDITION}-${SOURCE}-${TARGET_PROFILE_ER}-${Upgrade_Date}-initramfs-kernel"
                 
 
 	;;
@@ -96,12 +97,6 @@ function Diy_Part2() {
 		echo "AutoBuild_Firmware=${AutoBuild_Firmware}" >> ${GITHUB_ENV}
 	fi
 
- 	if [[ "${TARGET_BOARD}" == "ramips" ]]; then
-		echo "AutoBuild_initramfs=${AutoBuild_initramfs}" >> ${GITHUB_ENV}
-		echo "AutoBuild_squashfs=${AutoBuild_squashfs}" >> ${GITHUB_ENV}
-	else
-		echo "AutoBuild_Firmware=${AutoBuild_Firmware}" >> ${GITHUB_ENV}
-	fi
 	
 	echo "Update_tag=${Update_tag}" >> ${GITHUB_ENV}
 	echo "Firmware_SFX=${Firmware_SFX}" >> ${GITHUB_ENV}
