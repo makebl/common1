@@ -9,7 +9,7 @@ cd ${GITHUB_WORKSPACE}
 if [[ -n "${BENDI_VERSION}" ]]; then
   sudo rm -rf build common.sh
 else
-  sudo rm -rf build/common && git clone -b main --depth 1 https://github.com/shidahuilang/common build/common
+  sudo rm -rf build/common && git clone -b main --depth 1 https://github.com/makebl/common build/common
   cp -Rf build/common/*.sh build/${FOLDER_NAME}/
   cp -Rf build/common/common.sh build/${FOLDER_NAME}/common.sh
   cp -Rf build/common/upgrade.sh build/${FOLDER_NAME}/upgrade.sh
@@ -21,7 +21,7 @@ function tongbu_1() {
 cd ${GITHUB_WORKSPACE}
 sudo rm -rf repogx shangyou
 git clone https://github.com/${GIT_REPOSITORY}.git repogx
-git clone -b main --depth 1 https://github.com/shidahuilang/openwrt shangyou
+git clone -b main --depth 1 https://github.com/makebl/openwrt shangyou
 
 if [[ ! -d "repogx" ]]; then
   echo -e "\033[31m 本地仓库下载错误 \033[0m"
