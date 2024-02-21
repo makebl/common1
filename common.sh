@@ -263,13 +263,13 @@ if [[ -n "${LUCI_CHECKUT}" ]]; then
 fi
 git pull
 
-sed -i '/langge1/d; /helloworld/d; /passwall/d; /OpenClash/d' "feeds.conf.default"
+sed -i '/dalang/d; /helloworld/d; /passwall/d; /OpenClash/d' "feeds.conf.default"
 cat feeds.conf.default|awk '!/^#/'|awk '!/^$/'|awk '!a[$1" "$2]++{print}' >uniq.conf
 mv -f uniq.conf feeds.conf.default
 
 # 这里增加了源,要对应的删除/etc/opkg/distfeeds.conf插件源
 cat >>"feeds.conf.default" <<-EOF
-src-git langge1 https://github.com/shidahuilang/openwrt-package.git;${SOURCE}
+src-git dalang https://github.com/shidahuilang/openwrt-package.git;${SOURCE}
 EOF
 ./scripts/feeds update -a
 cat >>"feeds.conf.default" <<-EOF
@@ -634,9 +634,9 @@ fi
 
 cat feeds.conf.default|awk '!/^#/'|awk '!/^$/'|awk '!a[$1" "$2]++{print}' >uniq.conf
 mv -f uniq.conf feeds.conf.default
-sed -i 's@.*langge*@#&@g' "feeds.conf.default"
+sed -i 's@.*dalang*@#&@g' "feeds.conf.default"
 ./scripts/feeds update -a
-sed -i 's/^#\(.*langge\)/\1/' "feeds.conf.default"
+sed -i 's/^#\(.*dalang\)/\1/' "feeds.conf.default"
 # 正在执行插件语言修改
 if [[ "${LUCI_BANBEN}" == "2" ]]; then
   cp -Rf ${HOME_PATH}/build/common/language/zh_Hans.sh ${HOME_PATH}/zh_Hans.sh
