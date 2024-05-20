@@ -1819,8 +1819,8 @@ if [[ "${PACKAGING_FIRMWARE}" == "true" ]] && [[ -z "${BENDI_VERSION}" ]]; then
   # 打包固件转换仓库
   openwrt_armvirt
 fi
-#Diy_upgrade3
-#Diy_organize
+Diy_upgrade3
+Diy_organize
 }
 
 
