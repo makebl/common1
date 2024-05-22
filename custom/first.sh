@@ -251,7 +251,7 @@ BRANCH_HEAD="$(git rev-parse --abbrev-ref HEAD)"
 if [[ "${OPERATES_BUILD}" == "1" ]]; then
   rm -rf backups
 fi
-if [[ "${GIT_REPOSITORY}" =~ (shidahuilang/openwrt|shidahuilang/langlang) ]]; then
+if [[ "${GIT_REPOSITORY}" =~ (makebl/openwrt|makebl/langlang) ]]; then
   rm -rf backups
   BANBEN_SHUOMING="Update $(date +%Y.%m%d.%H%M.%S)"
 fi
@@ -297,9 +297,9 @@ exit 0
 function Diy_memu() {
 cd ${GITHUB_WORKSPACE}
 export OPERATES_BUILD="0"
-curl -fsSL https://raw.githubusercontent.com/shidahuilang/common/main/common.sh -o common.sh
+curl -fsSL https://raw.githubusercontent.com/makebl/common/main/common.sh -o common.sh
 if [[ $? -ne 0 ]]; then
-  wget -q https://raw.githubusercontent.com/shidahuilang/common/main/common.sh -O common.sh
+  wget -q https://raw.githubusercontent.com/makebl/common/main/common.sh -O common.sh
 fi
 export ACTIONS_VERSION="$(grep -E "ACTIONS_VERSION=.*" "common.sh" |grep -Eo [0-9]+\.[0-9]+\.[0-9]+)"
 export DIY_PART_SH="$(grep -Eo "DIY_PART_SH=.*" "common.sh" |grep '.sh' |awk 'NR==1' |cut -d'"' -f2)"
