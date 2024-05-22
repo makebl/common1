@@ -1997,7 +1997,7 @@ Diy_Publicarea
 
 function Diy_menu3() {
 Diy_checkout
-Diy_Wenjian
+#Diy_Wenjian
 Diy_${SOURCE_CODE}
 }
 
