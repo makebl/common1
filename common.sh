@@ -335,8 +335,8 @@ git clone https://github.com/sbwml/packages_lang_golang -b 22.x ${HOME_PATH}/fee
 #}
 
 
-#function Diy_Wenjian() {
-#cp -Rf ${HOME_PATH}/LICENSES/doc/uniq.conf ${HOME_PATH}/feeds.conf.default
+function Diy_Wenjian() {
+cp -Rf ${HOME_PATH}/LICENSES/doc/uniq.conf ${HOME_PATH}/feeds.conf.default
 
 # 增加中文语言包
 if [[ -f "${HOME_PATH}/feeds/luci/modules/luci-mod-system/root/usr/share/luci/menu.d/luci-mod-system.json" ]]; then
