@@ -1796,11 +1796,7 @@ UPLOAD_RELEASE="${UPLOAD_RELEASE}"
 UPLOAD_WETRANSFER="${UPLOAD_WETRANSFER}"
 EOF
 
-chmod -R +x ${FOLDER_NAME2}
-cd ${FOLDER_NAME2}
-git add .
-git commit -m "启动打包Amlogic/Rockchip固件(${SOURCE}-${LUCI_EDITION})"
-git push --force "https://${REPO_TOKEN}@github.com/${GIT_REPOSITORY}" HEAD:main
+
 }
 
 function firmware_jiance() {
