@@ -1676,28 +1676,19 @@ if [[ ! "${weizhicpu}" == "1" ]] && [[ -n "${OpenClash_Core}" ]] && [[ "${OpenCl
   rm -rf ${HOME_PATH}/clash-neihe
 fi
 
-if [[ ! "${weizhicpu}" == "1" ]] && [[ "${cloudflared_Core}" == "1" ]]; then
-    echo "正在执行：给cloudflared下载核心"
+if [[ ! "${weizhicpu}" == "1" ]] && [[ -n "${cloudflared_Core}" ]]; then
+  echo "正在执行：给cloudflared下载核心"
+  if [[ "${cloudflared_Core}" == "1" ]]; then
+    wget -q  wget -q https://github.com/cloudflare/cloudflared/releases/download/2024.6.1/cloudflared-linux-amd64 -O ${HOME_PATH}/files/usr/bin/cloudflared
     
-   
-    # 检查删除操作是否成功
-    if [[ $? -eq 0 ]]; then
-        echo "开始下载cloudflared..."
-        # 下载cloudflared，并指定下载文件名统一为 cloudflared
-        wget -q  wget -q https://github.com/cloudflare/cloudflared/releases/download/2024.6.1/cloudflared-linux-amd64 -O/usr/bin/cloudflared
-        
-        # 检查下载是否成功
-        if [[ -f "${HOME_PATH}/cloudflared" ]]; then
-            echo "核心下载成功"
-            sudo chmod +x "${HOME_PATH}/files/usr/bin/cloudflared"
-            echo "增加cloudflared核心完成"
-        else
-            echo "下载核心失败"
-        fi
+
+    if [[ $? -eq 0 ]];then
+     
+      sudo chmod +x ${HOME_PATH}/files/usr/bin/cloudflared
+      echo "cloudflared增加内核成功"
     else
-        echo "删除旧文件失败"
-    fi
-fi
+      echo "cloudflared增加内核失败"
+    fi  
 
 if [[ ! "${weizhicpu}" == "1" ]] && [[ "${AdGuardHome_Core}" == "1" ]]; then
   echo "正在执行：给adguardhome下载核心"
