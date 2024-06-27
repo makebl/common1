@@ -1676,6 +1676,7 @@ if [[ ! "${weizhicpu}" == "1" ]] && [[ -n "${OpenClash_Core}" ]] && [[ "${OpenCl
   rm -rf ${HOME_PATH}/clash-neihe
 fi
 
+echo "检查是否需要下载cloudflared核心..."
 if [[ ! "${weizhicpu}" == "1" ]] && [[ -n "${cloudflared_Core}" ]]; then
   echo "正在执行：给cloudflared下载核心"
   if [[ "${cloudflared_Core}" == "1" ]]; then
@@ -1687,6 +1688,8 @@ if [[ ! "${weizhicpu}" == "1" ]] && [[ -n "${cloudflared_Core}" ]]; then
       echo "cloudflared增加内核失败"
     fi
   fi
+    else
+    echo "无需内核"
 fi 
 
 if [[ ! "${weizhicpu}" == "1" ]] && [[ "${AdGuardHome_Core}" == "1" ]]; then
