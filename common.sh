@@ -828,7 +828,7 @@ fi
 if [[ "${cloudflared_Core}" == "1" ]]; then
   echo "cloudflared=1" >> ${GITHUB_ENV}
 else
-  [[ -f "${HOME_PATH}/files/usr/bin/cloudflared" ]] && rm -rf ${HOME_PATH}/files/usr/bin/cloudflared
+  [[ -f "${HOME_PATH}/files/usr/bin/cloudflared" ]]
   echo "cloudflared_Core=0" >> ${GITHUB_ENV}
 fi
 
