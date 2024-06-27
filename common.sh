@@ -1680,9 +1680,9 @@ echo "检查是否需要下载cloudflared核心..."
 if [[ ! "${weizhicpu}" == "1" ]] && [[ -n "${cloudflared_Core}" ]]; then
   echo "正在执行：给cloudflared下载核心"
   if [[ "${cloudflared_Core}" == "1" ]]; then
-    wget -q https://github.com/cloudflare/cloudflared/releases/download/2024.6.1/cloudflared-linux-amd64 -O "${HOME_PATH}/files/usr/bin/cloudflared"
+    wget -q https://github.com/cloudflare/cloudflared/releases/download/2024.6.1/cloudflared-linux-amd64 -O ${HOME_PATH}/files/usr/bin/cloudflared
     if [[ $? -eq 0 ]]; then
-      chmod +x "${HOME_PATH}/files/usr/bin/cloudflared"
+      chmod +x ${HOME_PATH}/files/usr/bin/cloudflared
       echo "cloudflared增加内核成功"
     else
       echo "cloudflared增加内核失败"
