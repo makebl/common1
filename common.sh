@@ -1716,7 +1716,7 @@ if [[ ! "${weizhicpu}" == "1" ]] && [[ "${cloudflared_Core}" == "1" ]]; then
     if [[ $? -eq 0 ]]; then
         echo "开始下载cloudflared..."
         # 下载cloudflared，并指定下载文件名统一为 cloudflared
-        wget -q "https://github.com/cloudflare/cloudflared/releases/download/${latest_ver}/cloudflared-${Arch}" -O "${HOME_PATH}/cloudflared"
+        wget -q https://github.com/cloudflare/cloudflared/releases/download/2024.6.1/cloudflared-linux-amd64 -O "${HOME_PATH}/cloudflared
         
         # 检查下载是否成功
         if [[ -f "${HOME_PATH}/cloudflared" ]]; then
