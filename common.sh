@@ -824,6 +824,14 @@ else
   echo "AdGuardHome_Core=0" >> ${GITHUB_ENV}
 fi
 
+# cloudflared内核
+if [[ "${cloudflared_Core}" == "1" ]]; then
+  echo "cloudflared_Core=1" >> ${GITHUB_ENV}
+else
+  [[ -f "${HOME_PATH}/files/usr/bin/cloudflared" ]] && rm -rf ${HOME_PATH}/files/usr/bin/cloudflared
+  echo "cloudflared_Core=0" >> ${GITHUB_ENV}
+fi
+
 # openclash内核
 if [[ "${OpenClash_Core}" == "1" ]]; then
   echo "OpenClash_Core=1" >> ${GITHUB_ENV}
@@ -1404,6 +1412,10 @@ if [[ "${AdGuardHome_Core}" == "1" ]]; then
   echo -e "\nCONFIG_PACKAGE_luci-app-adguardhome=y" >> ${HOME_PATH}/.config
 fi
 
+if [[ "${cloudflared_Core}" == "1" ]]; then
+  echo -e "\nCONFIG_PACKAGE_luci-app-cloudflared=y" >> ${HOME_PATH}/.config
+fi
+
 if [[ `grep -c "CONFIG_PACKAGE_dnsmasq_full_nftset=y" ${HOME_PATH}/.config` -eq '1' ]]; then
   if [[ `grep -c "CONFIG_PACKAGE_luci-app-passwall2_Nftables_Transparent_Proxy=y" ${HOME_PATH}/.config` -eq '1' ]]; then
     sed -i 's/CONFIG_PACKAGE_dnsmasq_full_nftset=y/# CONFIG_PACKAGE_dnsmasq_full_nftset is not set/g' ${HOME_PATH}/.config
@@ -1689,6 +1701,36 @@ if [[ ! "${weizhicpu}" == "1" ]] && [[ "${AdGuardHome_Core}" == "1" ]]; then
     echo "增加AdGuardHome核心失败"
   fi
     rm -rf ${HOME_PATH}/{AdGuardHome_${Arch}.tar.gz,AdGuardHome}
+fi
+
+if [[ ! "${weizhicpu}" == "1" ]] && [[ "${cloudflared_Core}" == "1" ]]; then
+    echo "正在执行：给cloudflared下载核心"
+    
+    # 确保下载路径存在
+    mkdir -p "${HOME_PATH}/files/usr/bin"
+    
+    # 删除旧的cloudflared文件
+    rm -rf "${HOME_PATH}/cloudflared"
+    
+    # 检查删除操作是否成功
+    if [[ $? -eq 0 ]]; then
+        echo "开始下载cloudflared..."
+        # 下载cloudflared，并指定下载文件名统一为 cloudflared
+        wget -q "https://github.com/cloudflare/cloudflared/releases/download/${latest_ver}/cloudflared-${Arch}" -O "${HOME_PATH}/cloudflared"
+        
+        # 检查下载是否成功
+        if [[ -f "${HOME_PATH}/cloudflared" ]]; then
+            echo "核心下载成功"
+            # 移动到/usr/bin目录并赋予执行权限
+            mv -f "${HOME_PATH}/cloudflared" "${HOME_PATH}/files/usr/bin/cloudflared"
+            sudo chmod +x "${HOME_PATH}/files/usr/bin/cloudflared"
+            echo "增加cloudflared核心完成"
+        else
+            echo "下载核心失败"
+        fi
+    else
+        echo "删除旧文件失败"
+    fi
 fi
 }
 
