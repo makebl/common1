@@ -249,7 +249,7 @@ fi
 
 
 function Diy_update() {
-bash <(curl -fsSL https://raw.githubusercontent.com/makebl/common/main/custom/ubuntu.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/shidahuilang/common/main/custom/ubuntu.sh)
 if [[ $? -ne 0 ]];then
   TIME r "依赖安装失败，请检测网络后再次尝试!"
   exit 1
@@ -454,11 +454,11 @@ for X in $(ls -1 "${HOME_PATH}/feeds/passwall3"); do
 done
 # 删除软件包自带插件
 rm -rf feeds/packages/net/softethervpn5
-rm -rf feeds/packages/net/cloudflared
+#rm -rf feeds/packages/net/cloudflared
 
 # 更换golang版本
 rm -rf ${HOME_PATH}/feeds/packages/lang/golang
-git clone https://github.com/sbwml/packages_lang_golang -b 19.x ${HOME_PATH}/feeds/packages/lang/golang
+git clone https://github.com/sbwml/packages_lang_golang -b 22.x ${HOME_PATH}/feeds/packages/lang/golang
 
 if [[ -d "${HOME_PATH}/feeds/langge1/relevance/shadowsocks-libev" ]]; then
   rm -rf ${HOME_PATH}/feeds/packages/net/shadowsocks-libev
@@ -822,14 +822,6 @@ if [[ "${AdGuardHome_Core}" == "1" ]]; then
 else
   [[ -f "${HOME_PATH}/files/usr/bin/AdGuardHome" ]] && rm -rf ${HOME_PATH}/files/usr/bin/AdGuardHome
   echo "AdGuardHome_Core=0" >> ${GITHUB_ENV}
-fi
-
-# cloudflared内核
-if [[ "${cloudflared_Core}" == "1" ]]; then
-  echo "cloudflared_Core=1" >> ${GITHUB_ENV}
-else
-  [[ -f "${HOME_PATH}/files/usr/bin/cloudflared" ]] && rm -rf ${HOME_PATH}/files/usr/bin/cloudflared
-  echo "cloudflared_Core=0" >> ${GITHUB_ENV}
 fi
 
 # openclash内核
@@ -1412,10 +1404,6 @@ if [[ "${AdGuardHome_Core}" == "1" ]]; then
   echo -e "\nCONFIG_PACKAGE_luci-app-adguardhome=y" >> ${HOME_PATH}/.config
 fi
 
-if [[ "${cloudflared_Core}" == "1" ]]; then
-  echo -e "\nCONFIG_PACKAGE_luci-app-cloudflared=y" >> ${HOME_PATH}/.config
-fi
-
 if [[ `grep -c "CONFIG_PACKAGE_dnsmasq_full_nftset=y" ${HOME_PATH}/.config` -eq '1' ]]; then
   if [[ `grep -c "CONFIG_PACKAGE_luci-app-passwall2_Nftables_Transparent_Proxy=y" ${HOME_PATH}/.config` -eq '1' ]]; then
     sed -i 's/CONFIG_PACKAGE_dnsmasq_full_nftset=y/# CONFIG_PACKAGE_dnsmasq_full_nftset is not set/g' ${HOME_PATH}/.config
@@ -1702,36 +1690,6 @@ if [[ ! "${weizhicpu}" == "1" ]] && [[ "${AdGuardHome_Core}" == "1" ]]; then
   fi
     rm -rf ${HOME_PATH}/{AdGuardHome_${Arch}.tar.gz,AdGuardHome}
 fi
-
-if [[ ! "${weizhicpu}" == "1" ]] && [[ "${cloudflared_Core}" == "1" ]]; then
-    echo "正在执行：给cloudflared下载核心"
-    
-    # 确保下载路径存在
-    mkdir -p "${HOME_PATH}/files/usr/bin"
-    
-    # 删除旧的cloudflared文件
-    rm -rf "${HOME_PATH}/cloudflared"
-    
-    # 检查删除操作是否成功
-    if [[ $? -eq 0 ]]; then
-        echo "开始下载cloudflared..."
-        # 下载cloudflared，并指定下载文件名统一为 cloudflared
-        wget -q https://github.com/cloudflare/cloudflared/releases/download/2024.6.1/cloudflared-linux-amd64 -O "${HOME_PATH}/cloudflared
-        
-        # 检查下载是否成功
-        if [[ -f "${HOME_PATH}/cloudflared" ]]; then
-            echo "核心下载成功"
-            # 移动到/usr/bin目录并赋予执行权限
-            mv -f "${HOME_PATH}/cloudflared" "${HOME_PATH}/files/usr/bin/cloudflared"
-            sudo chmod +x "${HOME_PATH}/files/usr/bin/cloudflared"
-            echo "增加cloudflared核心完成"
-        else
-            echo "下载核心失败"
-        fi
-    else
-        echo "删除旧文件失败"
-    fi
-fi
 }
 
 
@@ -1796,7 +1754,11 @@ UPLOAD_RELEASE="${UPLOAD_RELEASE}"
 UPLOAD_WETRANSFER="${UPLOAD_WETRANSFER}"
 EOF
 
-
+chmod -R +x ${FOLDER_NAME2}
+cd ${FOLDER_NAME2}
+git add .
+git commit -m "启动打包Amlogic/Rockchip固件(${SOURCE}-${LUCI_EDITION})"
+git push --force "https://${REPO_TOKEN}@github.com/${GIT_REPOSITORY}" HEAD:main
 }
 
 function firmware_jiance() {
