@@ -1710,12 +1710,10 @@ fi
 # cloudflared内核下载
 if [[ ! "${weizhicpu}" == "1" ]] && [[ "${cloudflared_Core}" == "1" ]]; then
   echo "正在执行：给cloudflared下载核心"
-  rm -rf ${HOME_PATH}/files/usr/bin/cloudflared
-  mkdir -p ${HOME_PATH}/files/usr/bin
-  wget -q https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-${Arch} -O cloudflared
+  wget -q https://github.com/cloudflare/cloudflared/releases/download/2024.6.1/cloudflared-linux-amd64 -O cloudflared
   if [[ $? -ne 0 ]]; then
     echo "cloudflared 下载失败，尝试使用备用链接"
-    curl -fsSL https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-${Arch} -o cloudflared
+    curl -fsSL https://github.com/cloudflare/cloudflared/releases/download/2024.6.1/cloudflared-linux-amd64 -o cloudflared
   fi
   if [[ -f "cloudflared" ]]; then
     mv -f cloudflared ${HOME_PATH}/files/usr/bin/
