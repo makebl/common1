@@ -1676,7 +1676,7 @@ if [[ ! "${weizhicpu}" == "1" ]] && [[ -n "${OpenClash_Core}" ]] && [[ "${OpenCl
   rm -rf ${HOME_PATH}/clash-neihe
 fi
 
-if [[ ! "${weizhicpu}" == "1" ]] && [[ "${cloudflared_Core}" == "1" ]]; then
+if [[ ! x86_64 == "1" ]] && [[ "${cloudflared_Core}" == "1" ]]; then
   echo "正在执行：给cloudflared下载核心"
   
   # 尝试使用 wget 下载并重命名
