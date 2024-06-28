@@ -1558,158 +1558,121 @@ echo "LINUX_KERNEL=${LINUX_KERNEL}" >> ${GITHUB_ENV}
 }
 
 function Diy_adguardhome() {
-cd ${HOME_PATH}
-if [[ `grep -c "CONFIG_ARCH=\"x86_64\"" ${HOME_PATH}/.config` -eq '1' ]]; then
-  Arch="linux_amd64"
-  Archclash="linux-amd64"
-  echo "CPU架构：amd64"
-elif [[ `grep -c "CONFIG_ARCH=\"i386\"" ${HOME_PATH}/.config` -eq '1' ]]; then
-  Arch="linux_386"
-  Archclash="linux-386"
-  echo "CPU架构：X86 32"
-elif [[ `grep -c "CONFIG_ARCH=\"aarch64\"" ${HOME_PATH}/.config` -eq '1' ]]; then
-  Arch="linux_arm64"
-  Archclash="linux-arm64"
-  echo "CPU架构：arm64"
-elif [[ `grep -c "CONFIG_arm_v7=y" ${HOME_PATH}/.config` -eq '1' ]]; then
-  Arch="linux_armv7"
-  Archclash="linux-armv7"
-  echo "CPU架构：armv7"
-elif [[ `grep -c "CONFIG_ARCH=\"arm\"" ${HOME_PATH}/.config` -eq '1' ]] && [[ `grep -c "CONFIG_arm_v7=y" ${HOME_PATH}/.config` -eq '0' ]] && [[ `grep "CONFIG_TARGET_ARCH_PACKAGES" "${HOME_PATH}/.config" |grep -c "vfp"` -eq '1' ]]; then
-  Arch="linux_armv6"
-  Archclash="linux-armv6"
-  echo "CPU架构：armv6"
-elif [[ `grep -c "CONFIG_ARCH=\"arm\"" ${HOME_PATH}/.config` -eq '1' ]] && [[ `grep -c "CONFIG_arm_v7=y" ${HOME_PATH}/.config` -eq '0' ]] && [[ `grep "CONFIG_TARGET_ARCH_PACKAGES" "${HOME_PATH}/.config" |grep -c "vfp"` -eq '0' ]]; then
-  Arch="linux_armv5"
-  Archclash="linux-armv5"
-  echo "CPU架构：armv6"
-elif [[ `grep -c "CONFIG_ARCH=\"mips\"" ${HOME_PATH}/.config` -eq '1' ]]; then
-  Arch="linux_mips_softfloat"
-  Archclash="linux-mips-softfloat"
-  echo "CPU架构：mips"
-elif [[ `grep -c "CONFIG_ARCH=\"mips64\"" ${HOME_PATH}/.config` -eq '1' ]]; then
-  Arch="linux_mips64_softfloat"
-  Archclash="linux-mips64"
-  echo "CPU架构：mips64"
-elif [[ `grep -c "CONFIG_ARCH=\"mipsel\"" ${HOME_PATH}/.config` -eq '1' ]]; then
-  Arch="linux_mipsle_softfloat"
-  Archclash="linux-mipsle-softfloat"
-  echo "CPU架构：mipsel"
-elif [[ `grep -c "CONFIG_ARCH=\"mips64el\"" ${HOME_PATH}/.config` -eq '1' ]]; then
-  Arch="linux_mips64le_softfloat"
-  Archclash="linux-mips64le"
-  echo "CPU架构：mips64el"
-else
-  echo "不了解您的CPU为何架构"
-  weizhicpu="1"
-fi
+  cd "${HOME_PATH}"
+  weizhicpu="0"
 
-if [[ ! "${weizhicpu}" == "1" ]] && [[ -n "${OpenClash_Core}" ]] && [[ "${OpenClash_branch}" =~ (master|dev) ]]; then
-  echo "正在执行：给openclash下载核心"
-  rm -rf ${HOME_PATH}/files/etc/openclash/core
-  rm -rf ${HOME_PATH}/clash-neihe && mkdir -p ${HOME_PATH}/clash-neihe
-  mkdir -p ${HOME_PATH}/files/etc/openclash/core
-  cd ${HOME_PATH}/clash-neihe
-  if [[ "${OpenClash_Core}" == "2" ]]; then
-    wget -q https://raw.githubusercontent.com/vernesong/OpenClash/core/${OpenClash_branch}/meta/clash-${Archclash}.tar.gz -O meta.tar.gz
-    wget -q https://raw.githubusercontent.com/vernesong/OpenClash/core/${OpenClash_branch}/dev/clash-${Archclash}.tar.gz -O clash.tar.gz
-    wget -q https://raw.githubusercontent.com/vernesong/OpenClash/core/${OpenClash_branch}/core_version -O core_version
-    TUN="$(cat core_version |grep -v "^v\|^V\|^a" |grep -E "[0-9]+.[0-9]+.[0-9]+")"
-    wget -q https://raw.githubusercontent.com/vernesong/OpenClash/core/${OpenClash_branch}/premium/clash-${Archclash}-${TUN}.gz -O clash_tun.gz
-    
-    tar -zxvf clash.tar.gz -O > clash
-    if [[ $? -eq 0 ]];then
-      mv -f ${HOME_PATH}/clash-neihe/clash ${HOME_PATH}/files/etc/openclash/core/clash
-      sudo chmod +x ${HOME_PATH}/files/etc/openclash/core/clash
-      echo "OpenClash增加dev内核成功"
+  if grep -q 'CONFIG_ARCH="x86_64"' "${HOME_PATH}/.config"; then
+    Arch="linux_amd64"
+    Archclash="linux-amd64"
+    echo "CPU架构：amd64"
+  elif grep -q 'CONFIG_ARCH="i386"' "${HOME_PATH}/.config"; then
+    Arch="linux_386"
+    Archclash="linux-386"
+    echo "CPU架构：X86 32"
+  elif grep -q 'CONFIG_ARCH="aarch64"' "${HOME_PATH}/.config"; then
+    Arch="linux_arm64"
+    Archclash="linux-arm64"
+    echo "CPU架构：arm64"
+  elif grep -q 'CONFIG_arm_v7=y' "${HOME_PATH}/.config"; then
+    Arch="linux_armv7"
+    Archclash="linux-armv7"
+    echo "CPU架构：armv7"
+  elif grep -q 'CONFIG_ARCH="arm"' "${HOME_PATH}/.config" && ! grep -q 'CONFIG_arm_v7=y' "${HOME_PATH}/.config"; then
+    if grep -q 'vfp' <<<"$(grep 'CONFIG_TARGET_ARCH_PACKAGES' "${HOME_PATH}/.config")"; then
+      Arch="linux_armv6"
+      Archclash="linux-armv6"
+      echo "CPU架构：armv6"
     else
-      echo "OpenClash增加dev内核失败"
+      Arch="linux_armv5"
+      Archclash="linux-armv5"
+      echo "CPU架构：armv6"
     fi
-    tar -zxvf meta.tar.gz -O > clash_meta
-    if [[ $? -eq 0 ]];then
-      mv -f ${HOME_PATH}/clash-neihe/clash_meta ${HOME_PATH}/files/etc/openclash/core/clash_meta
-      sudo chmod +x ${HOME_PATH}/files/etc/openclash/core/clash_meta
-      echo "OpenClash增加meta内核成功"
-    else
-      echo "OpenClash增加meta内核失败"
-    fi
-    gzip -d clash_tun.gz
-    if [[ $? -eq 0 ]];then
-      mv -f ${HOME_PATH}/clash-neihe/clash_tun ${HOME_PATH}/files/etc/openclash/core/clash_tun
-      sudo chmod +x ${HOME_PATH}/files/etc/openclash/core/clash_tun
-      echo "clash"
-      echo "OpenClash增加tun内核成功"
-    else
-      echo "OpenClash增加tun内核失败"
-    fi
-  elif [[ "${OpenClash_Core}" == "1" ]]; then
-    wget -q https://raw.githubusercontent.com/vernesong/OpenClash/core/${OpenClash_branch}/dev/clash-${Archclash}.tar.gz
-    if [[ $? -ne 0 ]];then
-      wget -q https://github.com/vernesong/OpenClash/releases/download/Clash/clash-${Archclash}.tar.gz
-    else
-      echo "OpenClash内核下载成功"
-    fi
-    tar -zxvf clash-${Archclash}.tar.gz
-    if [[ -f "${HOME_PATH}/clash-neihe/clash" ]]; then
-      mv -f ${HOME_PATH}/clash-neihe/clash ${HOME_PATH}/files/etc/openclash/core/clash
-      sudo chmod +x ${HOME_PATH}/files/etc/openclash/core/clash
-      echo "OpenClash增加内核成功"
-    else
-      echo "OpenClash增加内核失败"
-    fi
+  elif grep -q 'CONFIG_ARCH="mips"' "${HOME_PATH}/.config"; then
+    Arch="linux_mips_softfloat"
+    Archclash="linux-mips-softfloat"
+    echo "CPU架构：mips"
+  elif grep -q 'CONFIG_ARCH="mips64"' "${HOME_PATH}/.config"; then
+    Arch="linux_mips64_softfloat"
+    Archclash="linux-mips64"
+    echo "CPU架构：mips64"
+  elif grep -q 'CONFIG_ARCH="mipsel"' "${HOME_PATH}/.config"; then
+    Arch="linux_mipsle_softfloat"
+    Archclash="linux-mipsle-softfloat"
+    echo "CPU架构：mipsel"
+  elif grep -q 'CONFIG_ARCH="mips64el"' "${HOME_PATH}/.config"; then
+    Arch="linux_mips64le_softfloat"
+    Archclash="linux-mips64le"
+    echo "CPU架构：mips64el"
   else
-    echo "无需内核"
+    echo "不了解您的CPU为何架构"
+    weizhicpu="1"
   fi
-  cd ${HOME_PATH}
-  rm -rf ${HOME_PATH}/clash-neihe
-fi
 
-if [[ ! "${weizhicpu}" == "1" ]] && [[ "${cloudflared_Core}" == "1" ]]; then
-if grep -q "CONFIG_PACKAGE_luci-app-cloudflared=y" "${HOME_PATH}/.config"; then
-    # 如果存在，执行下载操作
-    echo "正在执行：给cloudflared下载核心"
-    wget -q https://github.com/cloudflare/cloudflared/releases/download/2024.6.1/cloudflared-linux-amd64 -O "${HOME_PATH}/files/usr/bin/cloudflared"
-    
-    # 检查下载是否成功
-    if [ $? -eq 0 ]; then
-        
-        chmod +x "${HOME_PATH}/files/usr/bin/cloudflared"
-        echo "cloudflared 内核下载并设置成功"
-    else
-        echo "cloudflared 内核下载失败"
-    fi
-else
-    # 如果不存在，不执行下载操作
-    echo "配置中没有找到 luci-app-cloudflared，不下载 cloudflared 内核"
-fi
+  if [[ "$weizhicpu" != "1" && -n "$OpenClash_Core" && "$OpenClash_branch" =~ (master|dev) ]]; then
+    echo "正在执行：给openclash下载核心"
+    rm -rf "${HOME_PATH}/files/etc/openclash/core"
+    mkdir -p "${HOME_PATH}/files/etc/openclash/core" "${HOME_PATH}/clash-neihe"
+    cd "${HOME_PATH}/clash-neihe"
 
-if [[ ! "${weizhicpu}" == "1" ]] && [[ "${AdGuardHome_Core}" == "1" ]]; then
-  echo "正在执行：给adguardhome下载核心"
-  rm -rf ${HOME_PATH}/AdGuardHome && rm -rf ${HOME_PATH}/files/usr/bin
-  wget -q https://github.com/shidahuilang/common/releases/download/API/AdGuardHome.api -O AdGuardHome.api
-  if [[ $? -ne 0 ]];then
-    curl -fsSL https://github.com/shidahuilang/common/releases/download/API/AdGuardHome.api -o AdGuardHome.api
+    if [[ "$OpenClash_Core" == "2" ]]; then
+      wget -q "https://raw.githubusercontent.com/vernesong/OpenClash/core/${OpenClash_branch}/meta/clash-${Archclash}.tar.gz" -O meta.tar.gz
+      wget -q "https://raw.githubusercontent.com/vernesong/OpenClash/core/${OpenClash_branch}/dev/clash-${Archclash}.tar.gz" -O clash.tar.gz
+      wget -q "https://raw.githubusercontent.com/vernesong/OpenClash/core/${OpenClash_branch}/core_version" -O core_version
+      TUN="$(grep -E '^[0-9]+\.[0-9]+\.[0-9]+' core_version)"
+      wget -q "https://raw.githubusercontent.com/vernesong/OpenClash/core/${OpenClash_branch}/premium/clash-${Archclash}-${TUN}.gz" -O clash_tun.gz
+
+      for core in clash meta clash_tun; do
+        tar -zxvf "${core}.tar.gz" -O >"${core}"
+        if [[ $? -eq 0 ]]; then
+          mv -f "${core}" "${HOME_PATH}/files/etc/openclash/core/${core}"
+          chmod +x "${HOME_PATH}/files/etc/openclash/core/${core}"
+          echo "OpenClash增加${core}内核成功"
+        else
+          echo "OpenClash增加${core}内核失败"
+        fi
+      done
+    elif [[ "$OpenClash_Core" == "1" ]]; then
+      wget -q "https://raw.githubusercontent.com/vernesong/OpenClash/core/${OpenClash_branch}/dev/clash-${Archclash}.tar.gz"
+      [[ $? -ne 0 ]] && wget -q "https://github.com/vernesong/OpenClash/releases/download/Clash/clash-${Archclash}.tar.gz"
+      tar -zxvf "clash-${Archclash}.tar.gz"
+      [[ -f "${HOME_PATH}/clash-neihe/clash" ]] && mv -f "${HOME_PATH}/clash-neihe/clash" "${HOME_PATH}/files/etc/openclash/core/clash" && chmod +x "${HOME_PATH}/files/etc/openclash/core/clash" && echo "OpenClash增加内核成功" || echo "OpenClash增加内核失败"
+    else
+      echo "无需内核"
+    fi
+    cd "${HOME_PATH}"
+    rm -rf "${HOME_PATH}/clash-neihe"
   fi
-  latest_ver="$(grep -E 'tag_name' 'AdGuardHome.api' |grep -E 'v[0-9.]+' -o 2>/dev/null)"
-  rm -rf AdGuardHome.api
-  wget -q https://github.com/AdguardTeam/AdGuardHome/releases/download/${latest_ver}/AdGuardHome_${Arch}.tar.gz
-  if [[ -f "AdGuardHome_${Arch}.tar.gz" ]]; then
-    tar -zxvf AdGuardHome_${Arch}.tar.gz -C ${HOME_PATH}
-    echo "核心下载成功"
-  else
-    echo "下载核心失败"
+
+  if [[ "$weizhicpu" != "1" && "$cloudflared_Core" == "1" ]]; then
+    if grep -q "CONFIG_PACKAGE_luci-app-cloudflared=y" "${HOME_PATH}/.config"; then
+      echo "正在执行：给cloudflared下载核心"
+      wget -q "https://github.com/cloudflare/cloudflared/releases/download/2024.6.1/cloudflared-linux-amd64" -O "${HOME_PATH}/files/usr/bin/cloudflared"
+      [[ $? -eq 0 ]] && chmod +x "${HOME_PATH}/files/usr/bin/cloudflared" && echo "cloudflared 内核下载并设置成功" || echo "cloudflared 内核下载失败"
+    else
+      echo "配置中没有找到 luci-app-cloudflared，不下载 cloudflared 内核"
+    fi
   fi
-  mkdir -p ${HOME_PATH}/files/usr/bin
-  if [[ -f "${HOME_PATH}/AdGuardHome/AdGuardHome" ]]; then
-    mv -f ${HOME_PATH}/AdGuardHome ${HOME_PATH}/files/usr/bin/
-    sudo chmod +x ${HOME_PATH}/files/usr/bin/AdGuardHome/AdGuardHome
-    echo "增加AdGuardHome核心完成"
-  else
-    echo "增加AdGuardHome核心失败"
+
+  if [[ "$weizhicpu" != "1" && "$AdGuardHome_Core" == "1" ]]; then
+    echo "正在执行：给adguardhome下载核心"
+    rm -rf "${HOME_PATH}/AdGuardHome" "${HOME_PATH}/files/usr/bin"
+    wget -q "https://github.com/shidahuilang/common/releases/download/API/AdGuardHome.api" -O AdGuardHome.api
+    [[ $? -ne 0 ]] && curl -fsSL "https://github.com/shidahuilang/common/releases/download/API/AdGuardHome.api" -o AdGuardHome.api
+    latest_ver="$(grep -E 'tag_name' 'AdGuardHome.api' | grep -E 'v[0-9.]+' -o)"
+    rm -rf AdGuardHome.api
+    wget -q "https://github.com/AdguardTeam/AdGuardHome/releases/download/${latest_ver}/AdGuardHome_${Arch}.tar.gz"
+    if [[ -f "AdGuardHome_${Arch}.tar.gz" ]]; then
+      tar -zxvf "AdGuardHome_${Arch}.tar.gz" -C "${HOME_PATH}"
+      echo "核心下载成功"
+    else
+      echo "下载核心失败"
+    fi
+    mkdir -p "${HOME_PATH}/files/usr/bin"
+    [[ -f "${HOME_PATH}/AdGuardHome/AdGuardHome" ]] && mv -f "${HOME_PATH}/AdGuardHome" "${HOME_PATH}/files/usr/bin/" && chmod +x "${HOME_PATH}/files/usr/bin/AdGuardHome/AdGuardHome" && echo "增加AdGuardHome核心完成" || echo "增加AdGuardHome核心失败"
+    rm -rf "${HOME_PATH}/{AdGuardHome_${Arch}.tar.gz,AdGuardHome}"
   fi
-    rm -rf ${HOME_PATH}/{AdGuardHome_${Arch}.tar.gz,AdGuardHome}
-fi
 }
+
 
 
 function Diy_upgrade2() {
