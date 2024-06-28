@@ -2186,14 +2186,18 @@ if [[ "${UPDATE_FIRMWARE_ONLINE}" == "true" ]] && [[ -z "${REPO_TOKEN}" ]]; then
   echo
 elif [[ "${UPDATE_FIRMWARE_ONLINE}" == "true" ]] && [[ -n "${REPO_TOKEN}" ]]; then
   echo
-  TIME l "定时自动更新信息"
-  TIME z "插件版本: ${AutoUpdate_Version}"
-  if [[ ${TARGET_BOARD} == "x86" ]]; then
+TIME z "插件版本: ${AutoUpdate_Version}"
+if [[ ${TARGET_BOARD} == "x86" ]]; then
     TIME b "传统固件: ${AutoBuild_Legacy}${Firmware_SFX}"
     [[ "${EFI_NO}" == "1" ]] && TIME b "UEFI固件: ${AutoBuild_Uefi}${Firmware_SFX}"
-  else
-    TIME b "固件名称: ${AutoBuild_Firmware}${Firmware_SFX}"
-  fi
+fi
+
+# 打印固件名称
+TIME b "固件名称: ${AutoBuild_Firmware}${Firmware_SFX}"
+if [[ -n "${AutoBuild_Tar}" ]]; then
+    TIME b "固件名称: ${AutoBuild_Tar}${Firmware_SFX_Tar}"
+fi
+
   TIME b "固件后缀: ${Firmware_SFX}"
   TIME b "固件版本: ${Openwrt_Version}"
   TIME b "云端路径: ${Github_Release}"
