@@ -48,12 +48,12 @@ function Diy_Part2() {
 		export AutoBuild_Firmware="${LUCI_EDITION}-${SOURCE}-${TARGET_PROFILE_ER}-${Upgrade_Date}-sysupgrade"
 	;;
 	x86)
-		export Firmware_SFX_Tar=".img.gz"
-                export ROOTFS_EXT=".tar.gz"
+		export Firmware_SFX=".img.gz"
+                export Firmware_SFX_Tar=".tar.gz"
 		export AutoBuild_Uefi="${LUCI_EDITION}-${SOURCE}-${TARGET_PROFILE_ER}-${Upgrade_Date}-uefi"
 		export AutoBuild_Legacy="${LUCI_EDITION}-${SOURCE}-${TARGET_PROFILE_ER}-${Upgrade_Date}-legacy"
                 export AutoBuild_Tar="${LUCI_EDITION}-${SOURCE}-${TARGET_PROFILE_ER}-${Upgrade_Date}${Firmware_SFX_Tar}"
-		echo "ROOTFS_EXT=$Firmware_SFX_Tar" >> $GITHUB_ENV
+		
 	;;
 	rockchip | bcm27xx | mxs | sunxi | zynq)
 		export Firmware_SFX=".img.gz"
@@ -92,6 +92,7 @@ function Diy_Part2() {
 	if [[ "${TARGET_BOARD}" == "x86" ]]; then
 		echo "AutoBuild_Uefi=${AutoBuild_Uefi}" >> ${GITHUB_ENV}
 		echo "AutoBuild_Legacy=${AutoBuild_Legacy}" >> ${GITHUB_ENV}
+                echo "Firmware_SFX_Tar=$Firmware_SFX_Tar" >> $GITHUB_ENV
 	else
 		echo "AutoBuild_Firmware=${AutoBuild_Firmware}" >> ${GITHUB_ENV}
 	fi
@@ -136,45 +137,70 @@ function Diy_Part3() {
 		gzip -f9n *.img
 	fi
 	
-	case "${TARGET_BOARD}" in
-	x86)
-		if [[ `ls -1 | grep -c "efi"` -ge '1' ]]; then
-			EFI_ZHONGZHUAN="$(ls -1 |grep -Eo ".*squashfs.*efi.*img.gz")"
-			if [[ -f "${EFI_ZHONGZHUAN}" ]]; then
-		  		EFIMD5="$(md5sum ${EFI_ZHONGZHUAN} |cut -c1-3)$(sha256sum ${EFI_ZHONGZHUAN} |cut -c1-3)"
-		  		cp -Rf "${EFI_ZHONGZHUAN}" "${BIN_PATH}/${AutoBuild_Uefi}-${EFIMD5}${Firmware_SFX}"
-			else
-				echo "没找到在线升级可用的${Firmware_SFX}格式固件"
-			fi
+case "${TARGET_BOARD}" in
+x86)
+	if [[ `ls -1 | grep -c "efi"` -ge '1' ]]; then
+		EFI_ZHONGZHUAN="$(ls -1 |grep -Eo ".*squashfs.*efi.*img.gz")"
+		if [[ -f "${EFI_ZHONGZHUAN}" ]]; then
+			EFIMD5="$(md5sum ${EFI_ZHONGZHUAN} |cut -c1-3)$(sha256sum ${EFI_ZHONGZHUAN} |cut -c1-3)"
+			cp -Rf "${EFI_ZHONGZHUAN}" "${BIN_PATH}/${AutoBuild_Uefi}-${EFIMD5}${Firmware_SFX}"
 		else
-			echo "没有uefi格式固件"
+			echo "没找到在线升级可用的${Firmware_SFX}格式固件"
 		fi
-		
-		if [[ `ls -1 | grep -c "squashfs"` -ge '1' ]]; then
-			LEGA_ZHONGZHUAN="$(ls -1 |grep -Eo ".*squashfs.*img.gz" |grep -v ".vm\|.vb\|.vh\|.qco\|efi\|root")"
-			if [[ -f "${LEGA_ZHONGZHUAN}" ]]; then
-				LEGAMD5="$(md5sum ${LEGA_ZHONGZHUAN} |cut -c1-3)$(sha256sum ${LEGA_ZHONGZHUAN} |cut -c1-3)"
-				cp -Rf "${LEGA_ZHONGZHUAN}" "${BIN_PATH}/${AutoBuild_Legacy}-${LEGAMD5}${Firmware_SFX}"
-			else
-				echo "没找到在线升级可用的${Firmware_SFX}格式固件"
-			fi
+	else
+		echo "没有uefi格式固件"
+	fi
+	
+	if [[ `ls -1 | grep -c "squashfs"` -ge '1' ]]; then
+		LEGA_ZHONGZHUAN="$(ls -1 |grep -Eo ".*squashfs.*img.gz" |grep -v ".vm\|.vb\|.vh\|.qco\|efi\|root")"
+		if [[ -f "${LEGA_ZHONGZHUAN}" ]]; then
+			LEGAMD5="$(md5sum ${LEGA_ZHONGZHUAN} |cut -c1-3)$(sha256sum ${LEGA_ZHONGZHUAN} |cut -c1-3)"
+			cp -Rf "${LEGA_ZHONGZHUAN}" "${BIN_PATH}/${AutoBuild_Legacy}-${LEGAMD5}${Firmware_SFX}"
 		else
-			echo "没有squashfs格式固件"
+			echo "没找到在线升级可用的${Firmware_SFX}格式固件"
 		fi
+	else
+		echo "没有squashfs格式固件"
+	fi
+	
+	if [[ `ls -1 | grep -c "tar.gz"` -ge '1' ]]; then
+		TAR_ZHONGZHUAN="$(ls -1 |grep -Eo ".*squashfs.*tar.gz" |grep -v ".vm\|.vb\|.vh\|.qco\|efi\|root")"
+		if [[ -f "${TAR_ZHONGZHUAN}" ]]; then
+			TARMD5="$(md5sum ${TAR_ZHONGZHUAN} |cut -c1-3)$(sha256sum ${TAR_ZHONGZHUAN} |cut -c1-3)"
+			cp -Rf "${TAR_ZHONGZHUAN}" "${BIN_PATH}/${AutoBuild_Tar}-${TARMD5}${Firmware_SFX_Tar}"
+		else
+			echo "没找到在线升级可用的${Firmware_SFX_Tar}格式固件"
+		fi
+	else
+		echo "没有tar.gz格式固件"
+	fi
 	;;
-	*)
-		if [[ `ls -1 | grep -c "sysupgrade"` -ge '1' ]]; then
-			UP_ZHONGZHUAN="$(ls -1 |grep -Eo ".*${TARGET_PROFILE}.*sysupgrade.*${Firmware_SFX}" |grep -v "rootfs\|ext4\|factory")"
+*)
+	if [[ `ls -1 | grep -c "sysupgrade"` -ge '1' ]]; then
+		UP_ZHONGZHUAN="$(ls -1 |grep -Eo ".*${TARGET_PROFILE}.*sysupgrade.*${Firmware_SFX}" |grep -v "rootfs\|ext4\|factory")"
+	else
+		UP_ZHONGZHUAN="$(ls -1 |grep -Eo ".*${TARGET_PROFILE}.*squashfs.*${Firmware_SFX}" |grep -v "rootfs\|ext4\|factory")"
+	fi
+	if [[ -f "${UP_ZHONGZHUAN}" ]]; then
+		MD5="$(md5sum ${UP_ZHONGZHUAN} | cut -c1-3)$(sha256sum ${UP_ZHONGZHUAN} | cut -c1-3)"
+		cp -Rf "${UP_ZHONGZHUAN}" "${BIN_PATH}/${AutoBuild_Firmware}-${MD5}${Firmware_SFX}"
+	else
+		echo "没找到在线升级可用的${Firmware_SFX}格式固件，或者没适配该机型"
+	fi
+	# 增加 tar.gz 格式的检查
+	if [[ `ls -1 | grep -c "tar.gz"` -ge '1' ]]; then
+		TAR_ZHONGZHUAN="$(ls -1 |grep -Eo ".*${TARGET_PROFILE}.*tar.gz" |grep -v "rootfs\|ext4\|factory")"
+		if [[ -f "${TAR_ZHONGZHUAN}" ]]; then
+			TARMD5="$(md5sum ${TAR_ZHONGZHUAN} | cut -c1-3)$(sha256sum ${TAR_ZHONGZHUAN} | cut -c1-3)"
+			cp -Rf "${TAR_ZHONGZHUAN}" "${BIN_PATH}/${AutoBuild_Firmware}-${TARMD5}.tar.gz"
 		else
-			UP_ZHONGZHUAN="$(ls -1 |grep -Eo ".*${TARGET_PROFILE}.*squashfs.*${Firmware_SFX}" |grep -v "rootfs\|ext4\|factory")"
+			echo "没找到在线升级可用的.tar.gz格式固件，或者没适配该机型"
 		fi
-		if [[ -f "${UP_ZHONGZHUAN}" ]]; then
-			MD5="$(md5sum ${UP_ZHONGZHUAN} | cut -c1-3)$(sha256sum ${UP_ZHONGZHUAN} | cut -c1-3)"
-			cp -Rf "${UP_ZHONGZHUAN}" "${BIN_PATH}/${AutoBuild_Firmware}-${MD5}${Firmware_SFX}"
-		else
-			echo "没找到在线升级可用的${Firmware_SFX}格式固件，或者没适配该机型"
-		fi
+	else
+		echo "没有.tar.gz格式固件"
+	fi
 	;;
-	esac
-	cd ${HOME_PATH}
+esac
+cd ${HOME_PATH}
+
 }
