@@ -1643,15 +1643,47 @@ function Diy_adguardhome() {
     rm -rf "${HOME_PATH}/clash-neihe"
   fi
 
-  if [[ "$weizhicpu" != "1" && "$cloudflared_Core" == "1" ]]; then
-    if grep -q "CONFIG_PACKAGE_luci-app-cloudflared=y" "${HOME_PATH}/.config"; then
-      echo "正在执行：给cloudflared下载核心"
-      wget -q "https://github.com/cloudflare/cloudflared/releases/download/2024.6.1/cloudflared-linux-amd64" -O "${HOME_PATH}/files/usr/bin/cloudflared"
-      [[ $? -eq 0 ]] && chmod +x "${HOME_PATH}/files/usr/bin/cloudflared" && echo "cloudflared 内核下载并设置成功" || echo "cloudflared 内核下载失败"
+if [[ "$weizhicpu" != "1" && "$cloudflared_Core" == "1" ]]; then
+  if grep -q "CONFIG_PACKAGE_luci-app-cloudflared=y" "${HOME_PATH}/.config"; then
+    echo "正在执行：给cloudflared下载核心"
+    
+    # 根据不同的CPU架构下载相应的cloudflared内核
+    case "$Arch" in
+      linux_amd64)
+        wget -q "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64" -O "${HOME_PATH}/files/usr/bin/cloudflared"
+        ;;
+      linux_386)
+        wget -q "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-386" -O "${HOME_PATH}/files/usr/bin/cloudflared"
+        ;;
+      linux_arm64)
+        wget -q "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64" -O "${HOME_PATH}/files/usr/bin/cloudflared"
+        ;;
+      linux_armv7)
+        wget -q "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm" -O "${HOME_PATH}/files/usr/bin/cloudflared"
+        ;;
+      linux_mips_softfloat)
+        wget -q "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-mips" -O "${HOME_PATH}/files/usr/bin/cloudflared"
+        ;;
+      linux_mipsle_softfloat)
+        wget -q "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-mipsle" -O "${HOME_PATH}/files/usr/bin/cloudflared"
+        ;;
+      *)
+        echo "不支持的CPU架构：$Arch"
+        ;;
+    esac
+    
+    # 检查下载是否成功
+    if [[ $? -eq 0 ]]; then
+      chmod +x "${HOME_PATH}/files/usr/bin/cloudflared"
+      echo "cloudflared 内核下载并设置成功"
     else
-      echo "配置中没有找到 luci-app-cloudflared，不下载 cloudflared 内核"
+      echo "cloudflared 内核下载失败"
     fi
+  else
+    echo "配置中没有找到 luci-app-cloudflared，不下载 cloudflared 内核"
   fi
+fi
+
 
   if [[ "$weizhicpu" != "1" && "$AdGuardHome_Core" == "1" ]]; then
     echo "正在执行：给adguardhome下载核心"
