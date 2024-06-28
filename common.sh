@@ -1676,25 +1676,23 @@ if [[ ! "${weizhicpu}" == "1" ]] && [[ -n "${OpenClash_Core}" ]] && [[ "${OpenCl
   rm -rf ${HOME_PATH}/clash-neihe
 fi
 
-if [[ ! x86_64 == "1" ]] && [[ "${cloudflared_Core}" == "1" ]]; then
-  echo "正在执行：给cloudflared下载核心"
-  
-  # 尝试使用 wget 下载并重命名
-  wget -q -O "${HOME_PATH}/files/usr/bin/cloudflared" https://github.com/cloudflare/cloudflared/releases/download/2024.6.1/cloudflared-linux-amd64
-  if [[ $? -ne 0 ]]; then
-    echo "wget 下载失败，正在尝试使用 curl 下载..."
-    # wget 失败后，使用 curl 下载并重命名
-    curl -s -o "${HOME_PATH}/files/usr/bin/cloudflared" https://github.com/cloudflare/cloudflared/releases/download/2024.6.1/cloudflared-linux-amd64
-  fi
-
-  if [[ -f "${HOME_PATH}/files/usr/bin/cloudflared" ]]; then
-    echo "核心下载成功"
-    chmod +x "${HOME_PATH}/files/usr/bin/cloudflared"  # 设置执行权限
-  else
-    echo "下载核心失败"
-  fi
+if [[ ! "${weizhicpu}" == "1" ]] && [[ "${cloudflared_Core}" == "1" ]]; then
+#if grep -q "CONFIG_PACKAGE_luci-app-cloudflared=y" "${HOME_PATH}/.config"; then
+    # 如果存在，执行下载操作
+    echo "正在执行：给cloudflared下载核心"
+    wget -q https://github.com/cloudflare/cloudflared/releases/download/2024.6.1/cloudflared-linux-amd64 -O "${HOME_PATH}/files/usr/bin/cloudflared"
+    
+    # 检查下载是否成功
+    if [ $? -eq 0 ]; then
+        
+        chmod +x "${HOME_PATH}/files/usr/bin/cloudflared"
+        echo "cloudflared 内核下载并设置成功"
+    else
+        echo "cloudflared 内核下载失败"
+    fi
 else
-  echo "条件不满足，不执行下载"
+    # 如果不存在，不执行下载操作
+    echo "配置中没有找到 luci-app-cloudflared，不下载 cloudflared 内核"
 fi
 
 if [[ ! "${weizhicpu}" == "1" ]] && [[ "${AdGuardHome_Core}" == "1" ]]; then
