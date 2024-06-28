@@ -48,9 +48,12 @@ function Diy_Part2() {
 		export AutoBuild_Firmware="${LUCI_EDITION}-${SOURCE}-${TARGET_PROFILE_ER}-${Upgrade_Date}-sysupgrade"
 	;;
 	x86)
-		export Firmware_SFX=".img.gz"
+		export Firmware_SFX_Tar=".img.gz"
+                export ROOTFS_EXT=".tar.gz"
 		export AutoBuild_Uefi="${LUCI_EDITION}-${SOURCE}-${TARGET_PROFILE_ER}-${Upgrade_Date}-uefi"
 		export AutoBuild_Legacy="${LUCI_EDITION}-${SOURCE}-${TARGET_PROFILE_ER}-${Upgrade_Date}-legacy"
+                export AutoBuild_Tar="${LUCI_EDITION}-${SOURCE}-${TARGET_PROFILE_ER}-${Upgrade_Date}${Firmware_SFX_Tar}"
+		echo "ROOTFS_EXT=$Firmware_SFX_Tar" >> $GITHUB_ENV
 	;;
 	rockchip | bcm27xx | mxs | sunxi | zynq)
 		export Firmware_SFX=".img.gz"
