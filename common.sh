@@ -456,9 +456,10 @@ done
 rm -rf feeds/packages/net/softethervpn5
 rm -rf feeds/packages/net/cloudflared
 rm -rf feeds/package/luci-app-smartdns
+rm -rf feeds/package/luci-app-zerotier
 # 更换golang版本
 rm -rf ${HOME_PATH}/feeds/packages/lang/golang
-git clone https://github.com/sbwml/packages_lang_golang -b 20.x ${HOME_PATH}/feeds/packages/lang/golang
+git clone https://github.com/sbwml/packages_lang_golang -b 22.x ${HOME_PATH}/feeds/packages/lang/golang
 
 if [[ -d "${HOME_PATH}/feeds/langge1/relevance/shadowsocks-libev" ]]; then
   rm -rf ${HOME_PATH}/feeds/packages/net/shadowsocks-libev
