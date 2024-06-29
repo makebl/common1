@@ -676,9 +676,24 @@ fi
 
 function Diy_LIENOL() {
 cd ${HOME_PATH}
-
+# 修改v2raya的kmod-nft-tproxy依赖
+if [[ "${REPO_BRANCH}" =~ (19.07|21.02) ]]; then
+  if [[ -d "${HOME_PATH}/build/common/Share/v2raya" ]]; then
+    rm -rf ${HOME_PATH}/feeds/helloworld/v2raya
+    cp -Rf ${HOME_PATH}/build/common/Share/v2raya ${HOME_PATH}/feeds/helloworld/v2raya
+  fi
+fi
+# 取消shadowsocksr-libev的libopenssl-legacy依赖
+if [[ "${REPO_BRANCH}" =~ (19.07|21.02|22.03) ]]; then
+  if [[ -d "${HOME_PATH}/feeds/passwall3/shadowsocksr-libev" ]]; then
+    curl -o ${HOME_PATH}/feeds/passwall3/shadowsocksr-libev/Makefile https://raw.githubusercontent.com/shidahuilang/common/main/Share/shadowsocksr-libev/Makefile
+  fi
+  # 降低shadowsocks-rust版本,最新版本编译不成功
+  if [[ -d "${HOME_PATH}/feeds/passwall3/shadowsocks-rust" ]]; then
+    curl -o ${HOME_PATH}/feeds/passwall3/shadowsocks-rust/Makefile https://raw.githubusercontent.com/shidahuilang/common/main/Share/shadowsocks-rust/Makefile
+  fi
+fi
 }
-
 
 
 function Diy_IMMORTALWRT() {
