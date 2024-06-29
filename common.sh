@@ -674,7 +674,10 @@ if [[ -f "${HOME_PATH}/feeds/packages/multimedia/aliyundrive-webdav/Makefile" ]]
 fi
 }
 
+function Diy_LIENOL() {
+cd ${HOME_PATH}
 
+}
 
 
 
