@@ -211,6 +211,7 @@ echo "Gujian_Date=$(date +%m.%d)" >> ${GITHUB_ENV}
 echo "FILE_TIME=$(date +"%m-%d %H.%M")" >> $GITHUB_ENV
 echo "FILE_TIME1=$(date "+%Y年%m月%d日-%H点%M分")" >> $GITHUB_ENV
 echo "FILE_TIME2=$(date "+%Y%m%d-%H%M")" >> $GITHUB_ENV
+echo "START_SECONDS=$(date --date="$START_TIME" +%s)" >> $GITHUB_ENV
 if [[ -n "${BENDI_VERSION}" ]]; then
   echo "PACKAGING_FIRMWARE_BENDI=${PACKAGING_FIRMWARE}" >> ${GITHUB_ENV}
   echo "MODIFY_CONFIGURATION=${MODIFY_CONFIGURATION}" >> ${GITHUB_ENV}
